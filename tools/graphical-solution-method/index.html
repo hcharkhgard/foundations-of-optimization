@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Graphical Solution Method – Linear Programming</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --paper:#EEF3F9; --panel:#FFFFFF; --ink:#16233B; --muted:#56657C;
+  --grid:#DFE8F3; --axis:#16233B; --line:#D3DDEA;
+  --region:#F2D23C; --region-op:.5; --obj:#D1246C; --obj2:#8E3FB8; --focus:#2F6FDE;
+  --field:#F7FAFD; --warn:#B45309; --ok:#15803D; --soft:#F3F6FA;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1524; --panel:#151F33; --ink:#E6ECF5; --muted:#9CAAC0;
+    --grid:#1C2940; --axis:#C9D4E6; --line:#2A3A55;
+    --region:#E8C547; --region-op:.3; --obj:#FF5E9C; --obj2:#C98BFF; --focus:#6FA0FF;
+    --field:#1B2740; --warn:#FDBA74; --ok:#4ADE80; --soft:#18233A;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1524; --panel:#151F33; --ink:#E6ECF5; --muted:#9CAAC0;
+  --grid:#1C2940; --axis:#C9D4E6; --line:#2A3A55;
+  --region:#E8C547; --region-op:.3; --obj:#FF5E9C; --obj2:#C98BFF; --focus:#6FA0FF;
+  --field:#1B2740; --warn:#FDBA74; --ok:#4ADE80; --soft:#18233A;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:16px;line-height:1.5;font-variant-numeric:tabular-nums;
+}
+header{max-width:1640px;margin:0 auto;padding:22px 20px 4px}
+h1{font-size:1.6rem;line-height:1.2;margin:0 0 4px;letter-spacing:-.01em}
+header p{margin:0;color:var(--muted);max-width:80ch}
+.wrap{
+  max-width:1640px;margin:0 auto;padding:14px 20px 40px;display:grid;gap:16px;align-items:start;
+  grid-template-columns:350px minmax(0,1fr) 390px;grid-template-areas:"form graph lesson";
+}
+.form{grid-area:form;display:flex;flex-direction:column;gap:14px}
+.graph{grid-area:graph;position:sticky;top:12px}
+.lesson{grid-area:lesson}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+h2{font-size:1.05rem;margin:0 0 10px}
+h3{font-size:1rem;margin:0}
+.hint{color:var(--muted);font-size:.9rem;margin:6px 0 0}
+input[type=number],input[type=text],select{
+  font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:8px;padding:5px 7px;min-width:0;
+}
+input[type=number]{width:3.6em;text-align:right}
+input[type=text].num{width:4.6em;text-align:right}
+input:disabled,select:disabled{opacity:.6}
+input[aria-invalid="true"]{border-color:var(--warn);outline:1px solid var(--warn)}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--field);color:var(--ink);padding:6px 11px}
+button:hover:not(:disabled){border-color:var(--muted)}
+button.primary{background:var(--obj);border-color:var(--obj);color:#fff;font-weight:700}
+button.go{background:var(--focus);border-color:var(--focus);color:#fff;font-weight:700}
+button[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+button:disabled{opacity:.4;cursor:default}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.var{font-style:italic}
+.cons{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.con{display:flex;align-items:center;gap:5px;padding:3px;border-radius:10px}
+.con.hl{background:var(--soft)}
+.badge{flex:none;width:22px;height:22px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-size:.78rem;font-weight:700}
+.con input,.con select{flex:none;padding:4px 5px}
+.con input[type=number]{width:3.1em}
+.con select{width:2.9em}
+.con .rm{padding:3px 8px;margin-left:auto;color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.check{display:flex;align-items:center;gap:8px;margin-top:10px}
+.check input{width:18px;height:18px;accent-color:var(--focus);flex:none}
+.vars input{width:3.2em;text-align:center}
+
+.plot{width:100%;overflow-x:auto}
+svg{display:block;width:100%;height:auto;min-width:320px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+svg.picking{cursor:crosshair}
+svg.grabbing{cursor:grabbing}
+.gtools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.tgroup{display:flex;gap:2px}
+.tgroup button{min-width:38px;padding:5px 8px;font-size:1.05rem;line-height:1.2}
+.viewmode{color:var(--muted);font-size:.9rem;margin-left:auto}
+.ranges{margin:0 0 8px;border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+.ranges summary{cursor:pointer;font-weight:700;font-size:.95rem}
+.rgrid{display:grid;grid-template-columns:auto auto 1fr;gap:8px 10px;align-items:center;margin-top:8px}
+.rgrid button{padding:3px 10px}
+.pickhint{margin:8px 4px 0;color:var(--focus);font-weight:700;min-height:1.5em;font-size:.95rem}
+
+.tabs{display:flex;gap:4px;margin:-4px -4px 12px;flex-wrap:wrap}
+.tab{flex:1 1 auto;white-space:nowrap;font-size:.84rem;border:none;background:transparent;padding:7px 4px;border-radius:9px;color:var(--muted);font-weight:700}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--panel)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.chip{display:flex;align-items:center;gap:6px;padding:4px 10px 4px 5px;border-radius:999px}
+.chip[aria-pressed="true"]{background:var(--soft);color:var(--ink);border-color:var(--ink);border-width:2px}
+.chip .tickmark{color:var(--ok);font-weight:700}
+.step{border:1px solid var(--line);border-radius:11px;padding:10px 12px;margin-top:10px;background:var(--panel)}
+.step.locked{opacity:.45}
+.step.current{border-color:var(--focus);box-shadow:0 0 0 1px var(--focus)}
+.step-h{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.step-n{flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--muted);display:grid;place-items:center;font-size:.78rem;font-weight:700;color:var(--muted)}
+.step.done .step-n{background:var(--ok);border-color:var(--ok);color:#fff}
+.step p{margin:4px 0}
+.eqn{font-size:1.15rem;font-weight:700}
+.pw{display:grid;grid-template-columns:auto auto 1fr;gap:6px 8px;align-items:center;margin:6px 0}
+.pw .lbl{color:var(--muted);font-size:.9rem}
+.pw .out{font-weight:700}
+.fb{margin:8px 0 0;padding:8px 10px;border-radius:8px;background:var(--soft);font-size:.95rem}
+.fb.ok{border-left:4px solid var(--ok)}
+.fb.bad{border-left:4px solid var(--warn)}
+.fb.info{border-left:4px solid var(--focus)}
+.sidebtns{display:flex;gap:8px;flex-wrap:wrap}
+.reglist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.reglist label{display:flex;align-items:center;gap:8px}
+.reglist .off{color:var(--muted);font-size:.85rem}
+input[type=range]{width:100%;accent-color:var(--obj);height:28px}
+.zread{font-size:1.3rem;font-weight:700;color:var(--obj)}
+.result{border-left:4px solid var(--obj);padding:10px 12px;background:var(--soft);border-radius:0 10px 10px 0;margin-top:10px}
+.result strong{display:block;font-size:1.05rem}
+.result span{color:var(--muted)}
+table{border-collapse:collapse;width:100%;font-size:.95rem;margin-top:8px}
+th,td{text-align:right;padding:5px 8px;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:400}
+.alg{display:flex;flex-direction:column;gap:3px;margin-top:6px;padding:8px 12px;background:var(--soft);border-radius:8px;font-size:1.05rem}
+.alg .res{font-weight:700;color:var(--obj)}
+table.feas td{text-align:left;padding:4px 6px}
+tr.best td{font-weight:700;color:var(--obj)}
+.foot{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+
+/* svg */
+.gminor{stroke:var(--grid);stroke-width:1}
+.gaxis{stroke:var(--axis);stroke-width:1.6}
+.tick{fill:var(--muted);font-size:12px}
+.axlabel{fill:var(--ink);font-size:15px;font-style:italic;font-weight:700}
+.region{fill:var(--region);fill-opacity:var(--region-op);stroke:var(--region);stroke-width:2;stroke-linejoin:round}
+.hp{fill-opacity:.13}
+.hp.sel{fill-opacity:.2}
+.olab{font-weight:700;font-size:14px;paint-order:stroke;stroke:var(--panel);stroke-width:5px;stroke-linejoin:round}
+.ptlab{fill:var(--ink);font-size:13px;font-weight:700;paint-order:stroke;stroke:var(--panel);stroke-width:4px;stroke-linejoin:round}
+.vtx{fill:var(--panel);stroke:var(--ink);stroke-width:2}
+.vtx.opt{fill:var(--obj);stroke:var(--obj)}
+.vring{fill:none;stroke:var(--obj);stroke-width:2.5}
+.vlabel{fill:var(--ink);font-weight:700;font-size:14px;paint-order:stroke;stroke:var(--panel);stroke-width:4px;stroke-linejoin:round}
+.cnum{fill:#fff;font-size:11px;font-weight:700}
+
+@media (max-width:1240px){
+  .wrap{grid-template-columns:minmax(280px,340px) minmax(0,1fr);grid-template-areas:"graph graph" "form lesson"}
+  .graph{position:static}
+}
+@media (max-width:760px){
+  .wrap{grid-template-columns:1fr;grid-template-areas:"graph" "lesson" "form";padding:10px 10px 30px}
+  header{padding:16px 12px 2px} h1{font-size:1.35rem}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Graphical Solution Method for Linear Programming</h1>
+  <p>Write the model on the left, then build the solution step by step on the right: draw each constraint, combine them into the feasible region, and move the objective line to the optimum.</p>
+</header>
+
+<main class="wrap">
+  <aside class="form">
+    <section class="card">
+      <h2>Objective function</h2>
+      <div class="row">
+        <select id="sense" aria-label="Maximize or minimize"><option value="max">Maximize</option><option value="min">Minimize</option></select>
+        <span><i>Z</i> =</span>
+        <input type="number" id="c1" step="any" aria-label="Objective coefficient of first variable"><span class="var v1">x</span><span>+</span>
+        <input type="number" id="c2" step="any" aria-label="Objective coefficient of second variable"><span class="var v2">y</span>
+      </div>
+    </section>
+    <section class="card">
+      <h2>Subject to</h2>
+      <ul class="cons" id="cons"></ul>
+      <div class="actions"><button id="add">Add constraint</button></div>
+      <label class="check"><input type="checkbox" id="nonneg" checked><span><span class="var v1">x</span>, <span class="var v2">y</span> ≥ 0</span></label>
+      <p class="hint">Editing a constraint resets its steps in the lesson.</p>
+    </section>
+    <section class="card">
+      <h2>Examples and settings</h2>
+      <select id="preset" aria-label="Load an example problem">
+        <option value="">Load an example…</option>
+        <option value="mix">Product mix (maximize)</option>
+        <option value="diet">Diet problem (minimize)</option>
+        <option value="multi">Multiple optimal solutions</option>
+        <option value="unb">Unbounded problem</option>
+        <option value="inf">Infeasible problem</option>
+      </select>
+      <div class="row vars" style="margin-top:10px">
+        <span>Variable names</span>
+        <input type="text" id="n1" maxlength="4" aria-label="First variable name">
+        <input type="text" id="n2" maxlength="4" aria-label="Second variable name">
+      </div>
+    </section>
+  </aside>
+
+  <section class="card graph">
+    <div class="gtools" id="gtools" role="toolbar" aria-label="Graph view controls">
+      <div class="tgroup">
+        <button data-z="in" aria-label="Zoom in" title="Zoom in">＋</button>
+        <button data-z="out" aria-label="Zoom out" title="Zoom out">−</button>
+      </div>
+      <div class="tgroup">
+        <button data-z="left" aria-label="Move view left" title="Move left">←</button>
+        <button data-z="up" aria-label="Move view up" title="Move up">↑</button>
+        <button data-z="down" aria-label="Move view down" title="Move down">↓</button>
+        <button data-z="right" aria-label="Move view right" title="Move right">→</button>
+      </div>
+      <button data-z="fit" id="fitbtn" title="Automatically choose the best view">Auto-fit</button>
+      <span class="viewmode" id="viewmode"></span>
+    </div>
+    <details class="ranges" id="ranges">
+      <summary>Adjust scale</summary>
+      <div class="rgrid">
+        <span><i>x</i> axis</span>
+        <span class="row"><button data-z="xin" aria-label="Stretch x axis">＋</button><button data-z="xout" aria-label="Compress x axis">−</button></span>
+        <span class="row">from <input type="text" inputmode="decimal" class="num" id="rx0" aria-label="x axis from"> to <input type="text" inputmode="decimal" class="num" id="rx1" aria-label="x axis to"></span>
+        <span><i>y</i> axis</span>
+        <span class="row"><button data-z="yin" aria-label="Stretch y axis">＋</button><button data-z="yout" aria-label="Compress y axis">−</button></span>
+        <span class="row">from <input type="text" inputmode="decimal" class="num" id="ry0" aria-label="y axis from"> to <input type="text" inputmode="decimal" class="num" id="ry1" aria-label="y axis to"></span>
+      </div>
+      <div class="actions"><button class="go" data-z="apply">Apply ranges</button><span class="hint" id="rangemsg" style="margin:0;align-self:center"></span></div>
+    </details>
+    <div class="plot"><svg id="svg" viewBox="0 0 720 560" role="img" aria-label="Graph of the linear programming problem"></svg></div>
+    <p class="hint" style="margin:6px 4px 0">Drag the graph to move it. To zoom, use ＋ and −, pinch, or hold Ctrl and scroll.</p>
+    <p class="pickhint" id="pickhint" aria-live="polite"></p>
+  </section>
+
+  <section class="card lesson" id="lesson" aria-live="polite"></section>
+</main>
+
+<script>
+(function(){
+const COLORS=['#2F6FDE','#0E8F84','#7A4FD6','#D9731A','#8A5A2B','#4F6378'];
+const PRESETS={
+  mix:{sense:'max',c:[3,5],cons:[[1,0,'<=',4],[0,2,'<=',12],[3,2,'<=',18]]},
+  diet:{sense:'min',c:[2,3],cons:[[1,1,'>=',6],[2,1,'>=',8],[1,3,'>=',9]]},
+  multi:{sense:'max',c:[6,4],cons:[[3,2,'<=',18],[1,0,'<=',4],[0,1,'<=',6]]},
+  unb:{sense:'max',c:[2,1],cons:[[1,1,'>=',4],[1,-1,'<=',2]]},
+  inf:{sense:'max',c:[1,1],cons:[[1,1,'<=',4],[1,1,'>=',6]]}
+};
+const SIGN={'<=':'≤','>=':'≥','=':'='};
+const W=720,H=560,M={l:58,r:26,t:22,b:50};
+const NN=[{a:1,b:0,s:'>=',r:0},{a:0,b:1,s:'>=',r:0}];
+const $=id=>document.getElementById(id);
+
+const state={sense:'max',c:[3,5],names:['x','y'],nonneg:true,cons:[],L:[],tab:'cons',sel:0,showSides:false,nnActive:true,obj:null,hl:-1,flip:0,sol:null,solved:[],autoFit:true};
+let anim=null, G=null, view=null, fitView=null;
+
+/* ================= math ================= */
+function valid(c){return [c.a,c.b,c.r].every(Number.isFinite)}
+function isLine(c){return c.a!==0||c.b!==0}
+function tolFor(v){return 1e-7*(1+Math.abs(v))}
+function feasible(p,cons){
+  for(const c of cons){
+    const l=c.a*p[0]+c.b*p[1];
+    const t=1e-7*(1+Math.abs(c.r)+Math.abs(c.a*p[0])+Math.abs(c.b*p[1]));
+    if(c.s==='<='&&l>c.r+t)return false;
+    if(c.s==='>='&&l<c.r-t)return false;
+    if(c.s==='='&&Math.abs(l-c.r)>t)return false;
+  }
+  return true;
+}
+function clean(v){return Math.abs(v)<1e-10?0:v}
+function intersect(c1,c2){
+  const d=c1.a*c2.b-c2.a*c1.b;
+  if(Math.abs(d)<1e-12)return null;
+  const x=(c1.r*c2.b-c2.r*c1.b)/d,y=(c1.a*c2.r-c2.a*c1.r)/d;
+  return Number.isFinite(x)&&Number.isFinite(y)?[clean(x),clean(y)]:null;
+}
+function dedupe(pts){
+  const out=[];
+  for(const p of pts)if(!out.some(q=>Math.hypot(q[0]-p[0],q[1]-p[1])<1e-7*(1+Math.hypot(p[0],p[1]))))out.push(p);
+  return out;
+}
+function hull(pts){
+  if(pts.length<3)return pts.slice();
+  const P=pts.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+  const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
+  const lo=[],up=[];
+  for(const p of P){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],p)<=1e-12)lo.pop();lo.push(p)}
+  for(let i=P.length-1;i>=0;i--){const p=P[i];while(up.length>=2&&cr(up[up.length-2],up[up.length-1],p)<=1e-12)up.pop();up.push(p)}
+  up.pop();lo.pop();return lo.concat(up);
+}
+function pairwise(lines,feas,extra){
+  const pts=[];
+  for(let i=0;i<lines.length;i++)for(let j=i+1;j<lines.length;j++){
+    const p=intersect(lines[i],lines[j]);
+    if(p&&feasible(p,feas)&&(!extra||extra(p)))pts.push(p);
+  }
+  return dedupe(pts);
+}
+function clipLine(a,b,r,hps){
+  if(a===0&&b===0)return null;
+  const d=[-b,a],p0=Math.abs(a)>=Math.abs(b)?[r/a,0]:[0,r/b];
+  let t0=-Infinity,t1=Infinity;const ex=[];
+  for(const h of hps){
+    if(h.s==='<=')ex.push(h);else if(h.s==='>=')ex.push({a:-h.a,b:-h.b,r:-h.r});
+    else{ex.push(h);ex.push({a:-h.a,b:-h.b,r:-h.r})}
+  }
+  for(const h of ex){
+    const k=h.a*d[0]+h.b*d[1],base=h.a*p0[0]+h.b*p0[1];
+    const t=1e-7*(1+Math.abs(h.r)+Math.abs(base));
+    if(Math.abs(k)<1e-12){if(base>h.r+t)return null;continue}
+    const tv=(h.r-base)/k;
+    if(k>0)t1=Math.min(t1,tv);else t0=Math.max(t0,tv);
+  }
+  if(!(t0<=t1+1e-9*(1+Math.abs(t0)))||!Number.isFinite(t0)||!Number.isFinite(t1))return null;
+  return [[p0[0]+t0*d[0],p0[1]+t0*d[1]],[p0[0]+t1*d[0],p0[1]+t1*d[1]]];
+}
+function niceStep(span,target){
+  const raw=span/target,p=Math.pow(10,Math.floor(Math.log10(raw))),f=raw/p;
+  return (f<1.5?1:f<3?2:f<7?5:10)*p;
+}
+function computeView(){
+  const all=state.cons.filter(valid);
+  const nn=state.nonneg?NN:[];
+  const lines=all.filter(isLine);
+  const ok=p=>!state.nonneg||(p[0]>=-1e-9&&p[1]>=-1e-9);
+  const pts=pairwise(lines.concat(nn),all.concat(nn));
+  for(let i=0;i<lines.length;i++)for(let j=i+1;j<lines.length;j++){const p=intersect(lines[i],lines[j]);if(p&&ok(p))pts.push(p)}
+  for(const c of lines){
+    if(c.a!==0){const p=[c.r/c.a,0];if(ok(p))pts.push(p)}
+    if(c.b!==0){const p=[0,c.r/c.b];if(ok(p))pts.push(p)}
+  }
+  state.cons.forEach((c,i)=>{const L=state.L&&state.L[i];if(!L||!L.eq||!valid(c)||!isLine(c))return;ptsOf(conLine(i),L.pts).forEach(p=>{if(p)pts.push(p)})});
+  if(state.obj&&objOk()){const O=state.obj;[[O.z1,O.p1],[O.z2,O.p2]].forEach(([z,arr])=>{const zz=parseNum(z);if(Number.isFinite(zz))ptsOf(objLine(zz),arr).forEach(p=>{if(p)pts.push(p)})})}
+  const good=pts.filter(p=>Math.abs(p[0])<1e7&&Math.abs(p[1])<1e7);
+  function axis(vals){
+    let lo=Math.min(...vals),hi=Math.max(...vals);
+    if(state.nonneg&&lo>=-1e-9){lo=0;if(hi<=1e-9)hi=10;hi*=1.18}
+    else{if(state.nonneg&&lo<0)hi=Math.max(hi,-lo);let s=hi-lo;if(s<1e-9)s=10;lo-=s*.15;hi+=s*.15}
+    const st=niceStep(hi-lo,8);
+    return {lo:state.nonneg&&lo===0?-st*0.4:Math.floor(lo/st)*st,hi:Math.ceil(hi/st)*st,step:st};
+  }
+  const X=axis(good.map(p=>p[0]).concat([0])),Y=axis(good.map(p=>p[1]).concat([0]));
+  return {xmin:X.lo,xmax:X.hi,xs:X.step,ymin:Y.lo,ymax:Y.hi,ys:Y.step};
+}
+function mkView(xmin,xmax,ymin,ymax){
+  let xs=xmax-xmin,ys=ymax-ymin;
+  const cl=(lo,hi,sp)=>{const c=(lo+hi)/2,s=Math.min(Math.max(sp,1e-6),1e8);return [c-s/2,c+s/2]};
+  [xmin,xmax]=cl(xmin,xmax,xs);[ymin,ymax]=cl(ymin,ymax,ys);
+  return {xmin,xmax,ymin,ymax,xs:niceStep(xmax-xmin,8),ys:niceStep(ymax-ymin,8)};
+}
+function SB(){const f=fitView||computeView(),v=view||f;return {xmin:Math.min(f.xmin,v.xmin),xmax:Math.max(f.xmax,v.xmax),ymin:Math.min(f.ymin,v.ymin),ymax:Math.max(f.ymax,v.ymax),xs:f.xs,ys:f.ys}}
+function boxCons(v){return [{a:1,b:0,s:'>=',r:v.xmin},{a:1,b:0,s:'<=',r:v.xmax},{a:0,b:1,s:'>=',r:v.ymin},{a:0,b:1,s:'<=',r:v.ymax}]}
+function inBox(p,v){return p[0]>=v.xmin-tolFor(v.xmin)&&p[0]<=v.xmax+tolFor(v.xmax)&&p[1]>=v.ymin-tolFor(v.ymin)&&p[1]<=v.ymax+tolFor(v.ymax)}
+
+// Solve over a list of half-planes (already including non-negativity if wanted)
+function solveRegion(hps,v){
+  const box=boxCons(v);
+  const lines=hps.filter(isLine);
+  let tv=pairwise(lines,hps,p=>inBox(p,v));
+  const region=hull(pairwise(lines.concat(box),hps.concat(box)));
+  if(tv.length){
+    const cx=tv.reduce((s,p)=>s+p[0],0)/tv.length,cy=tv.reduce((s,p)=>s+p[1],0)/tv.length;
+    tv.sort((p,q)=>Math.atan2(p[1]-cy,p[0]-cx)-Math.atan2(q[1]-cy,q[0]-cx));
+    let k=0,best=Infinity;tv.forEach((p,i)=>{const d=p[0]+p[1];if(d<best-1e-9){best=d;k=i}});
+    tv=tv.slice(k).concat(tv.slice(0,k));
+  }
+  const [c1,c2]=state.c,Z=p=>c1*p[0]+c2*p[1],sg=state.sense==='max'?1:-1;
+  const corners=[[v.xmin,v.ymin],[v.xmax,v.ymin],[v.xmin,v.ymax],[v.xmax,v.ymax]].map(Z);
+  let zlo=Math.min(...corners),zhi=Math.max(...corners);if(zhi-zlo<1e-9){zlo-=1;zhi+=1}
+  const objOk=Number.isFinite(c1)&&Number.isFinite(c2)&&!(c1===0&&c2===0);
+  let status,optVal=null,optVerts=[],target=null;
+  if(!region.length)status='infeasible';
+  else if(!objOk)status='noobj';
+  else{
+    const bestAll=Math.max(...region.map(p=>sg*Z(p)));
+    const bestV=tv.length?Math.max(...tv.map(p=>sg*Z(p))):-Infinity;
+    if(!tv.length||bestAll>bestV+tolFor(bestAll)){status='unbounded';target=sg>0?zhi:zlo}
+    else{status='optimal';optVal=sg*bestV;target=optVal;optVerts=tv.filter(p=>sg*Z(p)>=bestV-tolFor(bestV))}
+  }
+  return {tv,region,status,optVal,optVerts,target,zlo,zhi,Z,box,hps,objOk};
+}
+function fullModel(){return state.cons.filter(valid).concat(state.nonneg?NN:[])}
+function activeHPs(){
+  const out=[];
+  state.cons.forEach((c,i)=>{const L=state.L[i];if(valid(c)&&L.active&&ready(i))out.push(chosenHP(i))});
+  if(state.nonneg&&state.nnActive)out.push(...NN);
+  return out;
+}
+function anyActive(){return state.cons.some((c,i)=>state.L[i].active&&ready(i))}
+function chosenHP(i){const c=state.cons[i],L=state.L[i];return {a:c.a,b:c.b,r:c.r,s:c.s==='='?'=':L.side}}
+function ready(i){const c=state.cons[i],L=state.L[i];return valid(c)&&L.drawn&&(c.s==='='||!!L.side)}
+
+/* ================= formatting ================= */
+function fmt(v){
+  if(!Number.isFinite(v))return '–';
+  if(Math.abs(v)<1e-9)return '0';
+  if(Math.abs(v*1000-Math.round(v*1000))<1e-6*(1+Math.abs(v*1000)))return String(+(Math.round(v*1000)/1000).toFixed(3)).replace('-','−');
+  for(let d=2;d<=24;d++){const n=Math.round(v*d);if(Math.abs(n/d-v)<1e-8*(1+Math.abs(v)))return (n<0?'−':'')+Math.abs(n)+'/'+d}
+  return v.toFixed(3).replace('-','−');
+}
+function fracFmt(v){for(let d=1;d<=24;d++){const n=Math.round(v*d);if(Math.abs(n/d-v)<1e-9*(1+Math.abs(v)))return (n<0?'−':'')+Math.abs(n)+(d>1?'/'+d:'')}return fmt(v)}
+function rnd(v){return Math.abs(v)<1e-9?0:+v.toPrecision(10)}
+function tickLabel(v){const a=Math.abs(v);if(a>=1e5)return new Intl.NumberFormat('en',{notation:'compact',maximumFractionDigits:2}).format(v);if(a>0&&a<1e-3)return v.toExponential(1);return fmtTick(v)}
+function fmtTick(v){return String(+v.toPrecision(10))}
+function term(coef,name,first){
+  if(coef===0)return '';
+  const sign=coef<0?(first?'−':' − '):(first?'':' + ');
+  const m=Math.abs(coef);return sign+(m===1?'':fmt(m))+name;
+}
+function expr(a,b){const s=term(a,state.names[0],true)+term(b,state.names[1],a===0);return s||'0'}
+function eqText(a,b,s,r){return expr(a,b)+' '+SIGN[s]+' '+fmt(r)}
+function subst(a,b,x,y){
+  const parts=[];
+  if(a!==0)parts.push((a===1?'':a===-1?'−':fmt(a))+'('+fmt(x)+')');
+  if(b!==0)parts.push((parts.length?(b<0?'− ':'+ '):(b<0?'−':''))+(Math.abs(b)===1?'':fmt(Math.abs(b)))+'('+fmt(y)+')');
+  return parts.join(' ')||'0';
+}
+function esc(s){return String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]))}
+function V(i){return '<i>'+esc(state.names[i])+'</i>'}
+function P2(p){return '('+fmt(p[0])+', '+fmt(p[1])+')'}
+function parseNum(s){
+  s=String(s==null?'':s).trim().replace('−','-');
+  if(s==='')return NaN;
+  const m=s.match(/^(-?\d*\.?\d+)\s*\/\s*(-?\d*\.?\d+)$/);
+  if(m)return parseFloat(m[1])/parseFloat(m[2]);
+  return /^-?\d*\.?\d+(e-?\d+)?$/i.test(s)?parseFloat(s):NaN;
+}
+
+/* ================= lines and points ================= */
+function conLine(i){const c=state.cons[i];return {a:c.a,b:c.b,r:c.r}}
+function objLine(z){return {a:state.c[0],b:state.c[1],r:z}}
+function freeVar(l){return l.b!==0?0:1}
+function pointFrom(l,val){
+  if(!Number.isFinite(val))return null;
+  const p=freeVar(l)===0?[val,(l.r-l.a*val)/l.b]:[(l.r-l.b*val)/l.a,val];
+  return p.every(Number.isFinite)?[clean(p[0]),clean(p[1])]:null;
+}
+function ptsOf(l,raw){return raw.map(s=>pointFrom(l,parseNum(s)))}
+function canDraw(pts){return pts[0]&&pts[1]&&Math.hypot(pts[0][0]-pts[1][0],pts[0][1]-pts[1][1])>1e-9}
+function suggest(l){
+  // Always give the true intercepts when the line has them; the view refits to show them.
+  const fv=freeVar(l),f=fitView||computeView();
+  let vals;
+  if(l.a!==0&&l.b!==0&&Math.abs(l.r)>1e-12)vals=[0,rnd(l.r/l.a)];        // x = 0 gives the y-intercept, x = r/a gives the x-intercept
+  else if(l.a!==0&&l.b!==0)vals=[0,rnd(f.xs*2)];                           // line through the origin
+  else vals=[0,rnd((fv===0?f.xs:f.ys)*4)];                                  // horizontal or vertical line
+  return vals.sort((a,b)=>a-b).map(t=>fmtTick(t));
+}
+function sideWord(c,side){
+  // side: '<=' means a x + b y < r
+  if(c.b!==0){const below=(c.b>0)===(side==='<=');return below?'below':'above'}
+  const left=(c.a>0)===(side==='<=');return left?'left of':'right of';
+}
+function testPoint(c){
+  if(Math.abs(c.r)>1e-12)return [0,0];
+  if(Math.abs(c.a+c.b)>1e-12)return [1,1];
+  return [1,0];
+}
+
+/* ================= state helpers ================= */
+function freshL(){return {eq:false,pts:['',''],drawn:false,side:null,active:false}}
+function defaultZ(){
+  const [c1,c2]=state.c;
+  if(!Number.isFinite(c1)||!Number.isFinite(c2)||(c1===0&&c2===0))return ['',''];
+  const base=(c1!==0&&c2!==0)?Math.abs(c1*c2):Math.max(Math.abs(c1),Math.abs(c2));
+  const v=computeView();
+  const S=solveRegion(fullModel(),v);
+  let z1,z2;
+  if(state.sense==='max'){
+    if(S.status==='optimal'&&S.optVal>0){z1=Math.max(1,Math.floor(S.optVal*0.45/base))*base}else z1=base;
+    z2=z1+base;
+  }else{
+    if(S.status==='optimal'&&S.optVal>0){z1=Math.max(2,Math.ceil(S.optVal*1.6/base))*base}else z1=2*base;
+    z2=z1-base;
+  }
+  return [fmtTick(rnd(z1)),fmtTick(rnd(z2))];
+}
+function freshObj(){const d=defaultZ();return {z1:d[0],z2:d[1],p1:['',''],p2:['',''],d1:false,d2:false,dir:false,hide2:false,move:false,z:null,traces:true,reveal:false}}
+function objOk(){const [a,b]=state.c;return Number.isFinite(a)&&Number.isFinite(b)&&!(a===0&&b===0)}
+function consDone(i){return ready(i)}
+
+/* ================= drawing ================= */
+function draw(){
+  const v=view,pw=W-M.l-M.r,ph=H-M.t-M.b;
+  const sx=pw/(v.xmax-v.xmin),sy=ph/(v.ymax-v.ymin);
+  const px=x=>M.l+(x-v.xmin)*sx,py=y=>H-M.b-(y-v.ymin)*sy;
+  G={sx,sy,px,py,ix:X=>v.xmin+(X-M.l)/sx,iy:Y=>v.ymin+(H-M.b-Y)/sy};
+  const P=p=>px(p[0]).toFixed(2)+','+py(p[1]).toFixed(2);
+  const box=boxCons(v);
+  const O=state.obj;
+  let g='<defs>';
+  ['obj','obj2'].forEach(k=>g+='<marker id="ah-'+k+'" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--'+k+')"/></marker>');
+  g+='<clipPath id="pc"><rect x="'+M.l+'" y="'+M.t+'" width="'+pw+'" height="'+ph+'"/></clipPath></defs>';
+  for(let kx=Math.ceil(v.xmin/v.xs-1e-9);kx*v.xs<=v.xmax+v.xs*1e-6;kx++){const x=rnd(kx*v.xs),X=px(x).toFixed(2);
+    g+='<line class="gminor" x1="'+X+'" y1="'+M.t+'" x2="'+X+'" y2="'+(H-M.b)+'"/><text class="tick" x="'+X+'" y="'+(H-M.b+18)+'" text-anchor="middle">'+tickLabel(x)+'</text>'}
+  for(let ky=Math.ceil(v.ymin/v.ys-1e-9);ky*v.ys<=v.ymax+v.ys*1e-6;ky++){const y=rnd(ky*v.ys),Y=py(y).toFixed(2);
+    g+='<line class="gminor" x1="'+M.l+'" y1="'+Y+'" x2="'+(W-M.r)+'" y2="'+Y+'"/><text class="tick" x="'+(M.l-8)+'" y="'+(+Y+4)+'" text-anchor="end">'+tickLabel(y)+'</text>'}
+  if(v.xmin<=0&&v.xmax>=0)g+='<line class="gaxis" x1="'+px(0)+'" y1="'+M.t+'" x2="'+px(0)+'" y2="'+(H-M.b)+'"/>';
+  if(v.ymin<=0&&v.ymax>=0)g+='<line class="gaxis" x1="'+M.l+'" y1="'+py(0)+'" x2="'+(W-M.r)+'" y2="'+py(0)+'"/>';
+  g+='<rect x="'+M.l+'" y="'+M.t+'" width="'+pw+'" height="'+ph+'" fill="none" style="stroke:var(--line)"/>';
+  g+='<text class="axlabel" x="'+(W-M.r)+'" y="'+(H-12)+'" text-anchor="end">'+esc(state.names[0])+'</text><text class="axlabel" x="8" y="'+(M.t-6)+'">'+esc(state.names[1])+'</text>';
+  g+='<g clip-path="url(#pc)">';
+
+  // half-plane shading
+  state.cons.forEach((c,i)=>{
+    const L=state.L[i];
+    if(!valid(c)||!L.drawn||c.s==='='||!L.side||!isLine(c))return;
+    const isSel=state.tab==='cons'&&state.sel===i;
+    const show=isSel||(state.showSides&&(state.tab==='cons'||L.active));
+    if(!show)return;
+    const hp={a:c.a,b:c.b,r:c.r,s:L.side};
+    const poly=hull(pairwise([hp].concat(box),[hp].concat(box)));
+    if(poly.length>2)g+='<polygon class="hp'+(isSel?' sel':'')+'" fill="'+COLORS[i%COLORS.length]+'" points="'+poly.map(P).join(' ')+'"/>';
+  });
+
+  // feasible region (intersection of activated constraints)
+  const act=anyActive();
+  const S=act?solveRegion(activeHPs(),SB()):(state.tab==='solve'?solveRegion(fullModel(),SB()):null);
+  if(S){
+    if(S.region.length>2)g+='<polygon class="region" points="'+S.region.map(P).join(' ')+'"/>';
+    else if(S.region.length===2)g+='<polyline class="region" style="stroke-width:6" points="'+S.region.map(P).join(' ')+'"/>';
+    else if(S.region.length===1)g+='<circle class="region" r="6" cx="'+px(S.region[0][0])+'" cy="'+py(S.region[0][1])+'"/>';
+  }
+
+  // constraint lines
+  const badges=[];
+  state.cons.forEach((c,i)=>{
+    const L=state.L[i];
+    if(!valid(c)||!isLine(c)||(!L.drawn&&state.tab!=='solve'))return;
+    const seg=clipLine(c.a,c.b,c.r,box);if(!seg)return;
+    const col=COLORS[i%COLORS.length];
+    const sel=(state.tab==='cons'&&state.sel===i)||state.hl===i;
+    const dim=state.tab==='obj'?' stroke-opacity=".7"':'';
+    g+='<line x1="'+px(seg[0][0])+'" y1="'+py(seg[0][1])+'" x2="'+px(seg[1][0])+'" y2="'+py(seg[1][1])+'" stroke="'+col+'" stroke-width="'+(sel?4.5:2.4)+'" stroke-linecap="round"'+dim+'/>';
+    let a=[px(seg[0][0]),py(seg[0][1])],b=[px(seg[1][0]),py(seg[1][1])];
+    if(a[1]>b[1]+.5||(Math.abs(a[1]-b[1])<=.5&&a[0]<b[0])){const t=a;a=b;b=t}
+    const Ln=Math.hypot(b[0]-a[0],b[1]-a[1])||1,k=Math.min(22+i*4,Ln/2);
+    badges.push({x:a[0]+(b[0]-a[0])/Ln*k,y:a[1]+(b[1]-a[1])/Ln*k,col,n:i+1});
+  });
+
+  // objective lines
+  const labels=[];
+  function objFull(z){return clipLine(state.c[0],state.c[1],z,box)}
+  function lineSvg(seg,style){return '<line x1="'+px(seg[0][0])+'" y1="'+py(seg[0][1])+'" x2="'+px(seg[1][0])+'" y2="'+py(seg[1][1])+'" '+style+'/>'}
+  function labelFor(seg,text,color,shift){
+    let a=[px(seg[0][0]),py(seg[0][1])],b=[px(seg[1][0]),py(seg[1][1])];
+    if((a[0]-a[1])<(b[0]-b[1])){const t=a;a=b;b=t}
+    const Ln=Math.hypot(b[0]-a[0],b[1]-a[1])||1,d=18+(shift||0);
+    let lx=a[0]+(b[0]-a[0])/Ln*d,ly=a[1]+(b[1]-a[1])/Ln*d;
+    lx=Math.min(Math.max(lx,M.l+6),W-M.r-6);ly=Math.min(Math.max(ly,M.t+18),H-M.b-8);
+    const anchor=lx>W*.7?'end':'start';
+    labels.push('<text class="olab" style="fill:'+color+'" x="'+(lx+(anchor==='end'?-10:10))+'" y="'+(ly-12)+'" text-anchor="'+anchor+'">'+text+'</text>');
+  }
+  const gx=state.c[0]/sx,gy=-state.c[1]/sy,gl=Math.hypot(gx,gy)||1; // pixel gradient of Z
+  const sg=state.sense==='max'?1:-1;
+  let isoIn=null;
+  if(state.tab==='obj'&&O&&objOk()){
+    const z1=parseNum(O.z1),z2=parseNum(O.z2);
+    // traces
+    if(O.move&&O.traces&&Number.isFinite(z1)){
+      const dz=Math.abs(deltaZ())||1;const dirn=Math.sign(O.z-z1);
+      for(let k=1;k<60;k++){const z=z1+dirn*k*dz;if(dirn===0||(dirn>0?z>=O.z-1e-9:z<=O.z+1e-9))break;
+        const s=objFull(z);if(s)g+=lineSvg(s,'style="stroke:var(--obj)" stroke-opacity=".28" stroke-width="1.5"')}
+    }
+    if(O.d1){const s=objFull(z1);if(s){g+=lineSvg(s,'style="stroke:var(--obj)" stroke-width="'+(O.move?2:3)+'"'+(O.move?' stroke-dasharray="7 6"':''));labelFor(s,'Z = '+fmt(z1),'var(--obj)',0)}}
+    if(O.d2&&!O.hide2){const s=objFull(z2);if(s){g+=lineSvg(s,'style="stroke:var(--obj2)" stroke-width="3" stroke-dasharray="10 5"');labelFor(s,'Z = '+fmt(z2),'var(--obj2)',60)}}
+    // direction arrow from Z1 line to Z2 line
+    if(O.dir&&!O.move&&O.d1&&O.d2){
+      const s=objFull(z1);
+      if(s){
+        const mx=(px(s[0][0])+px(s[1][0]))/2,my=(py(s[0][1])+py(s[1][1]))/2;
+        const better=sg*(z2-z1)>=0?1:-1;
+        let t=(z2-z1)/gl; // pixels along unit gradient to reach Z2
+        let ux=gx/gl,uy=gy/gl;
+        let len=Math.abs(t);if(len<30)len=46;
+        const dir=sg; // arrow always points toward improvement
+        g+='<line x1="'+mx+'" y1="'+my+'" x2="'+(mx+ux*dir*len)+'" y2="'+(my+uy*dir*len)+'" style="stroke:var(--obj)" stroke-width="3" marker-end="url(#ah-obj)"/>';
+        labels.push('<text class="olab" style="fill:var(--obj)" x="'+(mx+ux*dir*len/2+12)+'" y="'+(my+uy*dir*len/2-8)+'">Z improves</text>');
+      }
+    }
+    if(O.move){
+      const s=objFull(O.z);
+      const hps=act?activeHPs():[];
+      if(s){
+        g+=lineSvg(s,'style="stroke:var(--obj)" stroke-width="3"');
+        if(act){isoIn=clipLine(state.c[0],state.c[1],O.z,hps.concat(box));
+          if(isoIn&&S&&S.region.length){const A=[px(isoIn[0][0]),py(isoIn[0][1])],B=[px(isoIn[1][0]),py(isoIn[1][1])];
+            if(Math.hypot(B[0]-A[0],B[1]-A[1])<1.5)g+='<circle cx="'+A[0]+'" cy="'+A[1]+'" r="7" style="fill:var(--obj)"/>';
+            else g+='<line x1="'+A[0]+'" y1="'+A[1]+'" x2="'+B[0]+'" y2="'+B[1]+'" style="stroke:var(--obj)" stroke-width="7" stroke-linecap="round"/>';}}
+        const mid=isoIn?[(isoIn[0][0]+isoIn[1][0])/2,(isoIn[0][1]+isoIn[1][1])/2]:[(s[0][0]+s[1][0])/2,(s[0][1]+s[1][1])/2];
+        const mx=px(mid[0]),my=py(mid[1]);
+        g+='<line x1="'+mx+'" y1="'+my+'" x2="'+(mx+gx/gl*sg*40)+'" y2="'+(my+gy/gl*sg*40)+'" style="stroke:var(--obj)" stroke-width="2.5" marker-end="url(#ah-obj)"/>';
+        labelFor(s,'Z = '+fmt(rnd(O.z)),'var(--obj)',120);
+      }
+    }
+  }
+  if(state.tab==='solve'&&state.sol){
+    const SS=state.sol;
+    [SS.e1,SS.e2].forEach(id=>{const E=getEq(id);if(!E)return;const seg=clipLine(E.a,E.b,E.r,box);if(!seg)return;
+      g+='<line x1="'+px(seg[0][0])+'" y1="'+py(seg[0][1])+'" x2="'+px(seg[1][0])+'" y2="'+py(seg[1][1])+'" style="stroke:'+E.color+'" stroke-width="6" stroke-opacity=".85" stroke-linecap="round"/>'});
+    const R=solveSys();
+    if(R&&R.pt&&SS.stage>=7&&SS.zline&&objOk()){const z=state.c[0]*R.pt[0]+state.c[1]*R.pt[1],s2=clipLine(state.c[0],state.c[1],z,box);
+      if(s2){g+='<line x1="'+px(s2[0][0])+'" y1="'+py(s2[0][1])+'" x2="'+px(s2[1][0])+'" y2="'+py(s2[1][1])+'" style="stroke:var(--obj)" stroke-width="2.5" stroke-dasharray="8 6"/>'}}
+  }
+  g+='</g>';
+  g+=labels.join('');
+  badges.forEach(b=>g+='<circle cx="'+b.x+'" cy="'+b.y+'" r="10" fill="'+b.col+'"/><text class="cnum" x="'+b.x+'" y="'+(b.y+4)+'" text-anchor="middle">'+b.n+'</text>');
+
+  // corner points of active region
+  if(S&&state.tab!=='cons'){
+    const showOpt=state.tab==='obj'&&O&&O.reveal&&S.status==='optimal';
+    const cx=S.tv.reduce((s,p)=>s+px(p[0]),0)/(S.tv.length||1),cy=S.tv.reduce((s,p)=>s+py(p[1]),0)/(S.tv.length||1);
+    S.tv.forEach((p,i)=>{
+      if(!inBox(p,v))return;
+      const X=px(p[0]),Y=py(p[1]),isOpt=showOpt&&S.optVerts.includes(p);
+      if(isOpt)g+='<circle class="vring" cx="'+X+'" cy="'+Y+'" r="12"/>';
+      g+='<circle class="vtx'+(isOpt?' opt':'')+'" cx="'+X+'" cy="'+Y+'" r="5.5"/>';
+      let dx=X-cx,dy=Y-cy;const dl=Math.hypot(dx,dy)||1;dx/=dl;dy/=dl;if(dl<1){dx=-.7;dy=.7}
+      let lx=Math.min(Math.max(X+dx*20,M.l+8),W-M.r-8),ly=Math.min(Math.max(Y+dy*20+5,M.t+12),H-M.b-6);
+      g+='<text class="vlabel" x="'+lx+'" y="'+ly+'" text-anchor="middle">'+String.fromCharCode(65+i)+'</text>';
+    });
+  }
+
+  if(state.tab==='solve'&&state.sol){
+    state.solved.forEach(o=>{if(inBox(o.p,v))g+='<circle cx="'+px(o.p[0])+'" cy="'+py(o.p[1])+'" r="5" style="fill:none;stroke:var(--obj)" stroke-width="2"/>'});
+    const R=solveSys();
+    if(R&&R.pt&&state.sol.stage>=6&&inBox(R.pt,v)){
+      const X=px(R.pt[0]),Y=py(R.pt[1]);
+      g+='<circle cx="'+X+'" cy="'+Y+'" r="14" style="fill:none;stroke:var(--obj)" stroke-width="2.5"/><circle cx="'+X+'" cy="'+Y+'" r="7" style="fill:var(--obj);stroke:var(--panel)" stroke-width="2"/>';
+      const right=X<W-170,ty=Math.max(Y-20,M.t+30);
+      g+='<text class="olab" style="fill:var(--obj)" x="'+(X+(right?18:-18))+'" y="'+ty+'" text-anchor="'+(right?'start':'end')+'">'+P2(R.pt)+'</text>';
+      if(state.sol.stage>=7&&objOk())g+='<text class="olab" style="fill:var(--obj)" x="'+(X+(right?18:-18))+'" y="'+(ty+18)+'" text-anchor="'+(right?'start':'end')+'">Z = '+fmt(rnd(state.c[0]*R.pt[0]+state.c[1]*R.pt[1]))+'</text>';
+    }else if(R&&R.pt&&state.sol.stage>=6)g+='<text class="olab" style="fill:var(--obj)" x="'+(M.l+10)+'" y="'+(M.t+20)+'">'+P2(R.pt)+' is outside the visible graph</text>';
+  }
+  // chosen points (constraint in progress, objective lines in progress)
+  const pts=[];
+  if(state.tab==='cons'&&state.cons[state.sel]&&valid(state.cons[state.sel])){
+    const L=state.L[state.sel];
+    if(L.eq){ptsOf(conLine(state.sel),L.pts).forEach((p,k)=>{if(p)pts.push({p,col:COLORS[state.sel%COLORS.length],n:'P'+(k+1)})})}
+    if(L.drawn&&L.side){const c=state.cons[state.sel],tp=testPoint(c);if(inBox(tp,v))pts.push({p:tp,col:'var(--ink)',n:'test',diamond:true})}
+  }
+  if(state.tab==='obj'&&O&&objOk()&&!O.move){
+    if(Number.isFinite(parseNum(O.z1)))ptsOf(objLine(parseNum(O.z1)),O.p1).forEach((p,k)=>{if(p)pts.push({p,col:'var(--obj)',n:'Q'+(k+1)})});
+    if(O.d1&&Number.isFinite(parseNum(O.z2))&&!O.hide2)ptsOf(objLine(parseNum(O.z2)),O.p2).forEach((p,k)=>{if(p)pts.push({p,col:'var(--obj2)',n:'R'+(k+1)})});
+  }
+  pts.forEach(o=>{
+    if(!inBox(o.p,v))return;
+    const X=px(o.p[0]),Y=py(o.p[1]);
+    if(o.diamond)g+='<rect x="'+(X-6)+'" y="'+(Y-6)+'" width="12" height="12" transform="rotate(45 '+X+' '+Y+')" style="fill:var(--panel);stroke:var(--ink)" stroke-width="2"/>';
+    else g+='<circle cx="'+X+'" cy="'+Y+'" r="6.5" style="fill:'+o.col+';stroke:var(--panel)" stroke-width="2"/>';
+    const right=X<W-140;
+    g+='<text class="ptlab" x="'+(X+(right?11:-11))+'" y="'+(Y-9)+'" text-anchor="'+(right?'start':'end')+'">'+o.n+' '+P2(o.p)+'</text>';
+  });
+
+  $('svg').innerHTML=g;
+  return {S,isoIn};
+}
+
+/* ================= picking on the graph ================= */
+function pickTarget(){
+  if(state.tab==='cons'){const c=state.cons[state.sel],L=state.L[state.sel];if(c&&valid(c)&&isLine(c)&&L.eq&&!L.drawn)return {kind:'con',line:conLine(state.sel),arr:L.pts}}
+  if(state.tab==='obj'&&state.obj&&objOk()&&!state.obj.move){
+    const O=state.obj,z1=parseNum(O.z1),z2=parseNum(O.z2);
+    if(!O.d1&&Number.isFinite(z1))return {kind:'z1',line:objLine(z1),arr:O.p1};
+    if(O.d1&&!O.d2&&Number.isFinite(z2)&&z2!==z1)return {kind:'z2',line:objLine(z2),arr:O.p2};
+  }
+  return null;
+}
+function handlePick(cx,cy){
+  const t=pickTarget();if(!t||!G)return;
+  const svg=$('svg'),pt=svg.createSVGPoint();pt.x=cx;pt.y=cy;
+  const q=pt.matrixTransform(svg.getScreenCTM().inverse());
+  const fv=freeVar(t.line);
+  const raw=fv===0?G.ix(q.x):G.iy(q.y);
+  const st=(fv===0?view.xs:view.ys)/2;
+  const val=rnd(Math.round(raw/st)*st);
+  let k=t.arr[0]===''?0:t.arr[1]===''?1:(state.flip++%2);
+  t.arr[k]=fmtTick(val);
+  render();
+}
+
+/* ================= zoom and pan ================= */
+let rafPending=false;
+function setView(nv,full){
+  view=mkView(nv.xmin,nv.xmax,nv.ymin,nv.ymax);state.autoFit=false;
+  if(full){render();return}
+  if(!rafPending){rafPending=true;requestAnimationFrame(()=>{rafPending=false;renderLight()})}
+}
+function zoomed(v0,fx,fy,cx,cy){return {xmin:cx-(cx-v0.xmin)*fx,xmax:cx+(v0.xmax-cx)*fx,ymin:cy-(cy-v0.ymin)*fy,ymax:cy+(v0.ymax-cy)*fy}}
+function toSvg(cx,cy){const svg=$('svg'),pt=svg.createSVGPoint();pt.x=cx;pt.y=cy;return pt.matrixTransform(svg.getScreenCTM().inverse())}
+function dataAt(v0,q){const pw=W-M.l-M.r,ph=H-M.t-M.b;return [v0.xmin+(q.x-M.l)/pw*(v0.xmax-v0.xmin),v0.ymin+(H-M.b-q.y)/ph*(v0.ymax-v0.ymin)]}
+function zoomCenter(f){const v0=view;setView(zoomed(v0,f,f,(v0.xmin+v0.xmax)/2,(v0.ymin+v0.ymax)/2),true)}
+function panBy(fx,fy){const v0=view,dx=(v0.xmax-v0.xmin)*fx,dy=(v0.ymax-v0.ymin)*fy;setView({xmin:v0.xmin+dx,xmax:v0.xmax+dx,ymin:v0.ymin+dy,ymax:v0.ymax+dy},true)}
+(function(){
+  const svg=$('svg'),ptrs=new Map();let drag=null,pinch=null;
+  svg.addEventListener('pointerdown',e=>{
+    if(e.button!==undefined&&e.button!==0&&e.pointerType==='mouse')return;
+    try{svg.setPointerCapture(e.pointerId)}catch(err){}
+    ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(ptrs.size===1){drag={x0:e.clientX,y0:e.clientY,v0:{...view},moved:false};pinch=null}
+    else if(ptrs.size===2){
+      const [a,b]=[...ptrs.values()];
+      pinch={d0:Math.hypot(a.x-b.x,a.y-b.y)||1,v0:{...view},mid:dataAt(view,toSvg((a.x+b.x)/2,(a.y+b.y)/2))};
+      if(drag)drag.moved=true;
+    }
+  });
+  svg.addEventListener('pointermove',e=>{
+    if(!ptrs.has(e.pointerId))return;
+    ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pinch&&ptrs.size>=2){
+      const [a,b]=[...ptrs.values()],f=pinch.d0/(Math.hypot(a.x-b.x,a.y-b.y)||1);
+      setView(zoomed(pinch.v0,f,f,pinch.mid[0],pinch.mid[1]));return;
+    }
+    if(!drag)return;
+    if(!drag.moved&&Math.hypot(e.clientX-drag.x0,e.clientY-drag.y0)>5){drag.moved=true;svg.classList.add('grabbing')}
+    if(drag.moved){
+      const q0=toSvg(drag.x0,drag.y0),q=toSvg(e.clientX,e.clientY),v0=drag.v0;
+      const dx=(q.x-q0.x)/(W-M.l-M.r)*(v0.xmax-v0.xmin),dy=(q.y-q0.y)/(H-M.t-M.b)*(v0.ymax-v0.ymin);
+      setView({xmin:v0.xmin-dx,xmax:v0.xmax-dx,ymin:v0.ymin+dy,ymax:v0.ymax+dy});
+    }
+  });
+  function end(e){
+    if(!ptrs.has(e.pointerId))return;
+    ptrs.delete(e.pointerId);
+    if(ptrs.size===0){
+      const wasClick=drag&&!drag.moved&&!pinch&&e.type==='pointerup';
+      const moved=(drag&&drag.moved)||pinch;
+      drag=null;pinch=null;svg.classList.remove('grabbing');
+      if(wasClick)handlePick(e.clientX,e.clientY);else if(moved)render();
+    }else if(ptrs.size===1){pinch=null;const p=[...ptrs.values()][0];drag={x0:p.x,y0:p.y,v0:{...view},moved:true}}
+  }
+  svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end);
+  let wheelT=null;
+  svg.addEventListener('wheel',e=>{
+    if(!e.ctrlKey&&!e.metaKey)return;
+    e.preventDefault();
+    const f=Math.exp(Math.max(-60,Math.min(60,e.deltaY))*0.004),c=dataAt(view,toSvg(e.clientX,e.clientY));
+    setView(zoomed(view,f,f,c[0],c[1]));
+    clearTimeout(wheelT);wheelT=setTimeout(render,250);
+  },{passive:false});
+})();
+document.querySelector('.graph').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-z]');if(!b)return;
+  const z=b.dataset.z;
+  if(z==='in')zoomCenter(0.8);else if(z==='out')zoomCenter(1.25);
+  else if(z==='left')panBy(-0.2,0);else if(z==='right')panBy(0.2,0);
+  else if(z==='up')panBy(0,0.2);else if(z==='down')panBy(0,-0.2);
+  else if(z==='xin'){const v0=view;setView(zoomed(v0,0.8,1,(v0.xmin+v0.xmax)/2,0),true)}
+  else if(z==='xout'){const v0=view;setView(zoomed(v0,1.25,1,(v0.xmin+v0.xmax)/2,0),true)}
+  else if(z==='yin'){const v0=view;setView(zoomed(v0,1,0.8,0,(v0.ymin+v0.ymax)/2),true)}
+  else if(z==='yout'){const v0=view;setView(zoomed(v0,1,1.25,0,(v0.ymin+v0.ymax)/2),true)}
+  else if(z==='fit'){state.autoFit=true;render()}
+  else if(z==='apply'){
+    const vals=['rx0','rx1','ry0','ry1'].map(id=>parseNum($(id).value));
+    const msg=$('rangemsg');
+    if(!vals.every(Number.isFinite)){msg.textContent='Enter four numbers.';return}
+    if(vals[0]>=vals[1]||vals[2]>=vals[3]){msg.textContent='Each "from" value must be smaller than its "to" value.';return}
+    msg.textContent='';setView({xmin:vals[0],xmax:vals[1],ymin:vals[2],ymax:vals[3]},true);
+  }
+});
+$('ranges').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();document.querySelector('[data-z=apply]').click()}});
+function syncViewUI(){
+  const r=v=>fmtTick(+v.toPrecision(4));
+  [['rx0','xmin'],['rx1','xmax'],['ry0','ymin'],['ry1','ymax']].forEach(([id,k])=>{const el=$(id);if(el&&document.activeElement!==el)el.value=r(view[k])});
+  const fb=$('fitbtn');fb.classList.toggle('go',!state.autoFit);
+  $('viewmode').textContent=state.autoFit?'Auto-fit view':'Custom view';
+}
+
+/* ================= lesson panel ================= */
+function pointWidget(key,l,arr,disabled){
+  const fv=freeVar(l),other=1-fv,prefix=key==='con'?'P':key==='z1'?'Q':'R';
+  let h='<div class="pw">';
+  arr.forEach((raw,k)=>{
+    const p=pointFrom(l,parseNum(raw));
+    const bad=raw!==''&&!Number.isFinite(parseNum(raw));
+    h+='<span class="lbl">'+prefix+(k+1)+'</span>';
+    h+='<span>'+V(fv)+' = <input type="text" inputmode="decimal" class="num" id="pw-'+key+'-'+k+'" data-pw="'+key+'" data-k="'+k+'" value="'+esc(raw)+'"'+(disabled?' disabled':'')+(bad?' aria-invalid="true"':'')+' aria-label="'+prefix+(k+1)+' '+esc(state.names[fv])+' value"></span>';
+    h+='<span class="out">'+(p?'→ '+V(other)+' = '+fmt(p[other])+' &nbsp;'+P2(p):'')+'</span>';
+  });
+  return h+'</div>';
+}
+function stepBox(n,title,st,body){
+  return '<div class="step '+st+'"><div class="step-h"><span class="step-n">'+(st==='done'?'✓':n)+'</span><h3>'+title+'</h3></div>'+(st==='locked'?'':body)+'</div>';
+}
+function consTab(){
+  const n=state.cons.length;
+  if(!n)return '<p>Add a constraint in the model on the left to begin.</p>';
+  let h='<div class="chips" role="group" aria-label="Choose a constraint">';
+  state.cons.forEach((c,i)=>{h+='<button class="chip" data-act="sel" data-i="'+i+'" aria-pressed="'+(i===state.sel)+'"><span class="badge" style="--c:'+COLORS[i%COLORS.length]+'">'+(i+1)+'</span>Constraint '+(i+1)+(consDone(i)?' <span class="tickmark">✓</span>':'')+'</button>'});
+  h+='</div>';
+  const i=state.sel,c=state.cons[i],L=state.L[i];
+  if(!valid(c))return h+'<p class="fb bad">Constraint '+(i+1)+' has an empty or invalid number in the model. Fix it on the left.</p>';
+  if(!isLine(c))return h+'<p class="fb bad">Both coefficients are 0, so this constraint has no line to draw.</p>';
+  const lineEq=esc(expr(c.a,c.b))+' = '+fmt(c.r);
+  h+='<p class="eqn" style="margin:6px 0 0">'+esc(eqText(c.a,c.b,c.s,c.r))+'</p>';
+  // step 1
+  h+=stepBox(1,'Convert to an equality',L.eq?'done':'current',
+    L.eq?'<p>Boundary line: <span class="eqn">'+lineEq+'</span></p>'+(c.s==='='?'<p class="hint">This constraint is already an equality.</p>':'<p class="hint">Replace '+SIGN[c.s]+' with = to get the line that separates the two sides.</p>')
+    :'<p>Replace the '+SIGN[c.s]+' sign with = to get the boundary line.</p><div class="actions"><button class="go" data-act="eq">Convert to equality</button></div>');
+  // step 2
+  const l=conLine(i),pts=ptsOf(l,L.pts),fv=freeVar(l);
+  const s2=!L.eq?'locked':L.drawn?'done':canDraw(pts)?'done':'current';
+  h+=stepBox(2,'Choose two points on the line',s2,
+    '<p class="hint">Type a value of '+V(fv)+' and the tool solves '+lineEq+' for '+V(1-fv)+', or click on the graph.</p>'+
+    pointWidget('con',l,L.pts,L.drawn)+
+    (L.drawn?'':'<div class="actions"><button data-act="suggest" data-k="con">Use intercepts</button><button data-act="clearpts" data-k="con">Clear points</button></div>')+
+    (L.pts[0]!==''&&L.pts[1]!==''&&!canDraw(pts)&&!pts.some(p=>!p)?'<p class="fb bad">The two points are the same. Choose a different value for one of them.</p>':''));
+  // step 3
+  const s3=!L.eq||!canDraw(pts)?'locked':L.drawn?'done':'current';
+  h+=stepBox(3,'Draw the line',s3,
+    L.drawn?'<p>Line drawn through '+P2(pts[0])+' and '+P2(pts[1])+'.</p>':'<div class="actions"><button class="go" data-act="draw" data-k="con">Draw the line through '+P2(pts[0]||[0,0])+' and '+P2(pts[1]||[0,0])+'</button></div>');
+  // step 4
+  if(c.s==='='){
+    h+=stepBox(4,'Feasible points',!L.drawn?'locked':'done','<p>For an equality constraint, only points on the line itself are feasible. There is no side to shade.</p>');
+  }else{
+    const s4=!L.drawn?'locked':L.side?'done':'current';
+    const w1=sideWord(c,'<='),w2=sideWord(c,'>=');
+    let body='<p>Which side of the line satisfies <b>'+esc(eqText(c.a,c.b,c.s,c.r))+'</b>?</p><div class="sidebtns">'+
+      '<button data-act="side" data-s="<=" aria-pressed="'+(L.side==='<=')+'">Shade '+w1+' the line</button>'+
+      '<button data-act="side" data-s=">=" aria-pressed="'+(L.side==='>=')+'">Shade '+w2+' the line</button></div>';
+    if(L.side){
+      const tp=testPoint(c),val=c.a*tp[0]+c.b*tp[1];
+      const holds=c.s==='<='?val<=c.r+1e-12:val>=c.r-1e-12;
+      const tpSide=val<c.r?'<=':'>=';
+      const correct=L.side===c.s;
+      body+='<p class="fb '+(correct?'ok':'bad')+'">Test point '+P2(tp)+': '+subst(c.a,c.b,tp[0],tp[1])+' = '+fmt(val)+' '+SIGN[c.s]+' '+fmt(c.r)+' is <b>'+(holds?'true':'false')+'</b>, so the feasible side '+(holds?'contains':'does not contain')+' '+P2(tp)+'. '+
+        (correct?'The shaded side is correct.':'The shaded side is the wrong one. Switch to shading '+sideWord(c,c.s)+' the line.')+'</p>';
+      void tpSide;
+    }
+    h+=stepBox(4,'Choose the feasible side',s4,body);
+  }
+  h+='<div class="foot">';
+  if(i<n-1)h+='<button class="go" data-act="sel" data-i="'+(i+1)+'"'+(consDone(i)?'':'')+'>Next: constraint '+(i+2)+'</button>';
+  else h+='<button class="go" data-act="tab" data-t="region">Next: feasible region</button>';
+  h+='<button data-act="auto1">Do all steps for this constraint</button><button data-act="redo">Redo this constraint</button></div>';
+  h+='<label class="check"><input type="checkbox" data-act="sides"'+(state.showSides?' checked':'')+'> Also shade the chosen sides of other constraints</label>';
+  return h;
+}
+function regionTab(){
+  const n=state.cons.length;
+  let h='<p>Tick the constraints to intersect. The yellow area is the set of points that satisfies every ticked constraint at the same time.</p><ul class="reglist">';
+  state.cons.forEach((c,i)=>{
+    const ok=ready(i),L=state.L[i];
+    const txt=valid(c)?esc(c.s==='='?eqText(c.a,c.b,'=',c.r):eqText(c.a,c.b,L.side||c.s,c.r)):'(incomplete)';
+    const wrong=ok&&c.s!=='='&&L.side!==c.s;
+    h+='<li><label><input type="checkbox" data-act="act" data-i="'+i+'"'+(L.active&&ok?' checked':'')+(ok?'':' disabled')+'><span class="badge" style="--c:'+COLORS[i%COLORS.length]+'">'+(i+1)+'</span><span>'+txt+(wrong?' <span class="off">(side differs from the model)</span>':'')+(ok?'':' <span class="off">finish its steps first</span>')+'</span></label></li>';
+  });
+  if(state.nonneg)h+='<li><label><input type="checkbox" data-act="nn"'+(state.nnActive?' checked':'')+'><span class="badge" style="--c:var(--muted)">+</span><span>'+V(0)+', '+V(1)+' ≥ 0</span></label></li>';
+  h+='</ul><div class="actions"><button class="go" data-act="actall">Activate all</button><button data-act="actnone">Clear all</button></div>';
+  h+='<label class="check"><input type="checkbox" data-act="sides"'+(state.showSides?' checked':'')+'> Show each ticked constraint\'s shaded side</label>';
+  if(!anyActive()){
+    const pending=state.cons.map((c,i)=>i).filter(i=>!ready(i));
+    h+='<p class="fb info">'+(pending.length===n?'Draw the constraints in the first tab, then activate them here.':'Tick at least one constraint to show its region.')+'</p>';
+  }else{
+    const S=solveRegion(activeHPs(),SB());
+    const allOn=state.cons.every((c,i)=>state.L[i].active&&ready(i))&&(!state.nonneg||state.nnActive);
+    if(S.status==='infeasible')h+='<p class="fb bad">No point satisfies all the ticked constraints together. The region is empty.</p>';
+    else h+='<p class="fb '+(allOn?'ok':'info')+'">'+(allOn?'This is the full feasible region.':'Partial region. Tick more constraints to shrink it to the feasible region.')+(S.tv.length?' Its corner points are labelled on the graph.':'')+'</p>';
+    if(S.tv.length){h+='<table><thead><tr><th>Corner</th><th>'+V(0)+'</th><th>'+V(1)+'</th></tr></thead><tbody>';
+      S.tv.forEach((p,k)=>h+='<tr><td>'+String.fromCharCode(65+k)+'</td><td>'+fmt(p[0])+'</td><td>'+fmt(p[1])+'</td></tr>');h+='</tbody></table>'}
+  }
+  h+='<div class="foot"><button class="go" data-act="tab" data-t="obj">Next: objective function</button></div>';
+  return h;
+}
+function deltaZ(){const O=state.obj,a=parseNum(O.z1),b=parseNum(O.z2);return Number.isFinite(a)&&Number.isFinite(b)&&a!==b?b-a:1}
+function dirWords(){
+  const sg=state.sense==='max'?1:-1,gx=state.c[0]*sg,gy=state.c[1]*sg;
+  const v=gy>0?'up':gy<0?'down':'',hz=gx>0?'right':gx<0?'left':'';
+  return v&&hz?v+' and to the '+hz:v||('to the '+hz);
+}
+function objTab(){
+  const O=state.obj;
+  if(!objOk())return '<p class="fb bad">Enter objective coefficients in the model on the left.</p>';
+  const [c1,c2]=state.c,sg=state.sense==='max'?1:-1,word=state.sense==='max'?'larger':'smaller';
+  let h='<p class="eqn" style="margin:0">'+(state.sense==='max'?'Maximize':'Minimize')+' Z = '+esc(expr(c1,c2))+'</p>';
+  if(!anyActive())h+='<p class="fb info">Tip: activate constraints in the feasible region tab so the objective line has a region to move across.</p>';
+  const z1=parseNum(O.z1),z2=parseNum(O.z2);
+  // step 1
+  const l1=Number.isFinite(z1)?objLine(z1):null,p1=l1?ptsOf(l1,O.p1):[null,null];
+  let b1='<p>Choose any value for Z to draw a first objective line.</p><div class="row">Z₁ = <input type="text" inputmode="decimal" class="num" id="z1in" data-z="z1" value="'+esc(O.z1)+'"'+(O.d1?' disabled':'')+(O.z1!==''&&!l1?' aria-invalid="true"':'')+' aria-label="First Z value">'+(l1?'<span class="eqn">&nbsp;'+esc(expr(c1,c2))+' = '+fmt(z1)+'</span>':'')+'</div>';
+  if(l1){b1+=pointWidget('z1',l1,O.p1,O.d1);
+    if(!O.d1)b1+='<div class="actions"><button data-act="suggest" data-k="z1">Use intercepts</button>'+(canDraw(p1)?'<button class="go" data-act="draw" data-k="z1">Draw the Z₁ line</button>':'')+'</div>';}
+  h+=stepBox(1,'Draw a first objective line',O.d1?'done':'current',b1);
+  // step 2
+  const l2=Number.isFinite(z2)?objLine(z2):null,p2=l2?ptsOf(l2,O.p2):[null,null];
+  let b2='<p>Choose a second value that is <b>'+word+'</b> than Z₁ (a better objective value).</p><div class="row">Z₂ = <input type="text" inputmode="decimal" class="num" id="z2in" data-z="z2" value="'+esc(O.z2)+'"'+(O.d2?' disabled':'')+(O.z2!==''&&!l2?' aria-invalid="true"':'')+' aria-label="Second Z value">'+(l2?'<span class="eqn">&nbsp;'+esc(expr(c1,c2))+' = '+fmt(z2)+'</span>':'')+'</div>';
+  if(l2&&z2===z1)b2+='<p class="fb bad">Z₂ must differ from Z₁.</p>';
+  else if(l2){
+    if(sg*(z2-z1)<0)b2+='<p class="fb bad">'+fmt(z2)+' is worse than '+fmt(z1)+' when you '+state.sense+'imize. You can still draw it, but pick a '+word+' value to show improvement.</p>';
+    b2+=pointWidget('z2',l2,O.p2,O.d2);
+    if(!O.d2)b2+='<div class="actions"><button data-act="suggest" data-k="z2">Use intercepts</button>'+(canDraw(p2)?'<button class="go" data-act="draw" data-k="z2">Draw the Z₂ line</button>':'')+'</div>';
+  }
+  h+=stepBox(2,'Draw a second, improved objective line',!O.d1?'locked':O.d2?'done':'current',b2);
+  // step 3
+  let b3='';
+  if(O.d2){
+    b3='<p>Both lines have slope '+(c2===0?'undefined (vertical)':fracFmt(-c1/c2))+', so they are parallel. Changing Z only shifts the line.</p>';
+    b3+=O.dir?'<p class="fb ok">Going from Z = '+fmt(z1)+' to Z = '+fmt(z2)+', the line moved '+(sg*(z2-z1)>0?'':'against the improving direction; improvement is ')+dirWords()+'. That is the direction of improvement.</p>':'<div class="actions"><button class="go" data-act="dir">Show direction of improvement</button></div>';
+    if(O.dir)b3+='<label class="check"><input type="checkbox" data-act="hide2"'+(O.hide2?' checked':'')+'> Hide the Z₂ line</label>';
+  }
+  h+=stepBox(3,'Identify the direction of improvement',!O.d2?'locked':O.dir?'done':'current',b3);
+  // step 4
+  let b4='';
+  if(O.dir){
+    if(!O.move)b4='<p>Slide the Z₁ line parallel to itself in the direction of improvement.</p><div class="actions"><button class="go" data-act="move">Start moving the line</button></div>';
+    else{
+      const R=anyActive()?solveRegion(activeHPs(),SB()):solveRegion(state.nonneg?NN:[],SB());
+      b4='<div class="row" style="justify-content:space-between"><span class="zread" id="zread">Z = '+fmt(rnd(O.z))+'</span><span id="zeq" class="hint" style="margin:0">'+esc(expr(c1,c2))+' = '+fmt(rnd(O.z))+'</span></div>';
+      b4+='<input type="range" id="zslider" min="'+R.zlo+'" max="'+R.zhi+'" step="'+((R.zhi-R.zlo)/1000)+'" value="'+O.z+'" aria-label="Objective value Z">';
+      b4+='<div class="actions"><button data-act="back">Step back '+fmt(Math.abs(deltaZ()))+'</button><button data-act="fwd">Step forward '+fmt(Math.abs(deltaZ()))+'</button>'+
+        (anim?'<button data-act="stop">Stop</button>':'<button class="primary" data-act="auto"'+(anyActive()?'':' disabled')+'>Move automatically</button>')+'<button data-act="toz1">Back to Z₁</button></div>';
+      b4+='<label class="check"><input type="checkbox" data-act="traces"'+(O.traces?' checked':'')+'> Leave faint traces every '+fmt(Math.abs(deltaZ()))+' units</label>';
+      b4+='<p class="hint" id="lineinfo"></p>';
+    }
+  }
+  h+=stepBox(4,'Move the objective line',!O.dir?'locked':O.move?'current':'current',b4);
+  // step 5
+  let b5='';
+  if(O.move){
+    if(!O.reveal)b5='<div class="actions"><button class="go" data-act="reveal"'+(anyActive()?'':' disabled')+'>Identify the optimal solution</button></div>';
+    else b5=resultHtml();
+  }
+  h+=stepBox(5,'Identify the optimal solution',!O.move?'locked':O.reveal?'done':'current',b5);
+  h+='<div class="foot"><button data-act="redoobj">Redo objective steps</button></div>';
+  return h;
+}
+function resultHtml(){
+  const S=solveRegion(activeHPs(),SB()),n=state.names;
+  const allOn=state.cons.every((c,i)=>state.L[i].active&&ready(i)&&(c.s==='='||state.L[i].side===c.s))&&(!state.nonneg||state.nnActive);
+  let h='<div class="result">';
+  if(S.status==='infeasible')h+='<strong>Infeasible problem</strong><span>No point satisfies all active constraints, so there is no solution.</span>';
+  else if(S.status==='unbounded')h+='<strong>Unbounded problem</strong><span>The region is open in the direction of improvement, so Z can improve without limit.</span>';
+  else{
+    const Lb=p=>String.fromCharCode(65+S.tv.indexOf(p));
+    if(S.optVerts.length>1){const nm=S.optVerts.map(Lb).sort();h+='<strong>Multiple optimal solutions, Z = '+fmt(S.optVal)+'</strong><span>The objective line lies along edge '+nm[0]+nm[nm.length-1]+'; every point on it is optimal.</span>'}
+    else{const p=S.optVerts[0];h+='<strong>Optimal at corner '+Lb(p)+': '+esc(n[0])+' = '+fmt(p[0])+', '+esc(n[1])+' = '+fmt(p[1])+', Z = '+fmt(S.optVal)+'</strong><span>This is the last corner the line touches as it moves in the direction of improvement.</span>'}
+  }
+  h+='</div>';
+  if(!allOn)h+='<p class="fb bad">Note: not every constraint is active with its correct side, so this answer is for the region currently shown.</p>';
+  if(S.tv.length){h+='<table><thead><tr><th>Corner</th><th>'+V(0)+'</th><th>'+V(1)+'</th><th>Z</th></tr></thead><tbody>';
+    S.tv.forEach((p,k)=>{const best=S.status==='optimal'&&S.optVerts.includes(p);h+='<tr'+(best?' class="best"':'')+'><td>'+String.fromCharCode(65+k)+'</td><td>'+fmt(p[0])+'</td><td>'+fmt(p[1])+'</td><td>'+fmt(S.Z(p))+'</td></tr>'});
+    h+='</tbody></table>'}
+  return h;
+}
+/* ================= solve a system of two equations ================= */
+function eqList(){
+  const out=[];
+  state.cons.forEach((c,i)=>{if(valid(c)&&isLine(c))out.push({id:'c'+i,a:c.a,b:c.b,r:c.r,s:c.s,name:'Constraint '+(i+1)+': '+eqText(c.a,c.b,c.s,c.r),color:COLORS[i%COLORS.length]})});
+  out.push({id:'ax',a:1,b:0,r:0,s:'=',name:'Vertical axis: '+state.names[0]+' = 0',axis:true,color:'var(--axis)'});
+  out.push({id:'ay',a:0,b:1,r:0,s:'=',name:'Horizontal axis: '+state.names[1]+' = 0',axis:true,color:'var(--axis)'});
+  return out;
+}
+function getEq(id){return eqList().find(e=>e.id===id)}
+function freshSol(){const ids=eqList().map(e=>e.id);return {e1:ids[0]||'ax',e2:ids[1]||'ay',stage:0,eqI:null,varI:null,zline:false}}
+function modelChanged(){state.obj=freshObj();state.sol=freshSol();state.solved=[]}
+function cfs(m){const s=fmt(m);return s.includes('/')?'('+s+')':s}
+function lin(parts){
+  let s='',first=true;
+  for(const [k,vi] of parts){
+    if(k===0||!Number.isFinite(k))continue;
+    const neg=k<0,m=Math.abs(k);
+    const body=vi===null?fmt(m):(m===1?'':cfs(m))+V(vi);
+    s+=first?(neg?'−':'')+body:(neg?' − ':' + ')+body;first=false;
+  }
+  return s||'0';
+}
+function par(v){return v<0?'('+fmt(v)+')':fmt(v)}
+function solveSys(){
+  const S=state.sol,E1=getEq(S.e1),E2=getEq(S.e2);
+  if(!E1||!E2||S.e1===S.e2||S.eqI===null)return null;
+  const A=S.eqI===0?E1:E2,B=S.eqI===0?E2:E1,nA=S.eqI===0?'(1)':'(2)',nB=S.eqI===0?'(2)':'(1)';
+  const v=S.varI,u=1-v,co=(E,i)=>i===0?E.a:E.b;
+  const av=co(A,v),au=co(A,u),bv=co(B,v),bu=co(B,u);
+  const c=clean(rnd(A.r/av)),k=clean(rnd(-au/av));
+  const m=clean(rnd(bv*k+bu)),q=clean(rnd(bv*c)),rhs=clean(rnd(B.r-q));
+  let status='unique',uval=null,vval=null;
+  if(Math.abs(m)<1e-12)status=Math.abs(rhs)<1e-9*(1+Math.abs(B.r))?'inf':'none';
+  else{uval=clean(rnd(rhs/m));vval=clean(rnd(c+k*uval))}
+  const pt=status==='unique'?(v===0?[vval,uval]:[uval,vval]):null;
+  return {A,B,nA,nB,v,u,av,au,bv,bu,c,k,m,q,rhs,status,uval,vval,pt};
+}
+function alg(lines,last){
+  const out=[];lines.forEach(l=>{if(out[out.length-1]!==l)out.push(l)});
+  return '<div class="alg">'+out.map((l,i)=>'<div'+(last&&i===out.length-1?' class="res"':'')+'>'+l+'</div>').join('')+'</div>';
+}
+function rewriteLines(R){
+  const {A,v,u,av,au,c,k}=R,L=[];
+  L.push(lin([[A.a,0],[A.b,1]])+' = '+fmt(A.r));
+  if(au!==0)L.push(lin([[av,v]])+' = '+lin([[A.r,null],[-au,u]]));
+  if(av!==1)L.push(V(v)+' = '+(au!==0?'('+lin([[A.r,null],[-au,u]])+')':fmt(A.r))+' / '+par(av));
+  L.push(V(v)+' = '+lin([[c,null],[k,u]]));
+  return L;
+}
+function substLines(R){
+  const {B,v,u,bv,bu,c,k,q}=R,L=[];
+  L.push(lin([[B.a,0],[B.b,1]])+' = '+fmt(B.r));
+  if(bv===0)return L;
+  const ex=lin([[c,null],[k,u]]);
+  const tV=f=>{const neg=bv<0,m=Math.abs(bv),body=(m===1?'':cfs(m))+'('+ex+')';return f?(neg?'−':'')+body:(neg?' − ':' + ')+body};
+  const tU=f=>{if(bu===0)return '';const neg=bu<0,m=Math.abs(bu),body=(m===1?'':cfs(m))+V(u);return f?(neg?'−':'')+body:(neg?' − ':' + ')+body};
+  L.push((v===0||bu===0?tV(true)+tU(false):tU(true)+tV(false))+' = '+fmt(B.r));
+  L.push(lin([[clean(rnd(bv*k)),u],[bu,u],[q,null]])+' = '+fmt(B.r));
+  return L;
+}
+function solveLines(R){
+  const {u,m,q,B,rhs,uval}=R,L=[];
+  L.push(lin([[m,u]])+' = '+fmt(B.r)+(q!==0?(q>0?' − ':' + ')+fmt(Math.abs(q)):''));
+  L.push(lin([[m,u]])+' = '+fmt(rhs));
+  if(R.status!=='unique')return L;
+  if(m!==1)L.push(V(u)+' = '+fmt(rhs)+' / '+par(m));
+  L.push(V(u)+' = '+fmt(uval));
+  return L;
+}
+function backLines(R){
+  const {v,u,c,k,uval,vval}=R,L=[];
+  if(k===0){L.push(V(v)+' = '+fmt(vval)+' &nbsp;<span class="hint" style="margin:0">(already found in step 2)</span>');return L}
+  L.push(V(v)+' = '+lin([[c,null],[k,u]]));
+  if(k!==0){
+    const m=Math.abs(k),kt=(m===1?'':cfs(m))+'('+fmt(uval)+')';
+    L.push(V(v)+' = '+(c!==0?fmt(c)+(k<0?' − ':' + ')+kt:(k<0?'−':'')+kt));
+  }
+  L.push(V(v)+' = '+fmt(vval));
+  return L;
+}
+function feasRows(pt){
+  const rows=[];let ok=true;const bad=[];
+  state.cons.forEach((c,i)=>{if(!valid(c))return;
+    const val=c.a*pt[0]+c.b*pt[1],t=1e-7*(1+Math.abs(c.r));
+    const holds=c.s==='<='?val<=c.r+t:c.s==='>='?val>=c.r-t:Math.abs(val-c.r)<=t;
+    if(!holds){ok=false;bad.push(i+1)}
+    const sb=subst(c.a,c.b,pt[0],pt[1]),lhs=/^−?\([^()]*\)$/.test(sb)?fmt(val):sb+' = '+fmt(val);
+    rows.push('<tr><td><span class="badge" style="--c:'+COLORS[i%COLORS.length]+';display:inline-grid">'+(i+1)+'</span></td><td style="text-align:left">'+lhs+' '+SIGN[c.s]+' '+fmt(c.r)+'</td><td>'+(holds?'<span style="color:var(--ok)">✓</span>':'<span style="color:var(--warn)">✗</span>')+'</td></tr>');
+  });
+  if(state.nonneg){[0,1].forEach(j=>{const h=pt[j]>=-1e-9;if(!h){ok=false;bad.push(state.names[j]+' ≥ 0')}
+    rows.push('<tr><td></td><td style="text-align:left">'+V(j)+' = '+fmt(pt[j])+' ≥ 0</td><td>'+(h?'<span style="color:var(--ok)">✓</span>':'<span style="color:var(--warn)">✗</span>')+'</td></tr>')})}
+  return {ok,bad,html:'<table class="feas"><tbody>'+rows.join('')+'</tbody></table>'};
+}
+function solveTab(){
+  const S=state.sol,list=eqList(),vn=state.names;
+  let h='<p>Pick two lines, for example the two that meet at a corner of the region, and solve them as a system of equations by substitution.</p>';
+  const selHTML=(key,lab)=>'<label class="row" style="margin-top:6px"><span style="min-width:6.5em">Equation '+lab+'</span><select data-sel="'+key+'" style="flex:1;min-width:0">'+list.map(e=>'<option value="'+e.id+'"'+(S[key]===e.id?' selected':'')+'>'+esc(e.name)+'</option>').join('')+'</select></label>';
+  h+=selHTML('e1','(1)')+selHTML('e2','(2)');
+  const E1=getEq(S.e1),E2=getEq(S.e2);
+  if(!E1||!E2)return h+'<p class="fb bad">Choose two equations.</p>';
+  if(S.e1===S.e2)return h+'<p class="fb bad">Choose two different lines.</p>';
+  const R=solveSys();
+  // step 1
+  const eqRow=(E,n)=>'<div>'+n+'&nbsp; '+lin([[E.a,0],[E.b,1]])+' = '+fmt(E.r)+(E.s!=='='?' <span class="hint" style="margin:0">(from '+SIGN[E.s]+')</span>':'')+'</div>';
+  h+=stepBox(1,'Write both as equalities',S.stage>=1?'done':'current',
+    S.stage>=1?'<div class="alg">'+eqRow(E1,'(1)')+eqRow(E2,'(2)')+'</div>'
+    :'<p>Replace each inequality sign with = so the two boundary lines form a system of equations.</p><div class="actions"><button class="go" data-act="sconv">Convert to equalities</button></div>');
+  // step 2
+  let b2='';
+  if(S.stage===1){
+    const opts=[];
+    [[0,E1],[1,E2]].forEach(([ei,E])=>[0,1].forEach(vi=>{const co=vi===0?E.a:E.b,ot=vi===0?E.b:E.a;if(co===0)return;
+      opts.push({ei,vi,score:ot===0?0:Math.abs(co)===1?1:2})}));
+    const best=Math.min(...opts.map(o=>o.score));let marked=false;
+    b2='<p>Choose one equation and the variable to isolate. An equation with only one variable, or a coefficient of 1, is easiest.</p><div class="actions">'+
+      opts.map(o=>{const star=!marked&&o.score===best;if(star)marked=true;return '<button'+(star?' class="go"':'')+' data-act="siso" data-e="'+o.ei+'" data-v="'+o.vi+'">Solve ('+(o.ei+1)+') for '+V(o.vi)+(star?' (easiest)':'')+'</button>'}).join('')+'</div>';
+  }else if(S.stage>=2&&R)b2='<p>From equation '+R.nA+':</p>'+alg(rewriteLines(R),true);
+  h+=stepBox(2,'Rewrite one equation for one variable',S.stage<1?'locked':S.stage>=2?'done':'current',b2);
+  // step 3
+  let b3='';
+  if(R){
+    if(S.stage===2)b3='<p>Replace '+V(R.v)+' in equation '+R.nB+' with '+lin([[R.c,null],[R.k,R.u]])+'.</p><div class="actions"><button class="go" data-act="ssub">Substitute into '+R.nB+'</button></div>';
+    else if(S.stage>=3)b3=R.bv===0?'<p>Equation '+R.nB+' has no '+V(R.v)+' term, so there is nothing to substitute. It already involves only '+V(R.u)+':</p>'+alg(substLines(R),false)
+      :'<p>Substituting into '+R.nB+' and expanding:</p>'+alg(substLines(R),false);
+  }
+  h+=stepBox(3,'Substitute into the other equation',S.stage<2?'locked':S.stage>=3?'done':'current',b3);
+  // step 4
+  let b4='';
+  if(R){
+    if(S.stage===3)b4='<div class="actions"><button class="go" data-act="ssolve">Solve for '+V(R.u)+'</button></div>';
+    else if(S.stage>=4){
+      b4='<p>Collect the '+V(R.u)+' terms and move the constant to the right-hand side:</p>'+alg(solveLines(R),R.status==='unique');
+      if(R.status==='none')b4+='<p class="fb bad">This says 0 = '+fmt(R.rhs)+', which is impossible. The two lines are parallel and never meet, so the system has no solution.</p>';
+      if(R.status==='inf')b4+='<p class="fb info">This says 0 = 0, which is always true. The two equations describe the same line, so there are infinitely many solutions.</p>';
+    }
+  }
+  h+=stepBox(4,'Solve for '+(R?V(R.u):'the first variable'),S.stage<3?'locked':S.stage>=4?'done':'current',b4);
+  const unique=R&&R.status==='unique';
+  // step 5
+  let b5='';
+  if(unique){
+    if(S.stage===4)b5='<p>Put '+V(R.u)+' = '+fmt(R.uval)+' into the expression from step 2.</p><div class="actions"><button class="go" data-act="sback">Find '+V(R.v)+'</button></div>';
+    else if(S.stage>=5)b5=alg(backLines(R),false)+'<p class="eqn" style="margin-top:8px">Solution: ('+V(0)+', '+V(1)+') = '+P2(R.pt)+'</p>';
+  }
+  h+=stepBox(5,'Find '+(R?V(R.v):'the second variable'),!unique||S.stage<4?'locked':S.stage>=5?'done':'current',b5);
+  // step 6
+  let b6='';
+  if(unique){
+    if(S.stage===5)b6='<div class="actions"><button class="go" data-act="sshow">Show the point on the graph</button></div>';
+    else if(S.stage>=6){
+      const F=feasRows(R.pt);
+      b6='<p>Check the point '+P2(R.pt)+' against every constraint:</p>'+F.html+
+        (F.ok?'<p class="fb ok">It satisfies every constraint, so it is a corner point of the feasible region.</p>'
+             :'<p class="fb bad">It violates '+F.bad.map(x=>typeof x==='number'?'constraint '+x:x).join(', ')+'. The two lines do cross here, but the point lies outside the feasible region, so it is not a corner point.</p>');
+    }
+  }
+  h+=stepBox(6,'Show the point on the feasible region',!unique||S.stage<5?'locked':S.stage>=6?'done':'current',b6);
+  // step 7
+  let b7='';
+  if(unique){
+    if(!objOk())b7='<p class="fb bad">Enter objective coefficients in the model first.</p>';
+    else if(S.stage===6)b7='<div class="actions"><button class="primary" data-act="sz">Compute Z at this point</button></div>';
+    else if(S.stage>=7){
+      const z=state.c[0]*R.pt[0]+state.c[1]*R.pt[1];
+      b7=alg(['Z = '+lin([[state.c[0],0],[state.c[1],1]]),'Z = '+subst(state.c[0],state.c[1],R.pt[0],R.pt[1]),'Z = '+fmt(rnd(z))],true)+
+        '<label class="check"><input type="checkbox" data-act="szline"'+(S.zline?' checked':'')+'> Draw the objective line through this point</label>';
+    }
+  }
+  h+=stepBox(7,'Objective value at this point',!unique||S.stage<6?'locked':S.stage>=7?'done':'current',b7);
+  // log of solved points
+  if(state.solved.length){
+    h+='<h3 style="margin-top:16px">Points found so far</h3><table><thead><tr><th>Lines</th><th>Point</th><th>Feasible</th><th>Z</th></tr></thead><tbody>';
+    state.solved.forEach(o=>h+='<tr><td>'+esc(o.pair)+'</td><td>'+P2(o.p)+'</td><td>'+(o.feas?'yes':'no')+'</td><td>'+(o.z===null?'–':fmt(rnd(o.z)))+'</td></tr>');
+    h+='</tbody></table>';
+    const fz=state.solved.filter(o=>o.feas&&o.z!==null);
+    if(fz.length>1){const sg=state.sense==='max'?1:-1,best=fz.reduce((a,b)=>sg*b.z>sg*a.z?b:a);
+      h+='<p class="hint">Best feasible point so far: '+P2(best.p)+' with Z = '+fmt(rnd(best.z))+'.</p>'}
+  }
+  h+='<div class="foot"><button class="go" data-act="snew">Solve another pair</button>'+(state.solved.length?'<button data-act="sclear">Clear points found</button>':'')+'</div>';
+  return h;
+}
+function pairName(){const S=state.sol,n=id=>id==='ax'?state.names[0]+'=0':id==='ay'?state.names[1]+'=0':'C'+(+id.slice(1)+1);return n(S.e1)+' & '+n(S.e2)}
+
+function renderLesson(){
+  const el=$('lesson');
+  const ae=document.activeElement,fid=ae&&ae.id&&el.contains(ae)?ae.id:null;
+  let ss=null,se=null;try{if(fid&&ae.type==='text'){ss=ae.selectionStart;se=ae.selectionEnd}}catch(e){}
+  const tabs=[['cons','1. Constraints'],['region','2. Region'],['obj','3. Objective'],['solve','4. Solve']];
+  let h='<div class="tabs" role="tablist">'+tabs.map(t=>'<button class="tab" role="tab" data-act="tab" data-t="'+t[0]+'" aria-selected="'+(state.tab===t[0])+'">'+t[1]+'</button>').join('')+'</div>';
+  h+=state.tab==='cons'?consTab():state.tab==='region'?regionTab():state.tab==='obj'?objTab():solveTab();
+  h+='<div class="foot"><button data-act="autoall">Complete all constraint steps</button><button data-act="resetall">Reset lesson</button></div>';
+  el.innerHTML=h;
+  if(fid){const n=$(fid);if(n&&!n.disabled){n.focus();try{if(ss!==null)n.setSelectionRange(ss,se)}catch(e){}}}
+}
+function renderLight(){
+  const r=draw();syncViewUI();
+  const O=state.obj;
+  if(O&&O.move){
+    const zr=$('zslider');if(zr&&document.activeElement!==zr)zr.value=O.z;
+    if($('zread'))$('zread').textContent='Z = '+fmt(rnd(O.z));
+    if($('zeq'))$('zeq').textContent=expr(state.c[0],state.c[1])+' = '+fmt(rnd(O.z));
+    const li=$('lineinfo');
+    if(li){
+      if(!r.S)li.textContent='Activate constraints to see where the line crosses the feasible region.';
+      else if(r.S.status==='infeasible')li.textContent='The active constraints have no feasible region.';
+      else if(!r.isoIn)li.textContent='At this value the line misses the feasible region: no feasible point gives Z = '+fmt(rnd(O.z))+'.';
+      else{const len=Math.hypot(r.isoIn[1][0]-r.isoIn[0][0],r.isoIn[1][1]-r.isoIn[0][1]),span=Math.max(view.xmax-view.xmin,view.ymax-view.ymin);
+        if(len<span*1e-4){const onC=r.S.tv.some(p=>Math.hypot(p[0]-r.isoIn[0][0],p[1]-r.isoIn[0][1])<span*1e-4);
+          li.textContent=onC?'The line touches the region at a single corner. Moving further would leave the region.':'The line only touches the edge of the visible graph; the region continues beyond it.'}
+        else li.textContent='The thick segment shows the feasible points that give Z = '+fmt(rnd(O.z))+'. Keep moving in the arrow direction.'}
+    }
+  }
+  const t=pickTarget();
+  $('svg').classList.toggle('picking',!!t);
+  $('pickhint').textContent=t?'Click on the graph to place a point on the line '+(t.kind==='con'?'for constraint '+(state.sel+1):t.kind==='z1'?'Z = '+state.obj.z1:'Z = '+state.obj.z2)+'.':'';
+}
+function render(){fitView=computeView();if(state.autoFit||!view)view=fitView;renderLight();renderLesson();renderLight();syncForm()}
+function syncForm(){document.querySelectorAll('.con').forEach(li=>li.classList.toggle('hl',state.hl===+li.dataset.i))}
+
+/* ================= lesson events ================= */
+function stopAnim(){if(anim){cancelAnimationFrame(anim);anim=null}}
+function zRange(){const R=solveRegion(anyActive()?activeHPs():(state.nonneg?NN:[]),SB());return R}
+function animateTo(target){
+  stopAnim();const O=state.obj,from=O.z;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){O.z=target;render();return}
+  const dur=Math.min(4000,Math.max(1200,Math.abs(target-from)/(Math.abs(deltaZ())||1)*450)),t0=performance.now();
+  const step=now=>{const t=Math.min(1,(now-t0)/dur);O.z=from+(target-from)*t;renderLight();
+    if(t<1)anim=requestAnimationFrame(step);else{anim=null;render()}};
+  anim=requestAnimationFrame(step);render();
+}
+$('lesson').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-act]');if(!b)return;
+  const act=b.dataset.act,O=state.obj;
+  const i=state.sel,L=state.L[i];
+  if(act!=='stop')stopAnim();
+  switch(act){
+    case 'tab':state.tab=b.dataset.t;break;
+    case 'sel':state.sel=+b.dataset.i;break;
+    case 'eq':L.eq=true;break;
+    case 'suggest':{const k=b.dataset.k;state.autoFit=true;
+      if(k==='con')L.pts=suggest(conLine(i));
+      else if(k==='z1')O.p1=suggest(objLine(parseNum(O.z1)));
+      else O.p2=suggest(objLine(parseNum(O.z2)));break}
+    case 'clearpts':L.pts=['',''];break;
+    case 'draw':{const k=b.dataset.k;
+      if(k==='con'){L.drawn=true;L.active=L.active||false}
+      else if(k==='z1')O.d1=true;else O.d2=true;break}
+    case 'side':L.side=b.dataset.s;break;
+    case 'auto1':autoCons(i);break;
+    case 'redo':state.L[i]=freshL();break;
+    case 'actall':state.cons.forEach((c,j)=>{if(ready(j))state.L[j].active=true});state.nnActive=true;break;
+    case 'actnone':state.L.forEach(x=>x.active=false);state.nnActive=false;break;
+    case 'dir':O.dir=true;break;
+    case 'move':O.move=true;O.z=parseNum(O.z1);O.hide2=true;break;
+    case 'back':{const R=zRange();O.z=Math.max(R.zlo,Math.min(R.zhi,O.z-Math.abs(deltaZ())*(state.sense==='max'?1:-1)));break}
+    case 'fwd':{const R=zRange();O.z=Math.max(R.zlo,Math.min(R.zhi,O.z+Math.abs(deltaZ())*(state.sense==='max'?1:-1)));break}
+    case 'toz1':O.z=parseNum(O.z1);break;
+    case 'auto':{const R=solveRegion(activeHPs(),SB());if(R.target!==null){animateTo(R.target);return}break}
+    case 'stop':stopAnim();break;
+    case 'reveal':O.reveal=true;{const R=solveRegion(activeHPs(),SB());if(R.status==='optimal')O.z=R.optVal}break;
+    case 'sconv':state.sol.stage=1;break;
+    case 'siso':state.sol.eqI=+b.dataset.e;state.sol.varI=+b.dataset.v;state.sol.stage=2;break;
+    case 'ssub':state.sol.stage=3;break;
+    case 'ssolve':state.sol.stage=4;break;
+    case 'sback':state.sol.stage=5;break;
+    case 'sshow':{state.sol.stage=6;const R=solveSys();if(R&&R.pt){const F=feasRows(R.pt);
+      const ex=state.solved.find(o=>Math.hypot(o.p[0]-R.pt[0],o.p[1]-R.pt[1])<1e-9);
+      if(!ex)state.solved.push({p:R.pt,pair:pairName(),feas:F.ok,z:null})}break}
+    case 'sz':{state.sol.stage=7;const R=solveSys();if(R&&R.pt){const o=state.solved.find(o=>Math.hypot(o.p[0]-R.pt[0],o.p[1]-R.pt[1])<1e-9);if(o)o.z=state.c[0]*R.pt[0]+state.c[1]*R.pt[1]}break}
+    case 'snew':state.sol.stage=0;state.sol.eqI=null;state.sol.varI=null;state.sol.zline=false;break;
+    case 'sclear':state.solved=[];break;
+    case 'redoobj':state.obj=freshObj();break;
+    case 'autoall':state.cons.forEach((c,j)=>autoCons(j));state.nnActive=true;state.cons.forEach((c,j)=>{if(ready(j))state.L[j].active=true});break;
+    case 'resetall':resetLesson();break;
+  }
+  render();
+});
+$('lesson').addEventListener('change',e=>{
+  const t=e.target;if(t.dataset.sel){state.sol[t.dataset.sel]=t.value;state.sol.stage=0;state.sol.eqI=null;state.sol.varI=null;state.sol.zline=false;render();return}
+  const act=t.dataset.act;if(!act)return;stopAnim();
+  if(act==='act')state.L[+t.dataset.i].active=t.checked;
+  else if(act==='nn')state.nnActive=t.checked;
+  else if(act==='sides')state.showSides=t.checked;
+  else if(act==='hide2')state.obj.hide2=t.checked;
+  else if(act==='traces')state.obj.traces=t.checked;
+  else if(act==='szline')state.sol.zline=t.checked;
+  render();
+});
+$('lesson').addEventListener('input',e=>{
+  const t=e.target;
+  if(t.id==='zslider'){stopAnim();state.obj.z=parseFloat(t.value);renderLight();return}
+  if(t.dataset.pw){const k=+t.dataset.k;
+    if(t.dataset.pw==='con')state.L[state.sel].pts[k]=t.value;else if(t.dataset.pw==='z1')state.obj.p1[k]=t.value;else state.obj.p2[k]=t.value;
+    render();return}
+  if(t.dataset.z){state.obj[t.dataset.z]=t.value;if(t.dataset.z==='z1')state.obj.p1=['',''];else state.obj.p2=['',''];render()}
+});
+function autoCons(j){
+  const c=state.cons[j];if(!valid(c)||!isLine(c))return;
+  const L=state.L[j];L.eq=true;if(!canDraw(ptsOf(conLine(j),L.pts)))L.pts=suggest(conLine(j));L.drawn=true;if(c.s!=='=')L.side=c.s;
+}
+function resetLesson(){stopAnim();state.L=state.cons.map(freshL);state.nnActive=true;state.tab='cons';state.sel=0;modelChanged()}
+
+/* ================= formulation panel ================= */
+function renderForm(){
+  $('sense').value=state.sense;$('c1').value=state.c[0];$('c2').value=state.c[1];
+  $('nonneg').checked=state.nonneg;$('n1').value=state.names[0];$('n2').value=state.names[1];
+  $('cons').innerHTML=state.cons.map((c,i)=>
+    '<li class="con" data-i="'+i+'"><span class="badge" style="--c:'+COLORS[i%COLORS.length]+'">'+(i+1)+'</span>'+
+    '<input type="number" step="any" data-f="a" value="'+c.a+'" aria-label="Constraint '+(i+1)+' coefficient 1">'+
+    '<span class="var v1">'+esc(state.names[0])+'</span><span>+</span>'+
+    '<input type="number" step="any" data-f="b" value="'+c.b+'" aria-label="Constraint '+(i+1)+' coefficient 2">'+
+    '<span class="var v2">'+esc(state.names[1])+'</span>'+
+    '<select data-f="s" aria-label="Constraint '+(i+1)+' sign">'+['<=','>=','='].map(s=>'<option value="'+s+'"'+(s===c.s?' selected':'')+'>'+SIGN[s]+'</option>').join('')+'</select>'+
+    '<input type="number" step="any" data-f="r" value="'+c.r+'" aria-label="Constraint '+(i+1)+' right-hand side">'+
+    '<button class="rm" data-rm="'+i+'" aria-label="Remove constraint '+(i+1)+'">✕</button></li>').join('');
+  $('add').disabled=state.cons.length>=6;
+}
+function numIn(el){const v=el.value.trim()===''?NaN:parseFloat(el.value);el.setAttribute('aria-invalid',Number.isFinite(v)?'false':'true');return v}
+function load(key){
+  const p=PRESETS[key];stopAnim();
+  state.sense=p.sense;state.c=p.c.slice();state.cons=p.cons.map(c=>({a:c[0],b:c[1],s:c[2],r:c[3]}));
+  state.autoFit=true;fitView=computeView();view=fitView;resetLesson();renderForm();render();
+}
+$('sense').addEventListener('change',e=>{stopAnim();state.sense=e.target.value;modelChanged();render()});
+['c1','c2'].forEach((id,k)=>$(id).addEventListener('input',e=>{stopAnim();state.c[k]=numIn(e.target);modelChanged();render()}));
+$('nonneg').addEventListener('change',e=>{stopAnim();state.nonneg=e.target.checked;modelChanged();render()});
+$('n1').addEventListener('input',e=>{state.names[0]=e.target.value.trim()||'x';document.querySelectorAll('.v1').forEach(x=>x.textContent=state.names[0]);render()});
+$('n2').addEventListener('input',e=>{state.names[1]=e.target.value.trim()||'y';document.querySelectorAll('.v2').forEach(x=>x.textContent=state.names[1]);render()});
+$('cons').addEventListener('input',e=>{
+  const li=e.target.closest('.con');if(!li||!e.target.dataset.f)return;stopAnim();
+  const i=+li.dataset.i,f=e.target.dataset.f;
+  state.cons[i][f]=f==='s'?e.target.value:numIn(e.target);
+  state.L[i]=freshL();modelChanged();render();
+});
+$('cons').addEventListener('change',e=>{
+  if(e.target.dataset.f!=='s')return;const i=+e.target.closest('.con').dataset.i;
+  state.cons[i].s=e.target.value;state.L[i]=freshL();modelChanged();render();
+});
+$('cons').addEventListener('click',e=>{
+  const b=e.target.closest('[data-rm]');if(!b)return;stopAnim();
+  const i=+b.dataset.rm;state.cons.splice(i,1);state.L.splice(i,1);
+  state.sel=Math.min(state.sel,Math.max(0,state.cons.length-1));state.hl=-1;
+  modelChanged();renderForm();render();
+});
+['mouseover','focusin'].forEach(t=>$('cons').addEventListener(t,e=>{
+  const li=e.target.closest('.con'),i=li?+li.dataset.i:-1;if(i!==state.hl){state.hl=i;renderLight();syncForm()}
+}));
+['mouseleave','focusout'].forEach(t=>$('cons').addEventListener(t,e=>{
+  if(t==='focusout'&&$('cons').contains(e.relatedTarget))return;if(state.hl!==-1){state.hl=-1;renderLight();syncForm()}
+}));
+$('add').addEventListener('click',()=>{
+  stopAnim();state.cons.push({a:1,b:1,s:'<=',r:10});state.L.push(freshL());
+  modelChanged();renderForm();render();
+  const ins=$('cons').querySelectorAll('.con:last-child input');if(ins[0])ins[0].focus();
+});
+$('preset').addEventListener('change',e=>{if(e.target.value){load(e.target.value);e.target.value=''}});
+
+load('mix');
+})();
+</script>
+</body>
+</html>
