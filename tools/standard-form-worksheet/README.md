@@ -101,6 +101,6 @@ Works in any modern browser, adapts to light and dark themes, and is usable down
 
 Part of the [Foundations of Optimization](../../) course repo, served by GitHub Pages from its `main` branch.
 
-## License
+## Terms of use
 
-MIT — see [LICENSE](../../LICENSE). Free to use, adapt, and share for teaching.
+Developed by Dr. Hadi Charkhgard for teaching the Foundations of Optimization course only. © 2026 Hadi Charkhgard. All rights reserved — see [LICENSE](../../LICENSE).

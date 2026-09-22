@@ -18,3 +18,5 @@ Includes examples for maximization, minimization, multiple optimal solutions, un
 Open `index.html` in any browser, or visit the GitHub Pages link above. No installation needed.
 
 Part of the [Foundations of Optimization](../../) course repo.
+
+Developed by Dr. Hadi Charkhgard for teaching the Foundations of Optimization course only. © 2026 Hadi Charkhgard. All rights reserved — see [LICENSE](../../LICENSE).
