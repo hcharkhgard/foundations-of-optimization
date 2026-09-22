@@ -2,7 +2,7 @@
 
 An interactive teaching worksheet for the **general-to-standard-form reduction** in linear programming.
 
-**▶ Live tool: https://hcharkhgard.github.io/LP-Standard-form-transformation-/**
+**▶ Live tool: https://hcharkhgard.github.io/foundations-of-optimization/tools/standard-form-worksheet/**
 
 Built for classroom use: students enter a linear program, then convert it to standard form
 one deliberate move at a time — choosing *which rule* to apply to *which* constraint,
@@ -86,8 +86,8 @@ this by applying them in any order and landing on the same standard form.
 The tool is a **single self-contained `index.html`**. No build step, no dependencies, no server code.
 
 ```bash
-git clone https://github.com/hcharkhgard/LP-Standard-form-transformation-.git
-cd LP-Standard-form-transformation-
+git clone https://github.com/hcharkhgard/foundations-of-optimization.git
+cd foundations-of-optimization/tools/standard-form-worksheet
 open index.html          # or just double-click it
 ```
 
@@ -99,8 +99,8 @@ Works in any modern browser, adapts to light and dark themes, and is usable down
 
 ## Deployment
 
-Served by GitHub Pages from the `main` branch. Any push to `main` republishes the site.
+Part of the [Foundations of Optimization](../../) course repo, served by GitHub Pages from its `main` branch.
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Free to use, adapt, and share for teaching.
+MIT — see [LICENSE](../../LICENSE). Free to use, adapt, and share for teaching.

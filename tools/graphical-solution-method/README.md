@@ -2,7 +2,7 @@
 
 An interactive teaching tool for solving two-variable linear programming problems with the graphical method.
 
-**Open the tool:** https://hcharkhgard.github.io/lp-graphical-solution-method/
+**Open the tool:** https://hcharkhgard.github.io/foundations-of-optimization/tools/graphical-solution-method/
 
 ## What it does
 
@@ -16,3 +16,5 @@ Includes examples for maximization, minimization, multiple optimal solutions, un
 ## Use
 
 Open `index.html` in any browser, or visit the GitHub Pages link above. No installation needed.
+
+Part of the [Foundations of Optimization](../../) course repo.
