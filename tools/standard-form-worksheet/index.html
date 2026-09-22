@@ -1,0 +1,1175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="An interactive teaching worksheet for converting a linear program from general form into standard form, one rule at a time.">
+<meta name="author" content="Hadi Charkhgard">
+<meta property="og:title" content="General form to standard form">
+<meta property="og:description" content="An interactive teaching worksheet for converting a linear program from general form into standard form, one rule at a time.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%226%22%20fill%3D%22%237a2f52%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2223%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%2221%22%20fill%3D%22%23fff%22%20text-anchor%3D%22middle%22%3E%26%23931%3B%3C%2Ftext%3E%3C%2Fsvg%3E">
+<style>
+:root{color-scheme:light dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Standard Form Worksheet</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
+<style>
+:root{
+  --paper:#f5f3f4; --card:#ffffff; --card-2:#faf8f9;
+  --ink:#1c1719; --ink-2:#5f5559; --ink-3:#8d8286;
+  --rule:#e4dee0; --rule-2:#cfc6ca;
+  --accent:#7a2f52; --accent-soft:#f7ecf1;
+  --h-keep:#2f7a52; --h-flip:#985a10; --h-grow:#1f5fa8;
+  --h-keep-soft:#eaf3ed; --h-flip-soft:#f7efe2; --h-grow-soft:#e9f0f9;
+  --bad:#b3261e;
+  --shadow:0 1px 2px rgba(28,23,25,.05), 0 8px 24px -18px rgba(28,23,25,.45);
+  --sans:'IBM Plex Sans',ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;
+  --serif:'STIX Two Text',Cambria,'Times New Roman',Georgia,serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#171416; --card:#1e1a1d; --card-2:#241f23;
+    --ink:#ece7e9; --ink-2:#a9a0a4; --ink-3:#7a7276;
+    --rule:#302a2e; --rule-2:#433b40;
+    --accent:#e8a0be; --accent-soft:#33202a;
+    --h-keep:#77c99a; --h-flip:#dda75c; --h-grow:#84b4ec;
+    --h-keep-soft:#1c2a22; --h-flip-soft:#2b241a; --h-grow-soft:#1b242f;
+    --bad:#e98b82;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -20px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#171416; --card:#1e1a1d; --card-2:#241f23;
+  --ink:#ece7e9; --ink-2:#a9a0a4; --ink-3:#7a7276;
+  --rule:#302a2e; --rule-2:#433b40;
+  --accent:#e8a0be; --accent-soft:#33202a;
+  --h-keep:#77c99a; --h-flip:#dda75c; --h-grow:#84b4ec;
+  --h-keep-soft:#1c2a22; --h-flip-soft:#2b241a; --h-grow-soft:#1b242f;
+  --bad:#e98b82;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -20px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:2.4rem 4rem}
+
+.eyebrow{font:500 .7rem/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 .85rem}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(1.9rem,1.25rem + 2.4vw,2.9rem);line-height:1.1;letter-spacing:-.015em;margin:0 0 .8rem;text-wrap:balance}
+h1 .arrow{color:var(--accent);font-style:normal;padding:0 .1em}
+.lede{max-width:66ch;margin:0;color:var(--ink-2);font-size:1.01rem}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(1.3rem,1.1rem + .8vw,1.7rem);letter-spacing:-.01em;margin:0}
+h3{font:600 .98rem/1.35 var(--sans);margin:0}
+.section{margin-top:3rem}
+.section__head{display:flex;flex-wrap:wrap;gap:.7rem 1.4rem;align-items:baseline;justify-content:space-between;padding-bottom:.8rem;margin-bottom:1.3rem;border-bottom:1px solid var(--rule)}
+.section__head p{margin:.25rem 0 0;color:var(--ink-2);font-size:.88rem;max-width:62ch}
+.step-n{color:var(--accent);font-family:var(--serif);font-weight:600;padding-right:.45rem}
+
+/* ---- math ---- */
+.mx{font-family:var(--serif);font-size:1.02rem;line-height:1.5;font-variant-numeric:lining-nums tabular-nums;color:var(--ink)}
+.mx i{font-style:italic}
+.mx sub,.mx sup{font-size:.66em;font-style:normal;line-height:0;position:relative}
+.mx sub{bottom:-.28em}
+.mx sup{top:.42em}
+.mx sub.iv{font-style:italic}
+.op{padding:0 .2em}.op--lead{padding:0 .02em 0 0}
+.rel{padding:0 .34em}.rm{font-style:normal}.kw{font-style:normal;padding-right:.45em}
+.eq{display:flex;flex-wrap:wrap;align-items:center;column-gap:.05em}
+.eq + .eq{margin-top:.3rem}
+.sum{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;margin:0 .2em;vertical-align:middle}
+.sum .sig{font-size:1.4em}
+.sum .lim{font-size:.58em;white-space:nowrap}
+.has-sum{line-height:1.1;padding-block:.15rem}
+.tk-new{color:var(--accent)}
+.sgn{padding-right:.1em}
+
+/* ---- board ---- */
+.board{display:grid;gap:.9rem;margin-top:2rem}
+@media(min-width:920px){.board{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:1rem}}
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:4px;box-shadow:var(--shadow);padding:1.15rem 1.1rem 1rem;display:flex;flex-direction:column;gap:.85rem;min-width:0}
+.panel--std{background:var(--card-2);border-color:var(--rule-2)}
+.panel__tag{font:500 .67rem/1 var(--sans);letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);display:flex;align-items:center;gap:.6rem;margin:0}
+.panel__tag::after{content:"";flex:1;height:1px;background:var(--rule)}
+.panel--std .panel__tag{color:var(--accent)}
+.panel--std .panel__tag::after{background:var(--accent);opacity:.3}
+.block{display:flex;flex-direction:column;gap:.45rem}
+.block__label{font:500 .66rem/1 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin:0}
+.grow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.15rem .9rem;padding-left:.7rem;border-left:2px solid var(--rule-2)}
+.grow--keep{border-left-color:var(--h-keep)}
+.grow--flip{border-left-color:var(--h-flip)}
+.grow--grow{border-left-color:var(--h-grow)}
+.grow--plain{border-left-color:var(--accent)}
+.range{font:400 .75rem/1.4 var(--sans);color:var(--ink-3)}
+.range i{font-family:var(--serif);font-style:italic;font-size:1.05em}
+.panel__foot{margin-top:auto;padding-top:.8rem;border-top:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:.3rem 1.3rem}
+.foot-item{font:400 .79rem/1.4 var(--sans);color:var(--ink-2)}
+.foot-item .mx{font-size:.94rem}
+.board__mid{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.3rem 0}
+@media(min-width:920px){.board__mid{flex-direction:column}}
+.board__glyph{font-family:var(--serif);font-size:1.4rem;color:var(--accent);transform:rotate(90deg)}
+@media(min-width:920px){.board__glyph{transform:none}}
+.board__mid .t{font:500 .64rem/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+@media(min-width:920px){.board__mid .t{writing-mode:vertical-rl}}
+
+/* ---- buttons ---- */
+.btn{font:500 .78rem/1 var(--sans);cursor:pointer;border:1px solid var(--rule-2);background:var(--card);color:var(--ink-2);border-radius:999px;padding:.44rem .8rem;transition:border-color .16s,color .16s,background .16s}
+.btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn--solid{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn--solid{color:#241016}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn--solid{color:#241016}}
+.btn--solid:hover:not(:disabled){opacity:.87;border-color:var(--accent)}
+.btn--sm{font-size:.72rem;padding:.3rem .55rem}
+.btnrow{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---- editor ---- */
+.card{background:var(--card);border:1px solid var(--rule);border-radius:4px;box-shadow:var(--shadow)}
+.card__head{display:flex;flex-wrap:wrap;gap:.6rem 1rem;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;border-bottom:1px solid var(--rule)}
+.card__title{font:500 .68rem/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0}
+.card__body{padding:1.1rem}
+.edwrap{overflow-x:auto;padding-bottom:.4rem}
+.ed{display:grid;gap:.4rem .45rem;align-items:center;min-width:max-content}
+.ed .hd{font-family:var(--serif);font-size:.98rem;text-align:center;color:var(--ink-2)}
+.ed .lab{font:500 .76rem/1.2 var(--sans);color:var(--ink-2);white-space:nowrap;padding-right:.4rem}
+.ed .lab .mx{font-size:.95rem}
+.num{width:3.7rem;padding:.32rem .2rem;text-align:center;border:1px solid var(--rule-2);border-radius:3px;background:var(--card-2);color:var(--ink);font:400 .92rem/1.2 var(--serif)}
+.num::placeholder{color:var(--ink-3);opacity:.6}
+.num:focus{border-color:var(--accent);background:var(--card)}
+.num.bad{border-color:var(--bad);background:rgba(179,38,30,.08)}
+.sel{padding:.3rem .3rem;border:1px solid var(--rule-2);border-radius:3px;background:var(--card-2);color:var(--ink);font:400 .8rem/1.2 var(--sans);cursor:pointer}
+.sel:focus{border-color:var(--accent)}
+.dims{display:flex;flex-wrap:wrap;gap:.45rem 1.1rem;align-items:center;margin-top:1rem;padding-top:.9rem;border-top:1px solid var(--rule)}
+.dims .g{display:flex;align-items:center;gap:.35rem}
+.dims .gl{font:500 .72rem/1 var(--sans);color:var(--ink-3);letter-spacing:.04em}
+.stepper{display:inline-flex;border:1px solid var(--rule-2);border-radius:999px;overflow:hidden}
+.stepper button{appearance:none;border:0;background:var(--card-2);color:var(--ink-2);font:500 .85rem/1 var(--sans);padding:.34rem .6rem;cursor:pointer}
+.stepper button:hover:not(:disabled){background:var(--accent-soft);color:var(--accent)}
+.stepper button:disabled{opacity:.35;cursor:not-allowed}
+.stepper .v{padding:.34rem .5rem;font:500 .8rem/1 var(--sans);background:var(--card);min-width:1.6rem;text-align:center;font-variant-numeric:tabular-nums}
+.errline{margin:.8rem 0 0;color:var(--bad);font-size:.82rem;min-height:1.2em}
+
+/* ---- worksheet ---- */
+.work{display:flex;flex-direction:column;gap:1rem}
+@media(min-width:1000px){.work{display:grid;grid-template-columns:minmax(0,1fr) 19.5rem;gap:1.1rem;align-items:start}}
+.rail{display:flex;flex-direction:column;gap:1rem;min-width:0}
+
+.tabwrap{overflow-x:auto;padding:.2rem .2rem .5rem}
+.tab{display:grid;min-width:max-content;gap:.12rem .15rem;align-items:stretch}
+.cell{font-family:var(--serif);font-size:1.02rem;padding:.4rem .45rem;display:flex;align-items:center;justify-content:center;white-space:nowrap;border-radius:3px;border:1px solid transparent;background:transparent;color:var(--ink);min-height:2.1rem}
+.cell i{font-style:italic}
+.cell sub{font-size:.66em;position:relative;bottom:-.25em;font-style:normal}
+button.cell{appearance:none;font:inherit;cursor:pointer;color:inherit}
+.cell--hd{font-size:1rem;border-color:var(--rule);background:var(--card-2);color:var(--ink-2)}
+.cell--hd:hover{border-color:var(--accent);color:var(--accent)}
+.cell--sign{font-size:.9rem;border-color:var(--rule);background:var(--card-2)}
+.cell--sign:hover{border-color:var(--accent)}
+.cell--sign.s-pos{color:var(--h-keep)}
+.cell--sign.s-neg{color:var(--h-flip);background:var(--h-flip-soft);border-color:var(--h-flip)}
+.cell--sign.s-free{color:var(--h-grow);background:var(--h-grow-soft);border-color:var(--h-grow)}
+.cell--lab{justify-content:flex-start;font-family:var(--sans);font-size:.8rem;font-weight:500;color:var(--ink-2);border-color:var(--rule);background:var(--card-2);padding-inline:.5rem}
+.cell--lab .mx{font-size:1rem}
+.cell--lab:hover{border-color:var(--accent);color:var(--accent)}
+.cell--rel{font-size:1.05rem;color:var(--ink-2)}
+.cell--rhs{font-size:1.02rem;justify-content:flex-start;padding-left:.2rem}
+.cell--corner{border:0;background:transparent}
+.cell--pad{min-height:.4rem;padding:0}
+.needs{position:relative}
+.needs::after{content:"";position:absolute;top:.28rem;right:.28rem;width:.36rem;height:.36rem;border-radius:50%;background:var(--accent)}
+.sel-row{background:var(--accent-soft)}
+.sel-col{background:var(--accent-soft)}
+.sel-row.cell--lab,.sel-col.cell--hd,.sel-col.cell--sign{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.hint-flash{animation:flash 1.1s ease-out 2}
+@keyframes flash{0%,100%{box-shadow:0 0 0 0 rgba(122,47,82,0)}35%{box-shadow:0 0 0 4px rgba(122,47,82,.35)}}
+.tabhint{font:400 .77rem/1.5 var(--sans);color:var(--ink-3);margin:.2rem 0 0;padding:0 .2rem}
+
+.tray{border-top:1px solid var(--rule);background:var(--card-2);padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.75rem;border-radius:0 0 3px 3px}
+.tray__what{display:flex;flex-wrap:wrap;gap:.4rem .7rem;align-items:baseline}
+.tray__kind{font:500 .67rem/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.acts{display:flex;flex-direction:column;gap:.5rem}
+.act{display:flex;flex-wrap:wrap;gap:.3rem .7rem;align-items:center;justify-content:space-between;width:100%;text-align:left;appearance:none;cursor:pointer;border:1px solid var(--rule-2);background:var(--card);border-radius:4px;padding:.6rem .75rem;font:inherit;color:var(--ink);transition:border-color .15s,background .15s}
+.act:hover:not(:disabled),.act:focus-visible{border-color:var(--accent);background:var(--accent-soft)}
+.act:disabled{cursor:not-allowed;opacity:.6;background:transparent}
+.act__main{display:flex;flex-direction:column;gap:.15rem;min-width:0}
+.act__name{font:600 .86rem/1.3 var(--sans)}
+.act__sub{font:400 .78rem/1.4 var(--sans);color:var(--ink-2)}
+.act__sub .mx{font-size:.92rem}
+.act__rule{font:500 .66rem/1 var(--sans);letter-spacing:.06em;color:var(--accent);background:var(--accent-soft);border-radius:3px;padding:.28rem .35rem;flex:none}
+.act:disabled .act__rule{color:var(--ink-3);background:transparent;border:1px solid var(--rule)}
+.prev{border:1px dashed var(--rule-2);border-radius:4px;padding:.6rem .75rem;background:var(--card);display:flex;flex-direction:column;gap:.3rem}
+.prev__t{font:500 .64rem/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.empty{font:400 .84rem/1.5 var(--sans);color:var(--ink-3)}
+
+.done{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:center;padding:.75rem 1.1rem;border-top:1px solid var(--h-keep);background:var(--h-keep-soft);color:var(--h-keep);font:500 .85rem/1.4 var(--sans)}
+.done .mx{color:inherit;font-size:.95rem}
+
+/* ---- rail widgets ---- */
+.widget{background:var(--card);border:1px solid var(--rule);border-radius:4px;box-shadow:var(--shadow);overflow:hidden}
+.widget__head{padding:.7rem .9rem;border-bottom:1px solid var(--rule);font:500 .66rem/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);display:flex;justify-content:space-between;align-items:center;gap:.5rem}
+.widget__body{padding:.85rem .9rem;display:flex;flex-direction:column;gap:.5rem}
+.todo{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.3rem}
+.todo button{width:100%;text-align:left;appearance:none;border:1px solid var(--rule);background:var(--card-2);border-radius:3px;padding:.42rem .55rem;font:400 .8rem/1.35 var(--sans);color:var(--ink-2);cursor:pointer;display:flex;gap:.45rem;align-items:baseline}
+.todo button:hover{border-color:var(--accent);color:var(--accent)}
+.todo .tag{font:500 .64rem/1 var(--sans);letter-spacing:.05em;flex:none;padding-top:.15rem}
+.todo .t-obj{color:var(--accent)}.todo .t-row{color:var(--h-flip)}.todo .t-col{color:var(--h-grow)}
+.todo .mx{font-size:.93rem;color:inherit}
+.ok{display:flex;gap:.45rem;align-items:center;font:500 .82rem/1.4 var(--sans);color:var(--h-keep)}
+.counts{display:flex;flex-wrap:wrap;gap:.3rem 1.1rem;font:400 .8rem/1.5 var(--sans);color:var(--ink-2)}
+.counts b{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.counts .mx{font-size:.92rem}
+.formula{font:400 .78rem/1.5 var(--sans);color:var(--ink-3);width:100%}
+.formula .mx{font-size:.92rem;color:var(--ink-2)}
+.rb{display:flex;flex-direction:column;gap:.3rem;font:400 .8rem/1.5 var(--sans);color:var(--ink-2)}
+.rb .mx{font-size:.95rem}
+.log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.25rem;counter-reset:s}
+.log li{counter-increment:s}
+.log button{width:100%;text-align:left;appearance:none;border:0;background:transparent;border-left:2px solid var(--rule-2);padding:.3rem .5rem;font:400 .79rem/1.45 var(--sans);color:var(--ink-2);cursor:pointer;display:flex;gap:.5rem}
+.log button:hover{border-left-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.log button::before{content:counter(s);font-variant-numeric:tabular-nums;color:var(--ink-3);flex:none;font-weight:500}
+.log .mx{font-size:.9rem;color:inherit}
+
+/* ---- reference ---- */
+.ref{background:var(--card);border:1px solid var(--rule);border-radius:4px;box-shadow:var(--shadow);overflow:hidden}
+.ref + .ref{margin-top:.9rem}
+.ref__head{display:flex;gap:.8rem;align-items:center;padding:.9rem 1.05rem}
+.ref__badge{font:600 .71rem/1 var(--sans);color:var(--accent);background:var(--accent-soft);border-radius:3px;padding:.38rem .42rem;flex:none}
+.ref__sub{margin:.2rem 0 0;color:var(--ink-2);font-size:.83rem}
+.ref__sub .mx{font-size:.93rem;color:var(--ink-2)}
+.ref__body{border-top:1px solid var(--rule);background:var(--card-2);padding:.95rem 1.05rem 1rem;display:flex;flex-direction:column;gap:.85rem}
+.case{display:flex;flex-direction:column;gap:.45rem}
+.case__tag{font:500 .69rem/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;display:inline-flex;align-items:center;gap:.4rem;color:var(--ink-3)}
+.case__tag::before{content:"";width:.5rem;height:.5rem;border-radius:50%;background:var(--rule-2)}
+.case--keep .case__tag{color:var(--h-keep)}.case--keep .case__tag::before{background:var(--h-keep)}
+.case--flip .case__tag{color:var(--h-flip)}.case--flip .case__tag::before{background:var(--h-flip)}
+.case--grow .case__tag{color:var(--h-grow)}.case--grow .case__tag::before{background:var(--h-grow)}
+.flow{display:grid;gap:.45rem;align-items:center;grid-template-columns:minmax(0,1fr)}
+@media(min-width:620px){.flow{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:.8rem}}
+.flow__arrow{font-family:var(--serif);color:var(--ink-3);font-size:1.1rem;justify-self:center;transform:rotate(90deg)}
+@media(min-width:620px){.flow__arrow{transform:none}}
+.slot{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:.55rem .65rem;min-width:0;overflow-x:auto}
+.slot--out{border-color:var(--accent);background:var(--accent-soft)}
+.slot--none{border-style:dashed;color:var(--ink-3)}
+.slot--none .mx{color:var(--ink-3)}
+.via{font:400 .74rem/1.4 var(--sans);color:var(--ink-3);display:flex;flex-wrap:wrap;align-items:baseline;gap:.25rem .5rem;margin-top:.35rem;padding-top:.35rem;border-top:1px dashed var(--rule)}
+.via .mx{font-size:.93rem;color:var(--ink-2)}
+.note{margin:0;font-size:.84rem;color:var(--ink-2);max-width:68ch}
+.note .mx{font-size:.94rem}
+.note strong{font-weight:600;color:var(--ink)}
+
+.duo{display:grid;gap:1rem}
+@media(min-width:800px){.duo{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ledger{background:var(--card);border:1px solid var(--rule);border-radius:4px;box-shadow:var(--shadow);padding:1.1rem 1.05rem;display:flex;flex-direction:column;gap:.8rem}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+th,td{text-align:left;padding:.45rem .35rem;border-bottom:1px solid var(--rule);vertical-align:baseline}
+th{font:500 .66rem/1 var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+td:last-child,th:last-child{text-align:right;white-space:nowrap}
+tr:last-child td{border-bottom:none;border-top:1px solid var(--rule-2);font-weight:600;padding-top:.6rem}
+td .mx{font-size:.97rem}
+.notes{margin-top:3rem;padding-top:1.3rem;border-top:1px solid var(--rule)}
+.notes ol{margin:0;padding-left:1.15rem;display:flex;flex-direction:column;gap:.55rem}
+.notes li{color:var(--ink-2);font-size:.85rem;max-width:76ch}
+.notes li::marker{color:var(--ink-3)}
+.notes .mx{font-size:.94rem}
+.colophon{margin-top:1.5rem;font-size:.77rem;color:var(--ink-3)}
+@media (prefers-reduced-motion: reduce){*{transition-duration:.01ms !important;animation:none !important}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Linear programming · Model reduction</p>
+    <h1>General form <span class="arrow">&#10230;</span> standard form</h1>
+    <p class="lede">Type in a linear program, then convert it one deliberate move at a time. Click the objective, any single constraint, or any single variable, and choose which rule to apply to it — the worksheet shows only the moves that are legal for what you picked, and keeps a record you can rewind.</p>
+  </header>
+
+  <!-- ===== BOARD ===== -->
+  <section class="board" aria-label="General form and standard form">
+    <article class="panel">
+      <p class="panel__tag">General form</p>
+      <div class="block">
+        <p class="block__label">Objective</p>
+        <div class="grow grow--plain">
+          <div class="mx eq has-sum"><span class="kw rm">min</span><span class="rm" style="color:var(--ink-3);font-size:.8em;padding-right:.5em">or max</span><span class="sum"><span class="lim"><i>n</i></span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span><i>c</i><sub class="iv">j</sub><i>x</i><sub class="iv">j</sub><span class="op"> + </span><i>c</i><sub>0</sub></div>
+        </div>
+      </div>
+      <div class="block">
+        <p class="block__label">Subject to</p>
+        <div class="grow grow--grow">
+          <div class="mx eq has-sum"><span class="sum"><span class="lim"><i>n</i></span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span><i>a</i><sub class="iv">ij</sub><i>x</i><sub class="iv">j</sub><span class="rel">&#8804;</span><i>b</i><sub class="iv">i</sub></div>
+          <span class="range"><i>i</i> = 1, &hellip;, <i>m</i><sub>1</sub></span>
+        </div>
+        <div class="grow grow--keep">
+          <div class="mx eq has-sum"><span class="sum"><span class="lim"><i>n</i></span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span><i>a</i><sub class="iv">ij</sub><i>x</i><sub class="iv">j</sub><span class="rel">=</span><i>b</i><sub class="iv">i</sub></div>
+          <span class="range"><i>i</i> = <i>m</i><sub>1</sub>+1, &hellip;, <i>m</i><sub>1</sub>+<i>m</i><sub>2</sub></span>
+        </div>
+        <div class="grow grow--flip">
+          <div class="mx eq has-sum"><span class="sum"><span class="lim"><i>n</i></span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span><i>a</i><sub class="iv">ij</sub><i>x</i><sub class="iv">j</sub><span class="rel">&#8805;</span><i>b</i><sub class="iv">i</sub></div>
+          <span class="range"><i>i</i> = <i>m</i><sub>1</sub>+<i>m</i><sub>2</sub>+1, &hellip;, <i>m</i></span>
+        </div>
+      </div>
+      <div class="block">
+        <p class="block__label">Sign of the variables</p>
+        <div class="grow grow--keep"><div class="mx eq"><i>x</i><sub class="iv">j</sub><span class="rel">&#8805;</span>0</div><span class="range"><i>j</i> &#8712; <i>P</i>,&nbsp; |<i>P</i>| = <i>n</i><sub>+</sub></span></div>
+        <div class="grow grow--flip"><div class="mx eq"><i>x</i><sub class="iv">j</sub><span class="rel">&#8804;</span>0</div><span class="range"><i>j</i> &#8712; <i>N</i>,&nbsp; |<i>N</i>| = <i>n</i><sub>&minus;</sub></span></div>
+        <div class="grow grow--grow"><div class="mx eq"><i>x</i><sub class="iv">j</sub><span class="rel"></span><span class="rm" style="color:var(--ink-2)">unrestricted in sign</span></div><span class="range"><i>j</i> &#8712; <i>F</i>,&nbsp; |<i>F</i>| = <i>n</i><sub class="iv">f</sub></span></div>
+      </div>
+      <div class="panel__foot">
+        <span class="foot-item"><span class="mx"><i>n</i> = <i>n</i><sub>+</sub><span class="op">+</span><i>n</i><sub>&minus;</sub><span class="op">+</span><i>n</i><sub class="iv">f</sub></span> variables</span>
+        <span class="foot-item"><span class="mx"><i>m</i> = <i>m</i><sub>1</sub><span class="op">+</span><i>m</i><sub>2</sub><span class="op">+</span><i>m</i><sub>3</sub></span> rows</span>
+      </div>
+    </article>
+
+    <div class="board__mid" aria-hidden="true"><span class="board__glyph">&#10230;</span><span class="t">Four rules</span></div>
+
+    <article class="panel panel--std">
+      <p class="panel__tag">Standard form</p>
+      <div class="block">
+        <p class="block__label">Objective</p>
+        <div class="grow grow--plain"><div class="mx eq has-sum"><span class="kw rm">max</span><span class="sum"><span class="lim"><i>n</i>&#8242;</span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span><i>c</i>&#772;<sub class="iv">j</sub><i>x</i>&#772;<sub class="iv">j</sub></div></div>
+      </div>
+      <div class="block">
+        <p class="block__label">Subject to</p>
+        <div class="grow grow--keep"><div class="mx eq has-sum"><span class="sum"><span class="lim"><i>n</i>&#8242;</span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span><i>a</i>&#772;<sub class="iv">ij</sub><i>x</i>&#772;<sub class="iv">j</sub><span class="rel">=</span><i>b</i>&#772;<sub class="iv">i</sub></div><span class="range"><i>i</i> = 1, &hellip;, <i>m</i>&#8242;</span></div>
+      </div>
+      <div class="block">
+        <p class="block__label">Sign of the variables</p>
+        <div class="grow grow--keep"><div class="mx eq"><i>x</i>&#772;<sub class="iv">j</sub><span class="rel">&#8805;</span>0</div><span class="range"><i>j</i> = 1, &hellip;, <i>n</i>&#8242;</span></div>
+      </div>
+      <p class="note">Three uniformities, and nothing else changes: the same feasible set, described differently. This is the shape the simplex method reads — a basis is a choice of <span class="mx"><i>m</i>&#8242;</span> columns out of <span class="mx"><i>n</i>&#8242;</span>, which only makes sense once every row is an equation and every variable has a floor at zero.</p>
+      <div class="panel__foot">
+        <span class="foot-item"><span class="mx"><i>m</i>&#8242; = <i>m</i></span> rows</span>
+        <span class="foot-item"><span class="mx"><i>n</i>&#8242; = <i>n</i><sub>+</sub><span class="op">+</span><i>n</i><sub>&minus;</sub><span class="op">+</span>2<i>n</i><sub class="iv">f</sub><span class="op">+</span><i>m</i><sub>1</sub><span class="op">+</span><i>m</i><sub>3</sub></span> variables</span>
+      </div>
+    </article>
+  </section>
+
+  <!-- ===== STEP 1: EDITOR ===== -->
+  <section class="section" id="setup">
+    <div class="section__head">
+      <div>
+        <h2><span class="step-n">1</span>Enter the problem</h2>
+        <p>Coefficients accept integers, decimals or fractions — <span class="mx">3</span>, <span class="mx">&minus;1.5</span>, <span class="mx">2/7</span>. Leave a cell blank for a zero coefficient.</p>
+      </div>
+      <div class="btnrow">
+        <button class="btn btn--sm" type="button" data-preset="mixed">Example: mixed signs</button>
+        <button class="btn btn--sm" type="button" data-preset="max">Example: already a max</button>
+        <button class="btn btn--sm" type="button" data-preset="blank">Clear</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__head">
+        <p class="card__title">Your linear program</p>
+        <div class="btnrow">
+          <button class="btn btn--solid" type="button" id="loadBtn">Load into the worksheet</button>
+        </div>
+      </div>
+      <div class="card__body">
+        <div class="edwrap"><div class="ed" id="ed"></div></div>
+        <div class="dims">
+          <div class="g"><span class="gl">Variables</span>
+            <span class="stepper"><button type="button" id="varMinus" aria-label="Remove a variable">&minus;</button><span class="v" id="varN">3</span><button type="button" id="varPlus" aria-label="Add a variable">+</button></span>
+          </div>
+          <div class="g"><span class="gl">Constraints</span>
+            <span class="stepper"><button type="button" id="conMinus" aria-label="Remove a constraint">&minus;</button><span class="v" id="conN">3</span><button type="button" id="conPlus" aria-label="Add a constraint">+</button></span>
+          </div>
+        </div>
+        <p class="errline" id="edErr" role="status"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STEP 2: WORKSHEET ===== -->
+  <section class="section" id="worksheet">
+    <div class="section__head">
+      <div>
+        <h2><span class="step-n">2</span>Transform it, one move at a time</h2>
+        <p id="selHint">Click a row label, a relation or a right-hand side to act on that constraint; click a variable's name or its sign to act on that variable; click the objective row to act on the objective.</p>
+      </div>
+      <div class="btnrow">
+        <button class="btn btn--sm" type="button" id="hintBtn">Suggest a move</button>
+        <button class="btn btn--sm" type="button" id="autoBtn">Run to the end</button>
+        <button class="btn btn--sm" type="button" id="undoBtn">Undo</button>
+        <button class="btn btn--sm" type="button" id="resetBtn">Start over</button>
+      </div>
+    </div>
+
+    <div class="work">
+      <div class="card" style="min-width:0">
+        <div class="tabwrap"><div class="tab" id="tab"></div></div>
+        <p class="tabhint" id="tabHint"></p>
+        <div id="doneBar"></div>
+        <div class="tray" id="tray"></div>
+      </div>
+
+      <div class="rail">
+        <div class="widget">
+          <div class="widget__head"><span>Still to fix</span><span id="todoCount"></span></div>
+          <div class="widget__body" id="todo"></div>
+        </div>
+        <div class="widget">
+          <div class="widget__head">Size of the problem</div>
+          <div class="widget__body"><div class="counts" id="counts"></div></div>
+        </div>
+        <div class="widget">
+          <div class="widget__head">Reading the answer back</div>
+          <div class="widget__body"><div class="rb" id="readback"></div></div>
+        </div>
+        <div class="widget">
+          <div class="widget__head"><span>Moves made</span><span id="logCount"></span></div>
+          <div class="widget__body" id="logBox"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== REFERENCE ===== -->
+  <section class="section" id="reference">
+    <div class="section__head">
+      <div>
+        <h2>The four rules</h2>
+        <p>Rules 1 and 2 touch only the objective. Rules 3 and 4 may be applied in any order and to the rows and variables in any order — substitution is linear, so the moves never interfere.</p>
+      </div>
+    </div>
+
+    <article class="ref">
+      <header class="ref__head"><span class="ref__badge">R1</span><div><h3>Make the objective a maximization</h3><p class="ref__sub"><span class="mx"><span class="rm">min</span> <i>f</i>(<i>x</i>) = &minus;<span class="rm">max</span> <span class="rm">(</span>&minus;<i>f</i>(<i>x</i>)<span class="rm">)</span></span></p></div></header>
+      <div class="ref__body">
+        <div class="case case--flip"><span class="case__tag">If the problem minimizes</span>
+          <div class="flow">
+            <div class="slot"><div class="mx eq has-sum"><span class="kw rm">min</span><span class="sum"><span class="lim"><i>n</i></span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span><i>c</i><sub class="iv">j</sub><i>x</i><sub class="iv">j</sub></div></div>
+            <span class="flow__arrow">&#10230;</span>
+            <div class="slot slot--out"><div class="mx eq has-sum"><span class="kw rm">max</span><span class="sum"><span class="lim"><i>n</i></span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span><span class="tk-new">(&minus;<i>c</i><sub class="iv">j</sub>)</span><i>x</i><sub class="iv">j</sub></div></div>
+          </div>
+        </div>
+        <div class="case case--keep"><span class="case__tag">If it already maximizes</span>
+          <div class="flow"><div class="slot"><div class="mx eq has-sum"><span class="kw rm">max</span><span class="sum"><span class="lim"><i>n</i></span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span><i>c</i><sub class="iv">j</sub><i>x</i><sub class="iv">j</sub></div></div><span class="flow__arrow">&#10230;</span><div class="slot slot--none"><div class="mx rm">unchanged</div></div></div>
+        </div>
+        <p class="note">Multiplying by &minus;1 reverses the ranking of every feasible point, so the maximizer of <span class="mx">&minus;<i>f</i></span> is exactly the minimizer of <span class="mx"><i>f</i></span>. <strong>The optimal solution is untouched; only the optimal value flips sign:</strong> <span class="mx"><i>z</i>*<sub class="rm">min</sub> = &minus;<i>w</i>*<sub class="rm">max</sub></span>.</p>
+      </div>
+    </article>
+
+    <article class="ref">
+      <header class="ref__head"><span class="ref__badge">R2</span><div><h3>Drop the constant from the objective</h3><p class="ref__sub">A shift of every value cannot change which point wins.</p></div></header>
+      <div class="ref__body">
+        <div class="case case--flip"><span class="case__tag">If a constant is present</span>
+          <div class="flow">
+            <div class="slot"><div class="mx eq has-sum"><span class="kw rm">max</span><span class="sum"><span class="lim"><i>n</i></span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span><i>c</i><sub class="iv">j</sub><i>x</i><sub class="iv">j</sub><span class="op"> + </span><i>c</i><sub>0</sub></div></div>
+            <span class="flow__arrow">&#10230;</span>
+            <div class="slot slot--out"><div class="mx eq has-sum"><span class="kw rm">max</span><span class="sum"><span class="lim"><i>n</i></span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span><i>c</i><sub class="iv">j</sub><i>x</i><sub class="iv">j</sub></div></div>
+          </div>
+        </div>
+        <p class="note">The feasible region never mentions <span class="mx"><i>c</i><sub>0</sub></span>, and every feasible point gains the same <span class="mx"><i>c</i><sub>0</sub></span>, so the argmax is identical. <strong>Solve without it and add it back at the end.</strong> Applied after R1, the constant you drop is already the sign-flipped one — the worksheet keeps that bookkeeping for you.</p>
+      </div>
+    </article>
+
+    <article class="ref">
+      <header class="ref__head"><span class="ref__badge">R3</span><div><h3>Turn every constraint into an equation</h3><p class="ref__sub">Inequalities absorb a nonnegative <em>slack</em> variable.</p></div></header>
+      <div class="ref__body">
+        <div class="case case--grow"><span class="case__tag">Less-than-or-equal row &mdash; add a slack</span>
+          <div class="flow">
+            <div class="slot"><div class="mx eq has-sum"><span class="sum"><span class="lim"><i>n</i></span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span><i>a</i><sub class="iv">ij</sub><i>x</i><sub class="iv">j</sub><span class="rel">&#8804;</span><i>b</i><sub class="iv">i</sub></div></div>
+            <span class="flow__arrow">&#10230;</span>
+            <div class="slot slot--out"><div class="mx eq has-sum"><span class="sum"><span class="lim"><i>n</i></span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span><i>a</i><sub class="iv">ij</sub><i>x</i><sub class="iv">j</sub><span class="op tk-new"> + </span><span class="tk-new"><i>s</i><sub class="iv">i</sub></span><span class="rel">=</span><i>b</i><sub class="iv">i</sub></div><div class="mx eq" style="margin-top:.28rem"><span class="tk-new"><i>s</i><sub class="iv">i</sub> &#8805; 0</span></div></div>
+          </div>
+        </div>
+        <div class="case case--keep"><span class="case__tag">Equality row &mdash; nothing to do</span>
+          <div class="flow"><div class="slot"><div class="mx eq has-sum"><span class="sum"><span class="lim"><i>n</i></span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span><i>a</i><sub class="iv">ij</sub><i>x</i><sub class="iv">j</sub><span class="rel">=</span><i>b</i><sub class="iv">i</sub></div></div><span class="flow__arrow">&#10230;</span><div class="slot slot--none"><div class="mx rm">unchanged</div></div></div>
+        </div>
+        <div class="case case--flip"><span class="case__tag">Greater-than-or-equal row &mdash; flip first, then add a slack</span>
+          <div class="flow">
+            <div class="slot"><div class="mx eq has-sum"><span class="sum"><span class="lim"><i>n</i></span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span><i>a</i><sub class="iv">ij</sub><i>x</i><sub class="iv">j</sub><span class="rel">&#8805;</span><i>b</i><sub class="iv">i</sub></div></div>
+            <span class="flow__arrow">&#10230;</span>
+            <div class="slot slot--out"><div class="mx eq has-sum"><span class="sum"><span class="lim"><i>n</i></span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span><span class="tk-new">(&minus;<i>a</i><sub class="iv">ij</sub>)</span><i>x</i><sub class="iv">j</sub><span class="op tk-new"> + </span><span class="tk-new"><i>s</i><sub class="iv">i</sub></span><span class="rel">=</span><span class="tk-new">&minus;<i>b</i><sub class="iv">i</sub></span></div><div class="mx eq" style="margin-top:.28rem"><span class="tk-new"><i>s</i><sub class="iv">i</sub> &#8805; 0</span></div></div>
+          </div>
+          <div class="via"><span>step 1 &mdash; multiply the row by &minus;1</span><span class="mx has-sum"><span class="sum"><span class="lim"><i>n</i></span><span class="sig">&#8721;</span><span class="lim"><i>j</i>=1</span></span>(&minus;<i>a</i><sub class="iv">ij</sub>)<i>x</i><sub class="iv">j</sub><span class="rel">&#8804;</span>&minus;<i>b</i><sub class="iv">i</sub></span></div>
+        </div>
+        <p class="note">Each <span class="mx">&#8804;</span> row and each <span class="mx">&#8805;</span> row picks up one new nonnegative variable, so the reduction adds <span class="mx"><i>m</i><sub>1</sub> + <i>m</i><sub>3</sub></span> slacks. <strong>The number of rows never changes:</strong> <span class="mx"><i>m</i>&#8242; = <i>m</i></span>. Slack variables enter the objective with coefficient 0.</p>
+        <p class="note">The flipped row leaves <span class="mx">&minus;<i>b</i><sub class="iv">i</sub></span> on the right, which may well be negative. That is fine — standard form places no sign condition on <span class="mx"><i>b</i>&#772;</span>.</p>
+      </div>
+    </article>
+
+    <article class="ref">
+      <header class="ref__head"><span class="ref__badge">R4</span><div><h3>Make every variable nonnegative</h3><p class="ref__sub">Substitute <em>everywhere</em> the variable appears — objective and all rows.</p></div></header>
+      <div class="ref__body">
+        <div class="case case--keep"><span class="case__tag">Already nonnegative</span>
+          <div class="flow"><div class="slot"><div class="mx eq"><i>x</i><sub class="iv">j</sub><span class="rel">&#8805;</span>0</div></div><span class="flow__arrow">&#10230;</span><div class="slot slot--none"><div class="mx rm">keep <i>x</i><sub class="iv">j</sub> as it is</div></div></div>
+        </div>
+        <div class="case case--flip"><span class="case__tag">Nonpositive &mdash; replace by its negative</span>
+          <div class="flow"><div class="slot"><div class="mx eq"><i>x</i><sub class="iv">j</sub><span class="rel">&#8804;</span>0</div></div><span class="flow__arrow">&#10230;</span>
+            <div class="slot slot--out"><div class="mx eq"><i>x</i><sub class="iv">j</sub><span class="rel">=</span><span class="tk-new">&minus;<i>x</i>&#8242;<sub class="iv">j</sub></span><span class="op">,</span><span class="tk-new" style="padding-left:.35em"><i>x</i>&#8242;<sub class="iv">j</sub> &#8805; 0</span></div></div>
+          </div>
+          <div class="via"><span>effect on the data</span><span class="mx"><i>c</i><sub class="iv">j</sub> &#8594; &minus;<i>c</i><sub class="iv">j</sub></span><span class="mx"><i>a</i><sub class="iv">ij</sub> &#8594; &minus;<i>a</i><sub class="iv">ij</sub></span><span>one variable out, one in</span></div>
+        </div>
+        <div class="case case--grow"><span class="case__tag">Unrestricted in sign &mdash; split into two</span>
+          <div class="flow"><div class="slot"><div class="mx eq"><i>x</i><sub class="iv">j</sub><span class="rel"></span><span class="rm">free</span></div></div><span class="flow__arrow">&#10230;</span>
+            <div class="slot slot--out"><div class="mx eq"><i>x</i><sub class="iv">j</sub><span class="rel">=</span><span class="tk-new"><i>x</i>&#8242;<sub class="iv">j</sub> &minus; <i>x</i>&#8243;<sub class="iv">j</sub></span></div><div class="mx eq" style="margin-top:.28rem"><span class="tk-new"><i>x</i>&#8242;<sub class="iv">j</sub> &#8805; 0<span class="op">,</span> <i>x</i>&#8243;<sub class="iv">j</sub> &#8805; 0</span></div></div>
+          </div>
+          <div class="via"><span>effect on the data</span><span class="mx">column <i>a</i><sub class="iv">&#8226;j</sub> splits into <i>a</i><sub class="iv">&#8226;j</sub> and &minus;<i>a</i><sub class="iv">&#8226;j</sub></span><span>one variable out, two in</span></div>
+        </div>
+        <p class="note">Any real number is the difference of two nonnegative numbers, so the split loses nothing. At any basic feasible solution at most one of <span class="mx"><i>x</i>&#8242;<sub class="iv">j</sub></span>, <span class="mx"><i>x</i>&#8243;<sub class="iv">j</sub></span> is positive, and the honest reading is <span class="mx"><i>x</i>&#8242;<sub class="iv">j</sub> = max(<i>x</i><sub class="iv">j</sub>, 0)</span>, <span class="mx"><i>x</i>&#8243;<sub class="iv">j</sub> = max(&minus;<i>x</i><sub class="iv">j</sub>, 0)</span>.</p>
+        <p class="note"><strong>Slack variables created in R3 are already nonnegative</strong> and need nothing here.</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- ===== LEDGER ===== -->
+  <section class="section">
+    <div class="section__head"><div><h2>Counting up, and reading the answer back</h2><p>The reduction changes the size of the problem predictably, and leaves a short dictionary for translating the solution back.</p></div></div>
+    <div class="duo">
+      <div class="ledger">
+        <h3>Where <span class="mx"><i>n</i>&#8242;</span> comes from</h3>
+        <table>
+          <thead><tr><th>Source</th><th>Contributes</th></tr></thead>
+          <tbody>
+            <tr><td><span class="mx"><i>x</i><sub class="iv">j</sub> &#8805; 0</span> — kept as is</td><td><span class="mx"><i>n</i><sub>+</sub></span></td></tr>
+            <tr><td><span class="mx"><i>x</i><sub class="iv">j</sub> &#8804; 0</span> — becomes <span class="mx"><i>x</i>&#8242;<sub class="iv">j</sub></span></td><td><span class="mx"><i>n</i><sub>&minus;</sub></span></td></tr>
+            <tr><td><span class="mx"><i>x</i><sub class="iv">j</sub></span> free — becomes <span class="mx"><i>x</i>&#8242;<sub class="iv">j</sub>, <i>x</i>&#8243;<sub class="iv">j</sub></span></td><td><span class="mx">2<i>n</i><sub class="iv">f</sub></span></td></tr>
+            <tr><td>slack on each <span class="mx">&#8804;</span> row</td><td><span class="mx"><i>m</i><sub>1</sub></span></td></tr>
+            <tr><td>slack on each <span class="mx">&#8805;</span> row</td><td><span class="mx"><i>m</i><sub>3</sub></span></td></tr>
+            <tr><td><span class="mx"><i>n</i>&#8242;</span></td><td><span class="mx"><i>n</i><sub>+</sub>+<i>n</i><sub>&minus;</sub>+2<i>n</i><sub class="iv">f</sub>+<i>m</i><sub>1</sub>+<i>m</i><sub>3</sub></span></td></tr>
+          </tbody>
+        </table>
+        <p class="note">Rows are never added or removed, so <span class="mx"><i>m</i>&#8242; = <i>m</i></span>. Only the <em>width</em> of the problem grows.</p>
+      </div>
+      <div class="ledger">
+        <h3>Translating the solution back</h3>
+        <table>
+          <thead><tr><th>From the standard form</th><th>Original</th></tr></thead>
+          <tbody>
+            <tr><td><span class="mx"><i>x</i><sub class="iv">j</sub></span>, <span class="mx"><i>j</i> &#8712; <i>P</i></span></td><td><span class="mx"><i>x</i><sub class="iv">j</sub></span></td></tr>
+            <tr><td><span class="mx"><i>x</i>&#8242;<sub class="iv">j</sub></span>, <span class="mx"><i>j</i> &#8712; <i>N</i></span></td><td><span class="mx"><i>x</i><sub class="iv">j</sub> = &minus;<i>x</i>&#8242;<sub class="iv">j</sub></span></td></tr>
+            <tr><td><span class="mx"><i>x</i>&#8242;<sub class="iv">j</sub>, <i>x</i>&#8243;<sub class="iv">j</sub></span>, <span class="mx"><i>j</i> &#8712; <i>F</i></span></td><td><span class="mx"><i>x</i><sub class="iv">j</sub> = <i>x</i>&#8242;<sub class="iv">j</sub> &minus; <i>x</i>&#8243;<sub class="iv">j</sub></span></td></tr>
+            <tr><td>slack <span class="mx"><i>s</i><sub class="iv">i</sub></span></td><td>discard</td></tr>
+            <tr><td>optimal value</td><td><span class="mx"><i>z</i>* = &plusmn;<i>w</i>* + <i>c</i>&#772;<sub>0</sub></span></td></tr>
+          </tbody>
+        </table>
+        <p class="note">The sign and the shift depend on which of R1 and R2 you actually used. The worksheet's <em>Reading the answer back</em> panel prints the exact statement for the moves you have made.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="notes">
+    <h3 style="margin-bottom:.9rem">Fine print worth saying out loud in class</h3>
+    <ol>
+      <li><strong>Standard form does not require <span class="mx"><i>b</i>&#772; &#8805; 0</span>.</strong> Flipping a <span class="mx">&#8805;</span> row routinely produces a negative right-hand side. The extra requirement <span class="mx"><i>b</i> &#8805; 0</span> belongs to the setup for Phase&nbsp;I of the simplex method, not to standard form itself.</li>
+      <li><strong>Slack and surplus are the same variable here.</strong> Writing <span class="mx">&#8721;<i>a</i><sub class="iv">ij</sub><i>x</i><sub class="iv">j</sub> &minus; <i>e</i><sub class="iv">i</sub> = <i>b</i><sub class="iv">i</sub></span> for a <span class="mx">&#8805;</span> row and multiplying through by &minus;1 gives exactly the equation R3 produces, with <span class="mx"><i>s</i><sub class="iv">i</sub> = <i>e</i><sub class="iv">i</sub></span>. Flip-then-slack and subtract-a-surplus are two names for one move.</li>
+      <li><strong>Order does not matter.</strong> You can slack row 3 before row 1, split a free variable before flipping the objective, and land on the same standard form. Try it in the worksheet — the moves commute.</li>
+      <li><strong>Multiplying a <span class="mx">&#8804;</span> row by &minus;1 is legal but unhelpful.</strong> The worksheet lets you do it so the mistake is visible: the row becomes <span class="mx">&#8805;</span> and you have to flip it back before a slack will go on.</li>
+      <li><strong>The free-variable split is not unique.</strong> Adding the same constant to <span class="mx"><i>x</i>&#8242;<sub class="iv">j</sub></span> and <span class="mx"><i>x</i>&#8243;<sub class="iv">j</sub></span> leaves <span class="mx"><i>x</i><sub class="iv">j</sub></span> unchanged, so the standard form has a whole ray of optimal solutions where the general form had one point. The simplex method never sees this: a basic solution keeps at most one of the pair in the basis.</li>
+      <li><strong>An unrestricted variable can be eliminated instead of split.</strong> If <span class="mx"><i>x</i><sub class="iv">j</sub></span> is free and appears in some equation, solve that equation for it and substitute it out — one fewer variable and one fewer row, rather than one more variable. The split is the mechanical route; elimination is the economical one.</li>
+      <li><strong>Feasibility and unboundedness are preserved.</strong> Every rule is a bijection between the two feasible sets that respects the objective up to the recorded sign and shift, so an infeasible problem stays infeasible and an unbounded one stays unbounded.</li>
+    </ol>
+    <p class="colophon">A teaching worksheet for the general-to-standard-form reduction in linear programming.</p>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var MIN = "−", PR = "′", DPR = "″";
+var LE = "≤", GE = "≥";
+
+/* ================= rationals ================= */
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){var t=a%b;a=b;b=t;}return a||1;}
+function R(n,d){ if(d===undefined)d=1; if(d===0)d=1; if(d<0){n=-n;d=-d;} var g=gcd(n,d); return {n:n/g,d:d/g}; }
+var Z = R(0,1), ONE = R(1,1);
+function rneg(r){ return R(-r.n, r.d); }
+function radd(a,b){ return R(a.n*b.d + b.n*a.d, a.d*b.d); }
+function riszero(r){ return r.n === 0; }
+function risone(r){ return r.n === 1 && r.d === 1; }
+function rabs(r){ return R(Math.abs(r.n), r.d); }
+function rstr(r){ return r.d === 1 ? String(r.n) : r.n + "/" + r.d; }
+function rhtml(r){ return rstr(r).replace(/-/g, MIN); }
+function decR(s){
+  if(s.indexOf(".") < 0) return R(parseInt(s,10) || 0, 1);
+  var p = s.split("."), d = Math.pow(10, p[1].length);
+  return R((parseInt(p[0],10) || 0) * d + parseInt(p[1],10), d);
+}
+function rparse(s){
+  s = String(s == null ? "" : s).trim().replace(/−/g,"-").replace(/\s+/g,"");
+  if(s === "" ) return Z;
+  var m = s.match(/^([+-]?)(\d*\.?\d+)\/(\d*\.?\d+)$/);
+  if(m){ var a = decR(m[2]), b = decR(m[3]); if(b.n === 0) return null;
+         var r = R(a.n*b.d, a.d*b.n); return m[1] === "-" ? rneg(r) : r; }
+  m = s.match(/^([+-]?)(\d*\.?\d+)$/);
+  if(m){ var v = decR(m[2]); return m[1] === "-" ? rneg(v) : v; }
+  return null;
+}
+
+/* ================= presets ================= */
+var PRESETS = {
+  mixed: { sense:"min", c:["3","-2","1"], k:"5", signs:["pos","neg","free"],
+    rows:[ {a:["1","1","-1"], rel:"le", b:"4"},
+           {a:["2","-1",""],  rel:"eq", b:"3"},
+           {a:["1","","3"],   rel:"ge", b:"6"} ] },
+  max: { sense:"max", c:["4","1"], k:"", signs:["pos","free"],
+    rows:[ {a:["1","2"],  rel:"le", b:"8"},
+           {a:["1","-1"], rel:"ge", b:"-2"} ] },
+  blank: { sense:"max", c:["",""], k:"", signs:["pos","pos"],
+    rows:[ {a:["",""], rel:"le", b:""}, {a:["",""], rel:"le", b:""} ] }
+};
+
+/* ================= editor state ================= */
+var E = null;
+function loadPreset(name){ E = JSON.parse(JSON.stringify(PRESETS[name])); renderEd(); }
+
+function renderEd(){
+  var n = E.c.length, m = E.rows.length, i, j, h = [];
+  var ed = document.getElementById("ed");
+  ed.style.gridTemplateColumns = "auto repeat(" + n + ", auto) auto auto";
+
+  h.push('<div></div>');
+  for(j=0;j<n;j++) h.push('<div class="hd"><i>x</i><sub>' + (j+1) + '</sub></div>');
+  h.push('<div></div><div></div>');
+
+  h.push('<div class="lab"><select class="sel" id="edSense"><option value="min"' + (E.sense==="min"?" selected":"") + '>min</option><option value="max"' + (E.sense==="max"?" selected":"") + '>max</option></select> <span class="mx"><i>z</i> =</span></div>');
+  for(j=0;j<n;j++) h.push('<input class="num" data-k="c" data-j="' + j + '" value="' + esc(E.c[j]) + '" placeholder="0" aria-label="objective coefficient of x' + (j+1) + '">');
+  h.push('<div class="lab" style="justify-self:end"><span class="mx">+</span></div>');
+  h.push('<input class="num" data-k="k" value="' + esc(E.k) + '" placeholder="0" aria-label="constant term">');
+
+  for(i=0;i<m;i++){
+    h.push('<div class="lab">(' + (i+1) + ')</div>');
+    for(j=0;j<n;j++) h.push('<input class="num" data-k="a" data-i="' + i + '" data-j="' + j + '" value="' + esc(E.rows[i].a[j]) + '" placeholder="0" aria-label="row ' + (i+1) + ' coefficient of x' + (j+1) + '">');
+    h.push('<select class="sel" data-k="rel" data-i="' + i + '" aria-label="relation of row ' + (i+1) + '">' +
+      '<option value="le"' + (E.rows[i].rel==="le"?" selected":"") + '>' + LE + '</option>' +
+      '<option value="eq"' + (E.rows[i].rel==="eq"?" selected":"") + '>=</option>' +
+      '<option value="ge"' + (E.rows[i].rel==="ge"?" selected":"") + '>' + GE + '</option></select>');
+    h.push('<input class="num" data-k="b" data-i="' + i + '" value="' + esc(E.rows[i].b) + '" placeholder="0" aria-label="right hand side of row ' + (i+1) + '">');
+  }
+
+  h.push('<div class="lab">sign</div>');
+  for(j=0;j<n;j++) h.push('<select class="sel" data-k="sign" data-j="' + j + '" aria-label="sign of x' + (j+1) + '">' +
+    '<option value="pos"' + (E.signs[j]==="pos"?" selected":"") + '>' + GE + ' 0</option>' +
+    '<option value="neg"' + (E.signs[j]==="neg"?" selected":"") + '>' + LE + ' 0</option>' +
+    '<option value="free"' + (E.signs[j]==="free"?" selected":"") + '>free</option></select>');
+  h.push('<div></div><div></div>');
+
+  ed.innerHTML = h.join("");
+  document.getElementById("varN").textContent = n;
+  document.getElementById("conN").textContent = m;
+  document.getElementById("varMinus").disabled = n <= 1;
+  document.getElementById("conMinus").disabled = m <= 1;
+  document.getElementById("varPlus").disabled = n >= 8;
+  document.getElementById("conPlus").disabled = m >= 8;
+}
+function esc(s){ return String(s == null ? "" : s).replace(/"/g,"&quot;"); }
+
+document.getElementById("ed").addEventListener("input", function(e){
+  var t = e.target; if(!t.dataset || !t.dataset.k) return;
+  var k = t.dataset.k;
+  if(k === "c") E.c[+t.dataset.j] = t.value;
+  else if(k === "k") E.k = t.value;
+  else if(k === "a") E.rows[+t.dataset.i].a[+t.dataset.j] = t.value;
+  else if(k === "b") E.rows[+t.dataset.i].b = t.value;
+  if(t.classList.contains("num")) t.classList.toggle("bad", rparse(t.value) === null);
+});
+document.getElementById("ed").addEventListener("change", function(e){
+  var t = e.target; if(!t.dataset || !t.dataset.k) return;
+  if(t.dataset.k === "rel") E.rows[+t.dataset.i].rel = t.value;
+  else if(t.dataset.k === "sign") E.signs[+t.dataset.j] = t.value;
+  else if(t.id === "edSense") E.sense = t.value;
+});
+document.getElementById("ed").addEventListener("change", function(e){
+  if(e.target.id === "edSense") E.sense = e.target.value;
+});
+
+document.getElementById("varPlus").addEventListener("click", function(){
+  E.c.push(""); E.signs.push("pos"); E.rows.forEach(function(r){ r.a.push(""); }); renderEd();
+});
+document.getElementById("varMinus").addEventListener("click", function(){
+  if(E.c.length <= 1) return;
+  E.c.pop(); E.signs.pop(); E.rows.forEach(function(r){ r.a.pop(); }); renderEd();
+});
+document.getElementById("conPlus").addEventListener("click", function(){
+  E.rows.push({a: E.c.map(function(){ return ""; }), rel:"le", b:""}); renderEd();
+});
+document.getElementById("conMinus").addEventListener("click", function(){
+  if(E.rows.length <= 1) return; E.rows.pop(); renderEd();
+});
+Array.prototype.forEach.call(document.querySelectorAll("[data-preset]"), function(b){
+  b.addEventListener("click", function(){ loadPreset(b.dataset.preset); document.getElementById("edErr").textContent = ""; });
+});
+
+/* ================= worksheet state ================= */
+var S = null, history = [], sel = null, initial = null, running = false;
+
+function snap(){ return JSON.stringify({S:S, sel:sel}); }
+function restore(str){ var o = JSON.parse(str); S = o.S; sel = o.sel; }
+
+function loadFromEditor(){
+  var bad = false, i, j;
+  var cells = document.querySelectorAll("#ed .num");
+  Array.prototype.forEach.call(cells, function(c){
+    var ok = rparse(c.value) !== null;
+    c.classList.toggle("bad", !ok);
+    if(!ok) bad = true;
+  });
+  if(bad){ document.getElementById("edErr").textContent = "Some coefficients are not numbers. Use 3, −1.5 or 2/7."; return; }
+  document.getElementById("edErr").textContent = "";
+
+  var n = E.c.length;
+  S = {
+    sense: E.sense,
+    cols: [],
+    c: E.c.map(rparse),
+    k: rparse(E.k),
+    rows: E.rows.map(function(r, idx){
+      return {a: r.a.map(rparse), rel: r.rel, b: rparse(r.b), num: idx + 1};
+    }),
+    zmult: 1, zadd: Z, flips: 0, drops: 0,
+    subs: [],
+    start: null
+  };
+  for(j=0;j<n;j++) S.cols.push({base:"x", idx:j+1, prime:0, sign:E.signs[j], kind:"orig"});
+
+  var nPos=0, nNeg=0, nFree=0, m1=0, m2=0, m3=0;
+  S.cols.forEach(function(c){ if(c.sign==="pos")nPos++; else if(c.sign==="neg")nNeg++; else nFree++; });
+  S.rows.forEach(function(r){ if(r.rel==="le")m1++; else if(r.rel==="eq")m2++; else m3++; });
+  S.start = {n:n, m:S.rows.length, nPos:nPos, nNeg:nNeg, nFree:nFree, m1:m1, m2:m2, m3:m3};
+
+  history = []; sel = null; initial = snap();
+  render();
+}
+document.getElementById("loadBtn").addEventListener("click", function(){
+  loadFromEditor();
+  document.getElementById("worksheet").scrollIntoView({behavior:"smooth", block:"start"});
+});
+
+/* ================= labels & math ================= */
+function colHTML(c){
+  var p = c.prime === 1 ? PR : c.prime === 2 ? DPR : "";
+  return "<i>" + c.base + "</i>" + p + "<sub>" + c.idx + "</sub>";
+}
+function termHTML(coef, lab, lead){
+  if(riszero(coef)) return "";
+  var neg = coef.n < 0, a = rabs(coef);
+  var mag = (risone(a) && lab) ? "" : rhtml(a);
+  var sign = lead ? (neg ? MIN : "") : (neg ? " " + MIN + " " : " + ");
+  return '<span class="sgn">' + sign + "</span>" + mag + (lab || "");
+}
+function relHTML(rel){ return rel === "le" ? LE : rel === "ge" ? GE : "="; }
+function objName(st){ return (st.flips % 2 ? "w" : "z") + (st.drops > 0 ? PR : ""); }
+function objNameHTML(st){ var s = objName(st); return "<i>" + s.charAt(0) + "</i>" + (s.length > 1 ? PR : ""); }
+
+function inlineExpr(coefs, cols, konst){
+  var parts = [], lead = true, i;
+  for(i=0;i<coefs.length;i++){
+    if(riszero(coefs[i])) continue;
+    parts.push(termHTML(coefs[i], colHTML(cols[i]), lead)); lead = false;
+  }
+  if(konst && !riszero(konst)){ parts.push(termHTML(konst, "", lead)); lead = false; }
+  return parts.length ? parts.join("") : "0";
+}
+function inlineObj(st){
+  return '<div class="mx eq"><span class="kw rm">' + (st.sense === "min" ? "min" : "max") + "</span>" +
+    objNameHTML(st) + '<span class="rel">=</span>' + inlineExpr(st.c, st.cols, st.k) + "</div>";
+}
+function inlineRow(st, i){
+  var r = st.rows[i];
+  return '<div class="mx eq"><span style="color:var(--ink-3);font-family:var(--sans);font-size:.75rem;padding-right:.5em">(' + r.num + ')</span>' +
+    inlineExpr(r.a, st.cols, null) + '<span class="rel">' + relHTML(r.rel) + "</span>" + rhtml(r.b) + "</div>";
+}
+function inlineSigns(st){
+  var pos = [], neg = [], fr = [];
+  st.cols.forEach(function(c){ (c.sign === "pos" ? pos : c.sign === "neg" ? neg : fr).push(colHTML(c)); });
+  var out = "";
+  if(pos.length) out += '<div class="mx eq">' + pos.join('<span class="op">,</span> ') + '<span class="rel">' + GE + "</span>0</div>";
+  if(neg.length) out += '<div class="mx eq">' + neg.join('<span class="op">,</span> ') + '<span class="rel">' + LE + "</span>0</div>";
+  if(fr.length)  out += '<div class="mx eq">' + fr.join('<span class="op">,</span> ') + '<span class="rel"></span><span class="rm">free</span></div>';
+  return out;
+}
+
+/* ================= actions ================= */
+function applyTo(st, sl, id){
+  var i, j, r, c, old;
+  if(id === "obj_max"){
+    st.c = st.c.map(rneg); st.k = rneg(st.k);
+    st.sense = st.sense === "min" ? "max" : "min";
+    st.zmult = -st.zmult; st.flips++;
+    return "R1 &middot; multiplied the objective by " + MIN + "1 and switched to <span class=\"mx\"><span class=\"rm\">max</span></span>";
+  }
+  if(id === "obj_const"){
+    var kk = st.zmult === 1 ? st.k : rneg(st.k);
+    st.zadd = radd(st.zadd, kk);
+    old = rhtml(st.k); st.k = Z; st.drops++;
+    return "R2 &middot; dropped the constant <span class=\"mx\">" + old + "</span> from the objective";
+  }
+  if(id === "row_neg"){
+    r = st.rows[sl.i];
+    r.a = r.a.map(rneg); r.b = rneg(r.b);
+    r.rel = r.rel === "le" ? "ge" : r.rel === "ge" ? "le" : "eq";
+    return "R3 &middot; multiplied row (" + r.num + ") by " + MIN + "1 &rarr; now <span class=\"mx\">" + relHTML(r.rel) + "</span>";
+  }
+  if(id === "row_slack"){
+    r = st.rows[sl.i];
+    st.cols.push({base:"s", idx:r.num, prime:0, sign:"pos", kind:"slack"});
+    st.c.push(Z);
+    for(i=0;i<st.rows.length;i++) st.rows[i].a.push(st.rows[i] === r ? ONE : Z);
+    r.rel = "eq";
+    return "R3 &middot; added slack <span class=\"mx\"><i>s</i><sub>" + r.num + "</sub></span> to row (" + r.num + ")";
+  }
+  if(id === "var_neg"){
+    j = sl.j; c = st.cols[j];
+    old = colHTML(c);
+    st.c[j] = rneg(st.c[j]);
+    for(i=0;i<st.rows.length;i++) st.rows[i].a[j] = rneg(st.rows[i].a[j]);
+    c.prime = 1; c.sign = "pos";
+    st.subs.push({from: old, to: MIN + colHTML(c)});
+    return "R4 &middot; substituted <span class=\"mx\">" + old + " = " + MIN + colHTML(c) + "</span> everywhere";
+  }
+  if(id === "var_split"){
+    j = sl.j; c = st.cols[j];
+    old = colHTML(c);
+    c.prime = 1; c.sign = "pos";
+    var nc = {base:c.base, idx:c.idx, prime:2, sign:"pos", kind:c.kind};
+    st.cols.splice(j+1, 0, nc);
+    st.c.splice(j+1, 0, rneg(st.c[j]));
+    for(i=0;i<st.rows.length;i++) st.rows[i].a.splice(j+1, 0, rneg(st.rows[i].a[j]));
+    st.subs.push({from: old, to: colHTML(c) + " " + MIN + " " + colHTML(nc)});
+    return "R4 &middot; split <span class=\"mx\">" + old + "</span> into <span class=\"mx\">" + colHTML(c) + " " + MIN + " " + colHTML(nc) + "</span>";
+  }
+  return "";
+}
+
+function actionsFor(sl){
+  var out = [];
+  if(!sl) return out;
+  if(sl.t === "obj"){
+    out.push({id:"obj_max", rule:"R1", name:"Convert " + (S.sense==="min"?"min &rarr; max":"max &rarr; min"),
+      sub:"Multiply every objective coefficient (and the constant) by " + MIN + "1.",
+      ok: S.sense === "min",
+      why: "The objective already maximizes — nothing to do."});
+    out.push({id:"obj_const", rule:"R2", name:"Drop the constant",
+      sub: riszero(S.k) ? "" : "Remove <span class=\"mx\">" + rhtml(S.k) + "</span> and record it for the read-back.",
+      ok: !riszero(S.k),
+      why: "There is no constant term in the objective."});
+  } else if(sl.t === "row"){
+    var r = S.rows[sl.i];
+    out.push({id:"row_neg", rule:"R3", name:"Multiply the row by " + MIN + "1",
+      sub: r.rel === "eq" ? "Legal on an equation, but it changes nothing structural."
+         : "The relation turns <span class=\"mx\">" + relHTML(r.rel) + "</span> into <span class=\"mx\">" + (r.rel==="le"?GE:LE) + "</span>.",
+      ok: true, why:""});
+    out.push({id:"row_slack", rule:"R3", name:"Add a slack variable",
+      sub: "Introduce <span class=\"mx\"><i>s</i><sub>" + r.num + "</sub> " + GE + " 0</span> on the left; the row becomes an equation.",
+      ok: r.rel === "le",
+      why: r.rel === "eq" ? "The row is already an equation."
+         : "A slack only goes on a " + LE + " row. Multiply this row by " + MIN + "1 first."});
+  } else if(sl.t === "col"){
+    var c = S.cols[sl.j];
+    out.push({id:"var_neg", rule:"R4", name:"Substitute " + colHTML(c) + " = " + MIN + "<i>x</i>" + PR + "<sub>" + c.idx + "</sub>",
+      sub:"Negate this variable's coefficient in the objective and in every row.",
+      ok: c.sign === "neg",
+      why: c.sign === "pos" ? "This variable is already nonnegative." : "This variable is free — split it instead."});
+    out.push({id:"var_split", rule:"R4", name:"Split into " + "<i>x</i>" + PR + "<sub>" + c.idx + "</sub> " + MIN + " <i>x</i>" + DPR + "<sub>" + c.idx + "</sub>",
+      sub:"The column is copied with its sign reversed; both halves are nonnegative.",
+      ok: c.sign === "free",
+      why: c.sign === "pos" ? "This variable is already nonnegative." : "This variable is " + LE + " 0 — substitute its negative instead."});
+  }
+  return out;
+}
+
+function doAction(id){
+  var before = snap();
+  var desc = applyTo(S, sel, id);
+  history.push({desc: desc, before: before});
+  render();
+}
+
+function nextStep(){
+  var i, j;
+  if(!S) return null;
+  if(S.sense === "min") return {sel:{t:"obj"}, id:"obj_max"};
+  if(!riszero(S.k)) return {sel:{t:"obj"}, id:"obj_const"};
+  for(i=0;i<S.rows.length;i++) if(S.rows[i].rel === "ge") return {sel:{t:"row", i:i}, id:"row_neg"};
+  for(i=0;i<S.rows.length;i++) if(S.rows[i].rel === "le") return {sel:{t:"row", i:i}, id:"row_slack"};
+  for(j=0;j<S.cols.length;j++) if(S.cols[j].sign === "neg") return {sel:{t:"col", j:j}, id:"var_neg"};
+  for(j=0;j<S.cols.length;j++) if(S.cols[j].sign === "free") return {sel:{t:"col", j:j}, id:"var_split"};
+  return null;
+}
+function isStandard(){
+  return S && S.sense === "max" && riszero(S.k) &&
+    S.rows.every(function(r){ return r.rel === "eq"; }) &&
+    S.cols.every(function(c){ return c.sign === "pos"; });
+}
+
+/* ================= rendering ================= */
+function render(){
+  renderTab(); renderTray(); renderTodo(); renderCounts(); renderReadback(); renderLog();
+  document.getElementById("undoBtn").disabled = history.length === 0;
+  document.getElementById("hintBtn").disabled = isStandard();
+  document.getElementById("autoBtn").disabled = isStandard() && !running;
+}
+
+function renderTab(){
+  var n = S.cols.length, m = S.rows.length, i, j, h = [];
+  var tab = document.getElementById("tab");
+  tab.style.gridTemplateColumns = "auto repeat(" + n + ", auto) auto auto";
+
+  function selCol(j){ return sel && sel.t === "col" && sel.j === j ? " sel-col" : ""; }
+  function selRow(i){ return sel && sel.t === "row" && sel.i === i ? " sel-row" : ""; }
+  var selObj = sel && sel.t === "obj" ? " sel-row" : "";
+
+  /* header */
+  h.push('<div class="cell cell--corner"></div>');
+  for(j=0;j<n;j++){
+    var c = S.cols[j];
+    h.push('<button type="button" class="cell cell--hd' + selCol(j) + (c.sign !== "pos" ? " needs" : "") + '" data-t="col" data-j="' + j + '" title="Act on this variable">' + colHTML(c) + "</button>");
+  }
+  h.push('<div class="cell cell--corner"></div><div class="cell cell--corner"></div>');
+
+  /* objective */
+  h.push('<button type="button" class="cell cell--lab' + selObj + ((S.sense === "min" || !riszero(S.k)) ? " needs" : "") + '" data-t="obj" title="Act on the objective"><span class="mx"><span class="rm">' + (S.sense === "min" ? "min" : "max") + "</span> " + objNameHTML(S) + " =</span></button>");
+  var lead = true;
+  for(j=0;j<n;j++){
+    var t = termHTML(S.c[j], colHTML(S.cols[j]), lead);
+    if(!riszero(S.c[j])) lead = false;
+    h.push('<div class="cell' + selObj + selCol(j) + '">' + t + "</div>");
+  }
+  h.push('<div class="cell cell--rel' + selObj + '"></div>');
+  h.push('<div class="cell cell--rhs' + selObj + '">' + (riszero(S.k) ? "" : termHTML(S.k, "", lead)) + "</div>");
+
+  /* spacer */
+  for(i=0;i<n+3;i++) h.push('<div class="cell cell--pad cell--corner"></div>');
+
+  /* rows */
+  for(i=0;i<m;i++){
+    var r = S.rows[i];
+    h.push('<button type="button" class="cell cell--lab' + selRow(i) + (r.rel !== "eq" ? " needs" : "") + '" data-t="row" data-i="' + i + '" title="Act on this constraint">(' + r.num + ")</button>");
+    var ld = true;
+    for(j=0;j<n;j++){
+      var tt = termHTML(r.a[j], colHTML(S.cols[j]), ld);
+      if(!riszero(r.a[j])) ld = false;
+      h.push('<button type="button" class="cell' + selRow(i) + selCol(j) + '" data-t="row" data-i="' + i + '">' + tt + "</button>");
+    }
+    h.push('<button type="button" class="cell cell--rel' + selRow(i) + '" data-t="row" data-i="' + i + '">' + relHTML(r.rel) + "</button>");
+    h.push('<button type="button" class="cell cell--rhs' + selRow(i) + '" data-t="row" data-i="' + i + '">' + rhtml(r.b) + "</button>");
+  }
+
+  for(i=0;i<n+3;i++) h.push('<div class="cell cell--pad cell--corner"></div>');
+
+  /* sign row */
+  h.push('<div class="cell cell--lab" style="cursor:default;border-color:transparent;background:transparent;color:var(--ink-3)">sign</div>');
+  for(j=0;j<n;j++){
+    var cc = S.cols[j];
+    var txt = cc.sign === "pos" ? GE + " 0" : cc.sign === "neg" ? LE + " 0" : "free";
+    h.push('<button type="button" class="cell cell--sign s-' + cc.sign + selCol(j) + '" data-t="col" data-j="' + j + '" title="Act on this variable">' + txt + "</button>");
+  }
+  h.push('<div class="cell cell--corner"></div><div class="cell cell--corner"></div>');
+
+  tab.innerHTML = h.join("");
+
+  var st = isStandard();
+  document.getElementById("tabHint").innerHTML = st
+    ? ""
+    : "Dots mark what still breaks standard form. Click a row label, relation or right-hand side for a constraint &middot; a variable's name or sign for that variable &middot; the objective label for the objective.";
+
+  var bar = document.getElementById("doneBar");
+  if(st){
+    var s0 = S.start;
+    bar.className = "done";
+    bar.innerHTML = '<span>✓ Standard form reached.</span>' +
+      '<span class="mx"><i>n</i>' + PR + " = " + s0.nPos + " + " + s0.nNeg + " + 2(" + s0.nFree + ") + " + s0.m1 + " + " + s0.m3 + " = " + S.cols.length + "</span>" +
+      '<span class="mx"><i>m</i>' + PR + " = " + S.rows.length + "</span>";
+  } else { bar.className = ""; bar.innerHTML = ""; }
+}
+
+document.getElementById("tab").addEventListener("click", function(e){
+  var b = e.target.closest("button[data-t]");
+  if(!b) return;
+  var t = b.dataset.t;
+  if(t === "obj") sel = {t:"obj"};
+  else if(t === "row") sel = {t:"row", i:+b.dataset.i};
+  else sel = {t:"col", j:+b.dataset.j};
+  render();
+  document.getElementById("tray").scrollIntoView({behavior:"smooth", block:"nearest"});
+});
+
+function selLabelHTML(){
+  if(!sel) return "";
+  if(sel.t === "obj") return '<span class="tray__kind">Objective</span>' + inlineObj(S);
+  if(sel.t === "row") return '<span class="tray__kind">Constraint (' + S.rows[sel.i].num + ')</span>' + inlineRow(S, sel.i);
+  var c = S.cols[sel.j];
+  var sg = c.sign === "pos" ? GE + " 0" : c.sign === "neg" ? LE + " 0" : "free";
+  return '<span class="tray__kind">Variable</span><span class="mx">' + colHTML(c) + '<span class="rel"></span>' + sg + "</span>";
+}
+
+function renderTray(){
+  var tray = document.getElementById("tray");
+  if(!sel){
+    tray.innerHTML = '<p class="empty">' + (isStandard()
+      ? "Nothing left to do — the problem is in standard form. Use <em>Start over</em> to run it again, or rewind to any move on the right."
+      : "Select the objective, a constraint or a variable in the table above to see the moves available for it.") + "</p>";
+    return;
+  }
+  var acts = actionsFor(sel), h = [];
+  h.push('<div class="tray__what">' + selLabelHTML() + "</div>");
+  h.push('<div class="acts">');
+  acts.forEach(function(a){
+    h.push('<button type="button" class="act" data-id="' + a.id + '"' + (a.ok ? "" : " disabled") + '>' +
+      '<span class="act__main"><span class="act__name">' + a.name + '</span>' +
+      '<span class="act__sub">' + (a.ok ? a.sub : a.why) + "</span></span>" +
+      '<span class="act__rule">' + a.rule + "</span></button>");
+  });
+  h.push("</div>");
+  h.push('<div class="prev" id="prev" hidden><span class="prev__t">Result of that move</span><div id="prevBody"></div></div>');
+  tray.innerHTML = h.join("");
+
+  Array.prototype.forEach.call(tray.querySelectorAll(".act"), function(btn){
+    if(btn.disabled) return;
+    btn.addEventListener("click", function(){ doAction(btn.dataset.id); });
+    var show = function(){ showPreview(btn.dataset.id); };
+    var hide = function(){ var p = document.getElementById("prev"); if(p) p.hidden = true; };
+    btn.addEventListener("mouseenter", show);
+    btn.addEventListener("focus", show);
+    btn.addEventListener("mouseleave", hide);
+    btn.addEventListener("blur", hide);
+  });
+}
+
+function showPreview(id){
+  var clone = JSON.parse(JSON.stringify(S));
+  applyTo(clone, sel, id);
+  var body = "";
+  if(sel.t === "obj") body = inlineObj(clone);
+  else if(sel.t === "row") body = inlineRow(clone, sel.i);
+  else {
+    body = inlineObj(clone);
+    for(var i=0;i<clone.rows.length;i++) body += inlineRow(clone, i);
+    body += inlineSigns(clone);
+  }
+  var p = document.getElementById("prev");
+  document.getElementById("prevBody").innerHTML = body;
+  p.hidden = false;
+}
+
+function renderTodo(){
+  var box = document.getElementById("todo"), items = [], i, j;
+  if(S.sense === "min") items.push({tag:"R1", cls:"t-obj", txt:"The objective is a minimization", s:{t:"obj"}});
+  if(!riszero(S.k)) items.push({tag:"R2", cls:"t-obj", txt:'The objective carries the constant <span class="mx">' + rhtml(S.k) + "</span>", s:{t:"obj"}});
+  for(i=0;i<S.rows.length;i++) if(S.rows[i].rel !== "eq")
+    items.push({tag:"R3", cls:"t-row", txt:"Row (" + S.rows[i].num + ') is a <span class="mx">' + relHTML(S.rows[i].rel) + "</span> inequality", s:{t:"row", i:i}});
+  for(j=0;j<S.cols.length;j++) if(S.cols[j].sign !== "pos")
+    items.push({tag:"R4", cls:"t-col", txt:'<span class="mx">' + colHTML(S.cols[j]) + "</span> is " + (S.cols[j].sign === "neg" ? '<span class="mx">' + LE + " 0</span>" : "unrestricted in sign"), s:{t:"col", j:j}});
+
+  document.getElementById("todoCount").textContent = items.length ? String(items.length) : "";
+  if(!items.length){ box.innerHTML = '<div class="ok">✓ Every condition of standard form is met.</div>'; return; }
+
+  var h = ['<ul class="todo">'];
+  items.forEach(function(it, idx){
+    h.push('<li><button type="button" data-idx="' + idx + '"><span class="tag ' + it.cls + '">' + it.tag + "</span><span>" + it.txt + "</span></button></li>");
+  });
+  h.push("</ul>");
+  box.innerHTML = h.join("");
+  Array.prototype.forEach.call(box.querySelectorAll("button"), function(b){
+    b.addEventListener("click", function(){
+      sel = items[+b.dataset.idx].s; render(); flashSelection();
+      document.getElementById("worksheet").scrollIntoView({behavior:"smooth", block:"start"});
+    });
+  });
+}
+
+function flashSelection(){
+  var els = document.querySelectorAll("#tab .sel-row.cell--lab, #tab .sel-col.cell--hd");
+  Array.prototype.forEach.call(els, function(el){
+    el.classList.remove("hint-flash"); void el.offsetWidth; el.classList.add("hint-flash");
+  });
+}
+
+function renderCounts(){
+  var s0 = S.start;
+  var slacks = S.cols.filter(function(c){ return c.kind === "slack"; }).length;
+  var h = '<span>variables <b>' + S.cols.length + "</b></span>" +
+          '<span>constraints <b>' + S.rows.length + "</b></span>" +
+          '<span>slacks added <b>' + slacks + "</b></span>";
+  h += '<span class="formula">Started at <span class="mx"><i>n</i> = ' + s0.n + "</span>, <span class=\"mx\"><i>m</i> = " + s0.m + '</span> &nbsp;&middot;&nbsp; target <span class="mx"><i>n</i>' + PR + " = " +
+       s0.nPos + " + " + s0.nNeg + " + 2(" + s0.nFree + ") + " + s0.m1 + " + " + s0.m3 + " = " +
+       (s0.nPos + s0.nNeg + 2*s0.nFree + s0.m1 + s0.m3) + "</span></span>";
+  document.getElementById("counts").innerHTML = h;
+}
+
+function renderReadback(){
+  var box = document.getElementById("readback"), h = [];
+  if(S.zmult !== 1 || !riszero(S.zadd)){
+    var body = (S.zmult === -1 ? MIN : "") + objNameHTML(S) + "*";
+    if(!riszero(S.zadd)) body += (S.zadd.n < 0 ? " " + MIN + " " : " + ") + rhtml(rabs(S.zadd));
+    h.push('<span class="mx"><i>z</i>*<span class="rel">=</span>' + body + "</span>");
+  }
+  S.subs.forEach(function(s){
+    h.push('<span class="mx">' + s.from + '<span class="rel">=</span>' + s.to + "</span>");
+  });
+  var slacks = S.cols.filter(function(c){ return c.kind === "slack"; });
+  if(slacks.length) h.push('<span style="color:var(--ink-3)">Discard ' + slacks.map(colHTML).map(function(s){ return '<span class="mx">' + s + "</span>"; }).join(", ") + " when reporting the solution.</span>");
+  box.innerHTML = h.length ? h.join("") : '<span style="color:var(--ink-3)">No moves yet — the original problem is still exactly what the table shows.</span>';
+}
+
+function renderLog(){
+  var box = document.getElementById("logBox");
+  document.getElementById("logCount").textContent = history.length ? String(history.length) : "";
+  if(!history.length){ box.innerHTML = '<span style="color:var(--ink-3);font-size:.8rem">Nothing yet. Every move you make is listed here, and clicking one rewinds to just before it.</span>'; return; }
+  var h = ['<ul class="log">'];
+  history.forEach(function(e, i){ h.push('<li><button type="button" data-i="' + i + '" title="Rewind to just before this move">' + e.desc + "</button></li>"); });
+  h.push("</ul>");
+  box.innerHTML = h.join("");
+  Array.prototype.forEach.call(box.querySelectorAll("button"), function(b){
+    b.addEventListener("click", function(){
+      var i = +b.dataset.i;
+      restore(history[i].before); history = history.slice(0, i); render();
+    });
+  });
+}
+
+/* ================= toolbar ================= */
+document.getElementById("undoBtn").addEventListener("click", function(){
+  if(!history.length) return;
+  var e = history.pop(); restore(e.before); render();
+});
+document.getElementById("resetBtn").addEventListener("click", function(){
+  if(!initial) return; restore(initial); history = []; sel = null; render();
+});
+document.getElementById("hintBtn").addEventListener("click", function(){
+  var s = nextStep(); if(!s) return;
+  sel = s.sel; render(); flashSelection();
+});
+
+var autoTimer = null;
+document.getElementById("autoBtn").addEventListener("click", function(){
+  if(running){ stopAuto(); return; }
+  var step = nextStep(); if(!step) return;
+  running = true;
+  document.getElementById("autoBtn").textContent = "Stop";
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var tick = function(){
+    var st = nextStep();
+    if(!st){ stopAuto(); return; }
+    sel = st.sel; render();
+    autoTimer = setTimeout(function(){
+      doAction(st.id);
+      autoTimer = setTimeout(tick, reduced ? 0 : 420);
+    }, reduced ? 0 : 380);
+  };
+  tick();
+});
+function stopAuto(){
+  running = false;
+  if(autoTimer) clearTimeout(autoTimer);
+  autoTimer = null;
+  document.getElementById("autoBtn").textContent = "Run to the end";
+  render();
+}
+
+/* ================= go ================= */
+loadPreset("mixed");
+loadFromEditor();
+})();
+</script>
+
+</body>
+</html>
