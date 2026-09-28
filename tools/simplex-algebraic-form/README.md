@@ -1,4 +1,4 @@
-# Simplex Method, Algebraic Form
+# Simplex method interactive tool: Algebraic Form
 
 An interactive, step-by-step worksheet for the **simplex method in algebraic form** when the **origin is feasible**
 (every constraint is `≤` and every right-hand side is nonnegative).
