@@ -12,6 +12,7 @@ Every tool is a single self-contained web page — no installation, no build ste
 |---|---|---|---|
 | Graphical Solution Method | Solving two-variable LPs graphically: constraints, feasible region, objective line, corner points | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/graphical-solution-method/) | [`tools/graphical-solution-method`](tools/graphical-solution-method) |
 | Standard Form Worksheet | Converting a general LP to standard form one rule at a time | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/standard-form-worksheet/) | [`tools/standard-form-worksheet`](tools/standard-form-worksheet) |
+| Simplex Method, Algebraic Form | The simplex method step by step when the origin is feasible: basis, Gaussian elimination, reduced costs, minimum ratio test | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/simplex-algebraic-form/) | [`tools/simplex-algebraic-form`](tools/simplex-algebraic-form) |
 
 ## Repository layout
 
@@ -24,7 +25,10 @@ foundations-of-optimization/
     ├── graphical-solution-method/
     │   ├── index.html              ← the tool itself
     │   └── README.md
-    └── standard-form-worksheet/
+    ├── standard-form-worksheet/
+    │   ├── index.html
+    │   └── README.md
+    └── simplex-algebraic-form/
         ├── index.html
         └── README.md
 ```

@@ -105,6 +105,14 @@ const TOOLS = [
     description: "Convert any linear program into standard form one move at a time: pick a row, variable or the objective, choose the rule to apply, and see the bookkeeping that comes with each move.",
     features: ["Slack variables", "Non-positive & free variables", "Min → max conversion", "Move log with rewind"],
     icon: "matrix"
+  },
+  {
+    folder: "simplex-algebraic-form",
+    title: "Simplex Method, Algebraic Form",
+    topic: "Simplex · Origin feasible",
+    description: "Run the simplex method exactly as in lecture: standardize, check that the origin is feasible, then work through each iteration's basis choice, Gaussian elimination one row operation at a time, reduced costs and the minimum ratio test.",
+    features: ["Row operations spelled out", "Pick any negative reduced cost", "Minimum ratio test with ties", "Optimal, unbounded & degenerate examples"],
+    icon: "simplex"
   }
 ];
 
@@ -112,6 +120,7 @@ const REPO = "https://github.com/hcharkhgard/foundations-of-optimization/tree/ma
 const ICONS = {
   graph: '<svg viewBox="0 0 96 96"><line x1="12" y1="84" x2="90" y2="84" stroke="var(--ink-3)" stroke-width="1.5"/><line x1="12" y1="84" x2="12" y2="6" stroke="var(--ink-3)" stroke-width="1.5"/><polygon points="12,84 12,30 40,30 66,52 66,84" fill="var(--region)" fill-opacity=".45" stroke="var(--region)" stroke-width="2" stroke-linejoin="round"/><line x1="22" y1="12" x2="88" y2="62" stroke="var(--obj)" stroke-width="2" stroke-dasharray="4 3"/><circle cx="40" cy="30" r="4.5" fill="var(--obj)"/></svg>',
   matrix: '<svg viewBox="0 0 96 96" font-family="Newsreader, Georgia, serif" font-style="italic"><text x="14" y="36" font-size="15" fill="var(--ink-2)">x₁ + x₂ ≤ 4</text><line x1="48" y1="44" x2="48" y2="56" stroke="var(--accent)" stroke-width="2"/><polyline points="43,52 48,57 53,52" fill="none" stroke="var(--accent)" stroke-width="2"/><text x="6" y="76" font-size="13.5" fill="var(--ink)">x₁ + x₂ + <tspan fill="var(--accent)">s₁</tspan> = 4</text></svg>',
+  simplex: '<svg viewBox="0 0 96 96" font-family="Newsreader, Georgia, serif" font-style="italic"><text x="8" y="26" font-size="13" fill="var(--obj)">z − 3x₁ − 5x₂ = 0</text><text x="8" y="48" font-size="13" fill="var(--ink-2)">x₁ + <tspan fill="var(--accent)">x₃</tspan> = 4</text><text x="8" y="70" font-size="13" fill="var(--ink-2)">2x₂ + <tspan fill="var(--accent)">x₄</tspan> = 12</text><line x1="8" y1="80" x2="88" y2="80" stroke="var(--accent)" stroke-width="2"/></svg>',
   default: '<svg viewBox="0 0 96 96"><path d="M14 78 L38 44 L58 58 L84 18" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="84" cy="18" r="5" fill="var(--obj)"/></svg>'
 };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
