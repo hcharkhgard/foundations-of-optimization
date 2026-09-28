@@ -19,4 +19,4 @@ Open `index.html` in any browser, or visit the GitHub Pages link above. No insta
 
 Part of the [Foundations of Optimization](../../) course repo.
 
-Developed by Dr. Hadi Charkhgard for teaching the Foundations of Optimization course only. © 2026 Hadi Charkhgard. All rights reserved — see [LICENSE](../../LICENSE).
+Developed by Dr. Hadi Gard (Charkhgard) for teaching the Foundations of Optimization course only. © 2026 Hadi Charkhgard. All rights reserved — see [LICENSE](../../LICENSE).

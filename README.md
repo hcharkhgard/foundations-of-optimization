@@ -1,6 +1,6 @@
 # Foundations of Optimization
 
-This is the list of all projects and their deployments that **Dr. Hadi Charkhgard (Gard)** used for his course.
+This is the list of all projects and their deployments that **Dr. Hadi Gard (Charkhgard)** used for his course.
 
 **▶ Course page: https://hcharkhgard.github.io/foundations-of-optimization/**
 
