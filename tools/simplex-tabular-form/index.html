@@ -1,0 +1,1246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta property="og:title" content="Simplex method interactive tool: Tabular Form">
+<meta property="og:description" content="Step-by-step simplex method in tabular form (simplex tableau) for linear programs whose origin is feasible.">
+<meta property="og:type" content="website">
+<style>
+:root{color-scheme:light dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Simplex method interactive tool: Tabular Form</title>
+<meta name="description" content="Interactive, step-by-step teaching tool for the simplex method in tabular form (simplex tableau) when the origin is feasible.">
+<meta name="author" content="Hadi Charkhgard">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
+<style>
+:root{
+  --paper:#f5f3f4; --card:#ffffff; --card-2:#faf8f9;
+  --ink:#1c1719; --ink-2:#5f5559; --ink-3:#8d8286;
+  --rule:#e4dee0; --rule-2:#cfc6ca;
+  --accent:#7a2f52; --accent-soft:#f7ecf1;
+  --basic:#2f7a3e; --basic-soft:#e8f3ea;
+  --zrow:#b3261e; --zrow-soft:#fbeceb;
+  --enter:#1f5fa8; --enter-soft:#e7eff9;
+  --leave:#985a10; --leave-soft:#f8eedd;
+  --hi:#fff4c2; --on-accent:#ffffff; --src:#efe3f7; --src-line:#7a2f52;
+  --shadow:0 1px 2px rgba(28,23,25,.05), 0 8px 24px -18px rgba(28,23,25,.45);
+  --sans:'IBM Plex Sans',ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;
+  --serif:'STIX Two Text',Cambria,'Times New Roman',Georgia,serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#171416; --card:#1e1a1d; --card-2:#241f23;
+    --ink:#ece7e9; --ink-2:#a9a0a4; --ink-3:#7a7276;
+    --rule:#302a2e; --rule-2:#433b40;
+    --accent:#e8a0be; --accent-soft:#33202a;
+    --basic:#7fd08f; --basic-soft:#1b2a1f;
+    --zrow:#f08a80; --zrow-soft:#2f1c1b;
+    --enter:#8ab8ee; --enter-soft:#1a2533;
+    --leave:#e3ad62; --leave-soft:#2d2419;
+    --hi:#3a3319; --on-accent:#241016; --src:#35243a; --src-line:#e8a0be;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -20px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#171416; --card:#1e1a1d; --card-2:#241f23;
+  --ink:#ece7e9; --ink-2:#a9a0a4; --ink-3:#7a7276;
+  --rule:#302a2e; --rule-2:#433b40;
+  --accent:#e8a0be; --accent-soft:#33202a;
+  --basic:#7fd08f; --basic-soft:#1b2a1f;
+  --zrow:#f08a80; --zrow-soft:#2f1c1b;
+  --enter:#8ab8ee; --enter-soft:#1a2533;
+  --leave:#e3ad62; --leave-soft:#2d2419;
+  --hi:#3a3319; --on-accent:#241016; --src:#35243a; --src-line:#e8a0be;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -20px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1000px;margin:0 auto;padding-inline:20px;padding-block:2.4rem 7rem}
+@media(max-width:480px){.wrap{padding-inline:16px}}
+.eyebrow{font:500 .7rem/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 .85rem}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(1.9rem,1.25rem + 2.4vw,2.8rem);line-height:1.1;letter-spacing:-.015em;margin:0 0 .8rem;text-wrap:balance}
+h1 em{color:var(--accent);font-style:italic}
+.lede{max-width:68ch;margin:0;color:var(--ink-2);font-size:1.01rem}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(1.3rem,1.1rem + .8vw,1.65rem);letter-spacing:-.01em;margin:0;text-wrap:balance}
+h3{font:600 .98rem/1.35 var(--sans);margin:0}
+.section{margin-top:2.6rem}
+.section__head{display:flex;flex-wrap:wrap;gap:.7rem 1.4rem;align-items:baseline;justify-content:space-between;padding-bottom:.8rem;margin-bottom:1.2rem;border-bottom:1px solid var(--rule)}
+.section__head p{margin:.25rem 0 0;color:var(--ink-2);font-size:.88rem;max-width:62ch}
+.legend{display:flex;flex-wrap:wrap;gap:.35rem .9rem;margin-top:1rem;font-size:.8rem;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:.35rem}
+.sw{width:.8rem;height:.8rem;border-radius:2px;display:inline-block}
+
+/* math */
+.mx{font-family:var(--serif);font-size:1.04rem;font-variant-numeric:lining-nums tabular-nums}
+.mx i,.sys i{font-style:italic}
+sub{font-size:.66em;position:relative;bottom:-.1em;line-height:0;font-style:normal}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;font-size:.74em;text-align:center;line-height:1.08;margin:0 .06em}
+.fr>span:first-child{border-bottom:1px solid currentColor;padding:0 .12em}
+.v-b{color:var(--basic);font-weight:600}
+.v-e{color:var(--enter);font-weight:600}
+.v-l{color:var(--leave);font-weight:600}
+.v-z{color:var(--zrow)}
+
+/* buttons */
+.btn{font:500 .8rem/1 var(--sans);cursor:pointer;border:1px solid var(--rule-2);background:var(--card);color:var(--ink-2);border-radius:999px;padding:.5rem .85rem;transition:border-color .16s,color .16s,background .16s}
+.btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn--solid{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn--solid{color:#241016}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn--solid{color:#241016}}
+.btn--solid:hover:not(:disabled){opacity:.88;color:#fff}
+.btn--sm{font-size:.74rem;padding:.34rem .6rem}
+.btnrow{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--rule);border-radius:4px;box-shadow:var(--shadow)}
+.card__head{display:flex;flex-wrap:wrap;gap:.6rem 1rem;align-items:center;justify-content:space-between;padding:.85rem 1.1rem;border-bottom:1px solid var(--rule)}
+.card__title{font:500 .68rem/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0}
+.card__body{padding:1.1rem}
+
+/* editor */
+.edwrap{overflow-x:auto;padding-bottom:.4rem}
+.ed{display:grid;gap:.4rem .45rem;align-items:center;justify-content:start;min-width:max-content}
+.ed .hd{font-family:var(--serif);font-size:1rem;text-align:center;color:var(--ink-2)}
+.ed .lab{font:500 .78rem/1.2 var(--sans);color:var(--ink-2);white-space:nowrap;padding-right:.3rem}
+.num{width:3.8rem;padding:.34rem .2rem;text-align:center;border:1px solid var(--rule-2);border-radius:3px;background:var(--card-2);color:var(--ink);font:400 .95rem/1.2 var(--serif)}
+.num:focus{border-color:var(--accent);background:var(--card);outline:none}
+.num.bad{border-color:var(--zrow);background:var(--zrow-soft)}
+.sel{padding:.32rem .3rem;border:1px solid var(--rule-2);border-radius:3px;background:var(--card-2);color:var(--ink);font:400 .85rem/1.2 var(--sans);cursor:pointer}
+.dims{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;align-items:center;margin-top:1rem;padding-top:.9rem;border-top:1px solid var(--rule)}
+.dims .g{display:flex;align-items:center;gap:.4rem}
+.dims .gl{font:500 .74rem/1 var(--sans);color:var(--ink-3)}
+.stepper{display:inline-flex;border:1px solid var(--rule-2);border-radius:999px;overflow:hidden}
+.stepper button{appearance:none;border:0;background:var(--card-2);color:var(--ink-2);font:500 .85rem/1 var(--sans);padding:.34rem .62rem;cursor:pointer}
+.stepper button:hover:not(:disabled){background:var(--accent-soft);color:var(--accent)}
+.stepper button:disabled{opacity:.35;cursor:not-allowed}
+.stepper .v{padding:.34rem .5rem;font:500 .82rem/1 var(--sans);background:var(--card);min-width:1.7rem;text-align:center;font-variant-numeric:tabular-nums}
+.errline{margin:.7rem 0 0;color:var(--zrow);font-size:.84rem;min-height:1.2em}
+.presets{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:center}
+.presets label{font:500 .74rem/1 var(--sans);color:var(--ink-3)}
+.presets .sel{max-width:100%}
+.note{font-size:.84rem;color:var(--ink-2);margin:0}
+
+/* worksheet */
+.toolbar{display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.seg{display:inline-flex;border:1px solid var(--rule-2);border-radius:999px;overflow:hidden}
+.seg button{appearance:none;border:0;background:var(--card);color:var(--ink-2);font:500 .74rem/1 var(--sans);padding:.4rem .7rem;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.empty{padding:1.4rem 1.1rem;color:var(--ink-2);font-size:.92rem;border:1px dashed var(--rule-2);border-radius:4px;background:var(--card-2)}
+.group{margin-top:1.4rem}
+.group>summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap;padding:.3rem 0 .6rem;border-bottom:2px solid var(--ink)}
+.group>summary::-webkit-details-marker{display:none}
+.group>summary h2::before{content:"▾";display:inline-block;font-size:.8em;color:var(--ink-3);margin-right:.4rem;transition:transform .15s}
+.group:not([open])>summary h2::before{transform:rotate(-90deg)}
+.group__meta{font-size:.82rem;color:var(--ink-2)}
+.goal{font:600 .82rem/1 var(--sans);color:var(--ink-2)}
+.goal .v-z{font-family:var(--serif);font-style:italic;font-size:1rem}
+.stages{display:flex;flex-direction:column;gap:1rem;margin-top:1rem}
+.stage{background:var(--card);border:1px solid var(--rule);border-radius:4px;box-shadow:var(--shadow);padding:1rem 1.1rem 1.1rem;display:flex;flex-direction:column;gap:.85rem;min-width:0;scroll-margin-top:1rem;scroll-margin-bottom:6rem}
+.stage.is-current{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),var(--shadow)}
+.stage__h{display:flex;flex-wrap:wrap;gap:.2rem .7rem;align-items:baseline}
+.stage__k{font:600 .7rem/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.stage__t{font:600 1rem/1.35 var(--sans)}
+.stage p{margin:0;max-width:72ch}
+.q{font-weight:600}
+.ans{padding:.55rem .75rem;border-radius:3px;font-size:.93rem}
+.ans--yes{background:var(--zrow-soft);color:var(--ink)}
+.ans--ok{background:var(--basic-soft)}
+.ans--bad{background:var(--zrow-soft)}
+.ans--info{background:var(--card-2);border:1px solid var(--rule)}
+.ans b.v{font-weight:600}
+
+/* system of equations */
+.sysw{overflow-x:auto;padding:.15rem 0}
+.sys{display:inline-grid;align-items:stretch;grid-auto-rows:minmax(2.1rem,auto);font-family:var(--serif);font-size:1.06rem;font-variant-numeric:lining-nums tabular-nums;min-width:max-content}
+.sc{padding:.18rem .1rem;white-space:nowrap;display:flex;align-items:center}
+.sc.lab{font:500 .76rem/1.2 var(--sans);color:var(--ink-3);padding-right:.9rem;justify-content:flex-end}
+.sc.sg{justify-content:center;padding-inline:.32rem;color:var(--ink-2)}
+.sc.tm{justify-content:flex-end}
+.sc.rel{padding-inline:.5rem;color:var(--ink-2)}
+.sc.rhs{justify-content:flex-end;padding-right:.3rem}
+.sc.zc{color:var(--zrow);font-style:italic}
+.r0 .sc, .sc.r0{color:var(--zrow)}
+.sc.r0.lab{color:var(--zrow)}
+.sc.tb{color:var(--basic);font-weight:600}
+.sc.tn{color:var(--accent);font-weight:600}
+.sc.ce{background:var(--enter-soft)}
+.sc.rh{background:var(--hi)}
+.sc.rl{background:var(--leave-soft)}
+.sc.rs{border-top:1px solid var(--ink-2)}
+.sc.nn{font-size:.95rem;color:var(--ink-2);padding-top:.3rem}
+.sc.dim{opacity:.35}
+
+.pair{display:grid;gap:.8rem;align-items:center}
+@media(min-width:760px){.pair{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}}
+.pair__arrow{display:flex;flex-direction:column;align-items:center;gap:.2rem;color:var(--accent);font-family:var(--serif);font-size:1.5rem;line-height:1}
+.pair__arrow small{font:500 .7rem/1.3 var(--sans);color:var(--ink-3);text-align:center;max-width:9rem}
+@media(max-width:759px){.pair__arrow{flex-direction:row;justify-content:center}.pair__arrow span{transform:rotate(90deg)}}
+.pane{background:var(--card-2);border:1px solid var(--rule);border-radius:3px;padding:.6rem .75rem;min-width:0}
+.pane__t{font:500 .64rem/1 var(--sans);letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin:0 0 .45rem}
+
+/* basis table */
+.bt{border-collapse:collapse;font-family:var(--serif);font-size:1.02rem;min-width:15rem}
+.bt th{font:600 .74rem/1.25 var(--sans);letter-spacing:.02em;background:var(--accent);color:#fff;padding:.5rem .8rem;text-align:center}
+:root[data-theme="dark"] .bt th{color:#241016}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .bt th{color:#241016}}
+.bt td{padding:.36rem .9rem;text-align:center;border-bottom:1px solid var(--card);background:var(--accent-soft)}
+.bt tr:nth-child(even) td{background:var(--card-2)}
+.bt td.b{color:var(--basic);font-weight:600}
+.bt td.new{box-shadow:inset 3px 0 0 var(--enter)}
+.bt td.out{box-shadow:inset 3px 0 0 var(--leave)}
+.btw{overflow-x:auto}
+.row2{display:flex;flex-wrap:wrap;gap:1rem 1.6rem;align-items:flex-start}
+.row2>div{min-width:0}
+
+/* GE */
+.ops{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.4rem}
+.op{display:grid;grid-template-columns:1.6rem minmax(0,1fr);gap:.1rem .5rem;padding:.5rem .65rem;border:1px solid var(--rule);border-radius:3px;background:var(--card-2);font-size:.9rem}
+.op__n{font:600 .78rem/1.6 var(--sans);color:var(--ink-3)}
+.op__not{grid-column:2;font-family:var(--serif);font-size:.98rem;color:var(--ink-2)}
+.op.done{border-color:var(--rule-2);background:var(--card)}
+.op.done .op__n{color:var(--basic)}
+.op.last{border-color:var(--accent);background:var(--accent-soft)}
+.op.pend{opacity:.55}
+.work{display:flex;flex-direction:column;gap:.8rem}
+
+
+/* GE player */
+.op{grid-template-columns:1.6rem minmax(0,1fr)}
+.op__body{display:flex;flex-direction:column;gap:.1rem;text-align:left;background:none;border:0;padding:0;font:inherit;color:inherit}
+button.op__body{cursor:pointer}
+button.op__body:hover .op__not{color:var(--accent)}
+.op.live{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 1px var(--accent)}
+.op.live .op__n{color:var(--accent)}
+.op__not{grid-column:auto}
+.player{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;justify-content:space-between;padding:.6rem .75rem;border:1px solid var(--rule-2);border-radius:4px;background:var(--card-2);scroll-margin-top:1rem}
+.player__ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+.player__count{font:500 .78rem/1 var(--sans);color:var(--ink-2);font-variant-numeric:tabular-nums}
+.pbig{min-width:7.2rem}
+.phases{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}
+.phases span{font:500 .74rem/1 var(--sans);padding:.34rem .6rem;border-radius:999px;border:1px solid var(--rule-2);color:var(--ink-3);transition:background .2s,color .2s}
+.phases span.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.phases span.done{color:var(--basic);border-color:var(--basic)}
+.cap{font-size:1rem;min-height:1.7em}
+.gebox{display:grid;gap:.8rem}
+@media(min-width:900px){.gebox{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}}
+.gesys{position:relative;display:inline-block;min-width:max-content}
+.gesys>svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.sc.chipc{justify-content:flex-end;padding-right:.1rem}
+.sc.rsrc{background:var(--src)}
+.sc.rtgt{background:var(--hi)}
+.sc.rdone{background:var(--basic-soft)}
+.sc.rnew{animation:rownew 1.1s ease-out both}
+@keyframes rownew{0%{background:var(--hi)}30%{background:var(--basic-soft);box-shadow:0 0 0 0 transparent}100%{background:var(--basic-soft)}}
+.sc.tkill{box-shadow:inset 0 0 0 2px var(--zrow);border-radius:3px}
+.sc.tone{box-shadow:inset 0 0 0 2px var(--basic);border-radius:3px}
+.mult{display:inline-flex;align-items:center;font-family:var(--serif);font-size:1rem;line-height:1.2;background:var(--src-line);color:var(--on-accent);border-radius:999px;padding:.1rem .55rem;white-space:nowrap}
+.mult.pop{animation:pop .5s cubic-bezier(.2,1.5,.4,1) both}
+.mult.dim{opacity:.45}
+@keyframes pop{from{transform:scale(.2);opacity:0}}
+.ga-path{fill:none;stroke:var(--src-line);stroke-width:2.4;stroke-linecap:round}
+.ga-head{fill:var(--src-line)}
+.ga-badge{fill:var(--src-line)}
+.ga-txt{fill:var(--on-accent);font:700 16px var(--sans)}
+svg.ga.dim{opacity:.35}
+svg.ga .late{animation:fadein .2s ease-out both;animation-delay:var(--draw,.7s)}
+svg.ga .late2{animation:pop2 .35s ease-out both;animation-delay:calc(var(--draw,.7s) * .5)}
+@keyframes pop2{from{opacity:0}}
+.worked.fadein{animation:fadein .45s ease-out both}
+@keyframes fadein{from{opacity:0}}
+@media (prefers-reduced-motion: reduce){.mult.pop,.sc.rnew,.worked.fadein,svg.ga .late,svg.ga .late2{animation:none}}
+
+/* ratio */
+.tests{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.3rem;font-family:var(--serif);font-size:1.02rem}
+.tests li{padding:.3rem .6rem;border-radius:3px;display:flex;flex-wrap:wrap;gap:.2rem .6rem;align-items:baseline}
+.tests li.win{background:var(--hi)}
+.tests .why{font:400 .78rem/1.4 var(--sans);color:var(--ink-3)}
+.imp{color:var(--zrow);font-style:italic}
+
+/* choices */
+.choices{display:flex;flex-wrap:wrap;gap:.5rem}
+.choice{appearance:none;cursor:pointer;border:1px solid var(--rule-2);background:var(--card);border-radius:4px;padding:.5rem .8rem;font:inherit;color:var(--ink);display:flex;flex-direction:column;gap:.1rem;align-items:flex-start;text-align:left}
+.choice:hover:not(:disabled){border-color:var(--accent)}
+.choice[aria-pressed="true"]{border-color:var(--enter);background:var(--enter-soft);box-shadow:0 0 0 1px var(--enter)}
+.choice:disabled{cursor:default}
+.choice small{font:400 .72rem/1.3 var(--sans);color:var(--ink-3)}
+.choice .mx{font-size:1.05rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.chip{display:inline-flex;gap:.4rem;align-items:baseline;padding:.3rem .6rem;border-radius:999px;border:1px solid var(--rule-2);font-family:var(--serif);font-size:1rem;background:var(--card)}
+.chip.neg{border-color:var(--zrow);background:var(--zrow-soft)}
+.chip.zero{border-style:dashed}
+
+.final{display:grid;gap:.6rem}
+.kv{display:flex;flex-wrap:wrap;gap:.3rem 1.2rem;font-family:var(--serif);font-size:1.05rem}
+.big{font-family:var(--serif);font-size:1.35rem}
+
+/* sticky bar */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--card);border-top:1px solid var(--rule-2);box-shadow:0 -8px 24px -20px rgba(0,0,0,.5);padding:.65rem 16px calc(.65rem + env(safe-area-inset-bottom,0px))}
+.bar__in{max-width:1000px;margin:0 auto;display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:center;justify-content:space-between}
+.bar__status{font-size:.82rem;color:var(--ink-2);min-width:0;flex:1 1 14rem}
+.bar__status b{color:var(--ink);font-weight:600}
+.bar .btn--solid{padding:.6rem 1.05rem;font-size:.84rem}
+kbd{font:500 .7rem/1 var(--sans);border:1px solid var(--rule-2);border-bottom-width:2px;border-radius:3px;padding:.1rem .3rem;color:var(--ink-3)}
+
+/* reference */
+.ref{display:grid;gap:1rem}
+@media(min-width:760px){.ref{grid-template-columns:1fr 1fr}}
+.ref ol{margin:.4rem 0 0;padding-left:1.2rem;font-size:.9rem;color:var(--ink-2)}
+.ref li{margin:.25rem 0}
+.foot{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--rule);font-size:.78rem;color:var(--ink-3)}
+.foot a{color:var(--ink-2)}
+a{color:var(--accent)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+/* ================= tableau ================= */
+.tw{overflow-x:auto;padding:.15rem 0 .3rem}
+.tabw{position:relative;display:inline-block;min-width:max-content}
+.tabw>svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+table.tab{border-collapse:separate;border-spacing:0;font-family:var(--serif);font-size:1.06rem;font-variant-numeric:lining-nums tabular-nums}
+.tab th{font:600 .7rem/1.2 var(--sans);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2);padding:.5rem .7rem;border-bottom:2px solid var(--ink);text-align:center;white-space:nowrap;vertical-align:bottom}
+.tab th.vh{font:italic 400 1.06rem/1.2 var(--serif);letter-spacing:0;text-transform:none;color:var(--ink)}
+.tab td{padding:.42rem .75rem;text-align:center;border-bottom:1px solid var(--rule);white-space:nowrap;min-width:2.7rem;background:var(--card);transition:background .25s}
+.tab .bv{text-align:left;border-right:1px solid var(--rule-2);min-width:3.2rem}
+.tab .eq{font:500 .76rem/1.2 var(--sans);color:var(--ink-3);border-right:1px solid var(--rule-2)}
+.tab .zcol{border-right:1px solid var(--rule-2)}
+.tab .rhsc{border-left:2px solid var(--ink-2);min-width:3.3rem}
+.tab tr.r0 td{color:var(--zrow);border-bottom:2px solid var(--rule-2)}
+.tab tr.r0 td.eq{color:var(--zrow)}
+.tab td.bvb{color:var(--basic);font-weight:600}
+.tab .z0{color:var(--ink-3)}
+.tab tr.r0 .z0{color:inherit;opacity:.6}
+.tab th.hb{color:var(--basic);box-shadow:inset 0 -3px 0 var(--basic)}
+.tab th.pc{background:var(--enter);color:var(--on-accent)}
+.tab td.pc{background:var(--enter-soft)}
+.tab tr.pr td:not(.gut):not(.gap):not(.sp){background:var(--leave-soft)}
+.tab tr.pr td.pc{background:color-mix(in srgb,var(--leave-soft) 50%,var(--enter-soft))}
+.tab td.pe{box-shadow:inset 0 0 0 2.5px var(--leave);font-weight:600;border-radius:4px}
+.tab td.rcn{box-shadow:inset 0 0 0 2px var(--zrow);border-radius:4px;font-weight:600}
+.tab tr.rsrc td:not(.gut):not(.gap):not(.sp){background:var(--src)}
+.tab tr.rtgt td:not(.gut):not(.gap):not(.sp){background:var(--hi)}
+.tab tr.rdone td:not(.gut):not(.gap):not(.sp){background:var(--basic-soft)}
+.tab tr.rnew td:not(.gut):not(.gap):not(.sp){animation:rownew 1.1s ease-out both}
+.tab tr.rs td{border-top:2px solid var(--ink-2)}
+.tab td.tkill{box-shadow:inset 0 0 0 2.5px var(--zrow);border-radius:4px}
+.tab td.tone{box-shadow:inset 0 0 0 2.5px var(--basic);border-radius:4px}
+.tab .gut,.tab .gap,.tab .sp{border:0!important;background:transparent!important;min-width:0;padding:0}
+.tab td.gut{text-align:right;padding-right:.15rem}
+.tab th.gut{min-width:4.2rem}
+.tab .gap{width:3.4rem;min-width:3.4rem}
+.tab .sp{width:1rem;min-width:1rem}
+.tab th.rt{background:var(--card-2);border:1px solid var(--rule-2);border-bottom:2px solid var(--ink);border-radius:4px 4px 0 0;text-transform:none;letter-spacing:0;font-size:.76rem;line-height:1.35}
+.tab td.rt{background:var(--card-2);border-left:1px solid var(--rule-2);border-right:1px solid var(--rule-2);text-align:left;min-width:12rem;color:var(--ink)}
+.tab tr:last-child td.rt{border-bottom:1px solid var(--rule-2)}
+.tab tr.r0 td.rt{color:var(--ink-3);font:400 .74rem/1.2 var(--sans)}
+.tab tr.win td.rt{background:var(--hi)}
+.tab td.rt .why{font:400 .74rem/1.3 var(--sans);color:var(--ink-3)}
+.mintag{display:inline-block;font:600 .64rem/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--on-accent);background:var(--leave);border-radius:999px;padding:.22rem .45rem;margin-left:.35rem;vertical-align:middle}
+.mintag.tie{background:var(--ink-3)}
+.tab.mini{font-size:.98rem}
+.tab.mini td{padding:.3rem .6rem}
+.tab.mini td.lbl{font:500 .76rem/1.2 var(--sans);color:var(--ink-2);white-space:nowrap}
+.qm{color:var(--ink-3);font-style:normal}
+.side{display:grid;gap:1rem;align-items:start}
+@media(min-width:900px){.side{grid-template-columns:auto minmax(0,1fr)}}
+@media (prefers-reduced-motion: reduce){.tab tr.rnew td{animation:none!important}}
+
+/* ================= compact iteration cards ================= */
+#sheet{display:flex;flex-direction:column;gap:1rem}
+.itcard{background:var(--card);border:1px solid var(--rule);border-radius:4px;box-shadow:var(--shadow);padding:.8rem 1rem .9rem;display:flex;flex-direction:column;gap:.55rem;min-width:0;scroll-margin-top:.8rem}
+.itcard.is-current{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),var(--shadow)}
+.itcard__h{display:flex;flex-wrap:wrap;gap:.2rem 1rem;align-items:baseline}
+.itcard__h h2{font-size:1.2rem}
+.nl{margin:0;font-size:.9rem;color:var(--ink);max-width:80ch}
+.nl.ok{color:var(--ink-2)}
+.small{font-size:.8rem;color:var(--ink-3)}
+.nl.small{font-size:.8rem;color:var(--ink-3)}
+.cap.nl{min-height:2.6em;font-size:.92rem}
+.tab td.ex{font-size:.8rem;color:var(--ink);padding-inline:.4rem}
+.tab td.ex .fr{font-size:.85em}
+.blank{color:var(--rule-2)}
+.tab tr.rold td:not(.gut):not(.gap):not(.sp){background:var(--hi)}
+.tab td.tzero{box-shadow:inset 0 0 0 2px var(--ink-3);border-radius:4px}
+.itcard .choices{gap:.35rem}
+.itcard .choice{padding:.3rem .6rem}
+.itcard .player{padding:.45rem .6rem}
+.itcard .phases span{font-size:.68rem;padding:.28rem .5rem}
+.itcard .pair .pane{padding:.45rem .6rem}
+.itcard .sys{font-size:.98rem;grid-auto-rows:minmax(1.8rem,auto)}
+.itcard .final{padding:.6rem .75rem}
+.itcard .mult{font-size:1.08rem;padding:.15rem .6rem}
+.itcard .mult .fr{font-size:.82em}
+@media(max-width:520px){.tab th.gut{min-width:3.4rem}.tab .gap{width:2.9rem;min-width:2.9rem}.itcard{padding-inline:.7rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Foundations of Optimization · Tool 4</p>
+  <h1>Simplex method interactive tool: <em>Tabular Form</em></h1>
+  <p class="lede">Pick an example or type your own linear program. Then run the simplex method on a <b>simplex tableau</b>, one move at a time: standardize, check that the origin is feasible, build the initial tableau, and in every iteration choose the pivot column (reduced costs), the pivot row (minimum ratio test), and watch the row operations that build the next tableau.</p>
+  <div class="legend" aria-label="Colour key">
+    <span><i class="sw" style="background:var(--zrow)"></i>row (0): <i style="font-family:var(--serif)">z</i> − (objective) = 0, goal: maximize <i style="font-family:var(--serif)">z</i></span>
+    <span><i class="sw" style="background:var(--basic)"></i>basic variable</span>
+    <span><i class="sw" style="background:var(--enter)"></i>entering variable · pivot column</span>
+    <span><i class="sw" style="background:var(--leave)"></i>leaving variable · pivot row · pivot element</span>
+    <span><i class="sw" style="background:var(--src)"></i>row being multiplied</span>
+    <span><i class="sw" style="background:var(--hi);border:1px solid var(--rule-2)"></i>row being changed</span>
+  </div>
+
+  <!-- ============ PROBLEM ============ -->
+  <section class="section" id="problem">
+    <div class="section__head">
+      <div>
+        <h2>1 · The problem</h2>
+        <p>All decision variables are assumed nonnegative. For the origin to be feasible, every constraint must be <span class="mx">≤</span> with a nonnegative right-hand side. Coefficients accept integers, decimals or fractions such as <span class="mx">3</span>, <span class="mx">−1.5</span>, <span class="mx">2/7</span>. Arithmetic is exact.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card__head">
+        <div class="presets">
+          <label for="preset">Example</label>
+          <select id="preset" class="sel"></select>
+          <button class="btn btn--sm" id="saveEx" type="button">Save as my example</button>
+          <button class="btn btn--sm" id="delEx" type="button" hidden>Remove saved example</button>
+        </div>
+        <span class="note" id="saveMsg" aria-live="polite"></span>
+      </div>
+      <div class="card__body">
+        <div class="edwrap"><div class="ed" id="ed"></div></div>
+        <div class="dims">
+          <div class="g"><span class="gl">Variables <i style="font-family:var(--serif)">n</i></span>
+            <span class="stepper"><button type="button" id="nDec" aria-label="Fewer variables">−</button><span class="v" id="nVal">2</span><button type="button" id="nInc" aria-label="More variables">+</button></span></div>
+          <div class="g"><span class="gl">Constraints <i style="font-family:var(--serif)">m</i></span>
+            <span class="stepper"><button type="button" id="mDec" aria-label="Fewer constraints">−</button><span class="v" id="mVal">3</span><button type="button" id="mInc" aria-label="More constraints">+</button></span></div>
+          <p class="note">Need free or non-positive variables? Convert them first with the <a href="https://hcharkhgard.github.io/foundations-of-optimization/tools/standard-form-worksheet/" target="_blank" rel="noopener">Standard Form Worksheet</a>. Same method without tableaus: <a href="https://hcharkhgard.github.io/foundations-of-optimization/tools/simplex-algebraic-form/" target="_blank" rel="noopener">Algebraic Form</a>.</p>
+        </div>
+        <p class="errline" id="err" role="alert"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WORKSHEET ============ -->
+  <section class="section" id="worksheet">
+    <div class="section__head">
+      <div>
+        <h2>2 · Worksheet</h2>
+        <p>Press <b>Next</b> in the bar at the bottom (or the <kbd>→</kbd> key) to take one step. <b>Back</b> (<kbd>←</kbd>) undoes it. While a pivot is playing, <kbd>Space</kbd> plays or pauses.</p>
+      </div>
+      <div class="btnrow">
+        <span class="seg" role="group" aria-label="Number format">
+          <button type="button" id="fmtFrac" aria-pressed="true">Fractions</button>
+          <button type="button" id="fmtDec" aria-pressed="false">Decimals</button>
+        </span>
+        <button class="btn btn--sm" id="restart" type="button">Restart worksheet</button>
+      </div>
+    </div>
+    <div id="sheet"></div>
+  </section>
+
+  <!-- ============ REFERENCE ============ -->
+  <section class="section" id="reference">
+    <div class="section__head"><div><h2>3 · The procedure at a glance</h2></div></div>
+    <div class="ref">
+      <div class="card"><div class="card__body">
+        <h3>Preparing to run the simplex method</h3>
+        <ol>
+          <li><b>Step 1.</b> Transform the problem into standard form, with a <b>maximization</b> objective. Each <span class="mx">≤</span> constraint gets its own slack variable.</li>
+          <li><b>Step 2.</b> Check that the <b>origin</b> is feasible: every constraint is <span class="mx">≤</span> and every right-hand side is nonnegative.</li>
+          <li><b>Step 3.</b> Write row (0) as <span class="mx"><i>z</i> − <i>c</i><sub>1</sub><i>x</i><sub>1</sub> − … − <i>c<sub>n</sub>x<sub>n</sub></i> = 0</span> and build the initial tableau: columns <b>Basic</b>, <b>Eq.</b>, <span class="mx"><i>z</i></span>, one column per variable, and <b>RHS</b>; one row per equation.</li>
+        </ol>
+      </div></div>
+      <div class="card"><div class="card__body">
+        <h3>Each iteration on the tableau</h3>
+        <ol>
+          <li><b>Step 1. Basic variables and the new tableau.</b> Initially the slacks are basic. Later the entering variable replaces the leaving one in the Basic column, and row operations turn its column into a unit column: divide the pivot row by the pivot element, then add multiples of the pivot row to every other row (including row (0)) to make their entries 0. Read off the solution: basic variable = RHS of its row, non-basic = 0, <span class="mx"><i>z</i></span> = RHS of row (0).</li>
+          <li><b>Step 2. Optimality test.</b> Look at row (0). If no non-basic variable has a negative coefficient (reduced cost), stop: optimal. Otherwise pick one (the most negative is the usual rule): it enters, and its column is the <b>pivot column</b>.</li>
+          <li><b>Step 3. Minimum ratio test.</b> For each row with a strictly positive pivot-column entry, divide its RHS by that entry; entries ≤ 0 are “impossible”. The smallest ratio marks the <b>pivot row</b>; its basic variable leaves. If every entry is ≤ 0, the problem is unbounded.</li>
+        </ol>
+      </div></div>
+    </div>
+  </section>
+
+  <p class="foot">Developed by Dr. Hadi Gard (Charkhgard) for teaching the Foundations of Optimization course only. © 2026 Hadi Charkhgard. · <a href="https://hcharkhgard.github.io/foundations-of-optimization/" target="_blank" rel="noopener">All course tools</a></p>
+</div>
+
+<div class="bar" role="region" aria-label="Step controls">
+  <div class="bar__in">
+    <button class="btn" id="back" type="button">← Back</button>
+    <div class="bar__status" id="status" aria-live="polite"></div>
+    <div class="btnrow">
+      <button class="btn" id="auto" type="button" title="Run every remaining step with the default choices">Run to the end</button>
+      <button class="btn btn--solid" id="next" type="button">Next →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+/* ================= exact rationals ================= */
+const gcd = (a, b) => { a = a < 0n ? -a : a; b = b < 0n ? -b : b; while (b) { [a, b] = [b, a % b]; } return a; };
+class Q {
+  constructor(n, d = 1n) {
+    n = BigInt(n); d = BigInt(d);
+    if (d === 0n) throw new Error("division by zero");
+    if (d < 0n) { n = -n; d = -d; }
+    const g = gcd(n, d) || 1n; this.n = n / g; this.d = d / g;
+  }
+  add(o) { return new Q(this.n * o.d + o.n * this.d, this.d * o.d); }
+  sub(o) { return new Q(this.n * o.d - o.n * this.d, this.d * o.d); }
+  mul(o) { return new Q(this.n * o.n, this.d * o.d); }
+  div(o) { return new Q(this.n * o.d, this.d * o.n); }
+  neg() { return new Q(-this.n, this.d); }
+  abs() { return this.n < 0n ? this.neg() : this; }
+  sign() { return this.n > 0n ? 1 : this.n < 0n ? -1 : 0; }
+  isZero() { return this.n === 0n; }
+  isOne() { return this.n === this.d; }
+  cmp(o) { return this.sub(o).sign(); }
+  num() { return Number(this.n) / Number(this.d); }
+}
+const ZERO = new Q(0), ONE = new Q(1);
+function parseQ(s) {
+  s = String(s).trim().replace(/[−–]/g, "-").replace(/\s+/g, "");
+  let m;
+  if ((m = s.match(/^([+-]?\d+)\/(\d+)$/))) { if (BigInt(m[2]) === 0n) return null; return new Q(BigInt(m[1]), BigInt(m[2])); }
+  if ((m = s.match(/^([+-]?)(\d*)\.?(\d*)$/))) {
+    if (m[2] === "" && m[3] === "") return null;
+    const sg = m[1] === "-" ? -1n : 1n, fp = m[3] || "", den = 10n ** BigInt(fp.length);
+    return new Q(sg * (BigInt(m[2] || "0") * den + BigInt(fp || "0")), den);
+  }
+  return null;
+}
+
+/* ================= formatting ================= */
+let MODE = "frac";
+/* decimals: 4 places, but never let a nonzero value print as 0 */
+const decStr = q => { const x = q.num(); return x !== 0 && Math.abs(x) < 0.001 ? String(+x.toPrecision(3)) : String(+x.toFixed(4)); };
+function absHtml(q) {
+  q = q.abs();
+  if (q.d === 1n) return String(q.n);
+  if (MODE === "dec") return decStr(q.abs());
+  return `<span class="fr"><span>${q.n}</span><span>${q.d}</span></span>`;
+}
+const numHtml = q => (q.sign() < 0 ? "−" : "") + absHtml(q);
+const numText = q => { if (q.d === 1n) return String(q.n).replace("-", "−"); if (MODE === "dec") return (q.sign() < 0 ? "−" : "") + decStr(q.abs()); return (q.sign() < 0 ? "−" : "") + q.abs().n + "/" + q.d; };
+const V = j => `<i>x</i><sub>${j + 1}</sub>`;
+const Vc = (j, cls) => `<span class="${cls}">${V(j)}</span>`;
+const coefHtml = q => (q.abs().isOne() ? "" : absHtml(q));
+const listVars = (arr, cls = "") => arr.map(j => cls ? Vc(j, cls) : V(j)).join(", ");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const relSym = r => r === "<=" ? "≤" : r === ">=" ? "≥" : "=";
+
+/* A linear expression as inline math (for prose). */
+function exprHtml(coefs, opts = {}) {
+  let h = opts.z ? '<i class="v-z">z</i>' : "", first = !opts.z;
+  coefs.forEach((c, j) => {
+    if (!c || c.isZero()) return;
+    const s = c.sign() < 0 ? "−" : first ? "" : "+";
+    h += (s ? (first ? s : ` ${s} `) : "") + coefHtml(c) + V(j);
+    first = false;
+  });
+  return h || "0";
+}
+
+/* System of equations as an aligned grid.
+   rows: {label, z, coefs, rel, rhs, cls, basicVar, lead}
+   o: {N, enter, newVars:Set, nonneg, dimZeroVars:Set} */
+function sys(rows, o) {
+  const N = o.N;
+  let h = `<div class="sys" style="grid-template-columns:auto auto repeat(${N},auto auto) auto auto">`;
+  for (const r of rows) {
+    const rc = " " + (r.cls || "");
+    h += `<div class="sc lab${rc}">${r.label ?? ""}</div>`;
+    let first = true;
+    if (r.z) { h += `<div class="sc zc${rc}"><i>z</i></div>`; first = false; }
+    else h += `<div class="sc${rc}"></div>`;
+    for (let j = 0; j < N; j++) {
+      const c = r.coefs[j], ce = o.enter === j ? " ce" : "";
+      if (!c || c.isZero()) { h += `<div class="sc sg${ce}${rc}"></div><div class="sc tm${ce}${rc}"></div>`; continue; }
+      const s = c.sign() < 0 ? "−" : first ? "" : "+";
+      let tc = "";
+      if (r.basicVar === j) tc = " tb"; else if (o.newVars && o.newVars.has(j)) tc = " tn";
+      h += `<div class="sc sg${ce}${rc}">${s}</div><div class="sc tm${tc}${ce}${rc}"><span>${coefHtml(c)}${V(j)}</span></div>`;
+      first = false;
+    }
+    if (r.rhs == null) h += `<div class="sc${rc}"></div><div class="sc${rc}"></div>`;
+    else h += `<div class="sc rel${rc}">${relSym(r.rel || "=")}</div><div class="sc rhs${rc}">${numHtml(r.rhs)}</div>`;
+  }
+  if (o.nonneg) h += `<div class="sc"></div><div class="sc nn" style="grid-column:2/-1"><span>${Array.from({ length: o.nonneg }, (_, j) => V(j)).join(", ")} ≥ 0</span></div>`;
+  return `<div class="sysw">${h}</div></div>`;
+}
+/* Tableau rows -> sys rows */
+function tRows(T, basis, extra = {}) {
+  return T.rows.map((r, i) => ({
+    label: `(${i})`, z: i === 0, coefs: r.coefs, rhs: r.rhs, cls: (i === 0 ? "r0 " : "") + (extra[i] || ""),
+    basicVar: i > 0 && basis ? basis[i] : -1
+  }));
+}
+function basisTable(nonbasic, basic, vals, marks = {}) {
+  const n = Math.max(nonbasic.length, basic.length);
+  let h = `<div class="btw"><table class="bt"><thead><tr><th>Non-basic variables</th><th>Basic variables</th></tr></thead><tbody>`;
+  for (let r = 0; r < n; r++) {
+    const nb = nonbasic[r], b = basic[r];
+    const nbc = nb !== undefined && marks.out === nb ? "out" : "";
+    const bc = "b" + (b !== undefined && marks.in === b ? " new" : "");
+    h += `<tr><td class="${nbc}">${nb === undefined ? "" : V(nb) + (vals ? " = 0" : "")}</td>`;
+    h += `<td class="${b === undefined ? "" : bc}">${b === undefined ? "" : V(b) + (vals ? " = " + numHtml(vals[b]) : "")}</td></tr>`;
+  }
+  return h + "</tbody></table></div>";
+}
+
+/* ================= examples ================= */
+const PRESETS = [
+  { name: "Lecture example (slides)", sense: "max", c: ["3", "5"], A: [["1", "0"], ["0", "2"], ["3", "2"]], rel: ["<=", "<=", "<="], b: ["4", "12", "18"] },
+  { name: "Three variables", sense: "max", c: ["5", "4", "3"], A: [["2", "3", "1"], ["4", "1", "2"], ["3", "4", "2"]], rel: ["<=", "<=", "<="], b: ["5", "11", "8"] },
+  { name: "Four constraints", sense: "max", c: ["5", "4"], A: [["6", "4"], ["1", "2"], ["-1", "1"], ["0", "1"]], rel: ["<=", "<=", "<=", "<="], b: ["24", "6", "1", "2"] },
+  { name: "Minimization (convert to max)", sense: "min", c: ["-2", "-3"], A: [["1", "1"], ["-1", "1"], ["1", "0"]], rel: ["<=", "<=", "<="], b: ["4", "2", "3"] },
+  { name: "Fractional data", sense: "max", c: ["1/2", "1"], A: [["1/3", "1"], ["2", "1"]], rel: ["<=", "<="], b: ["2", "6"] },
+  { name: "Tie in the ratio test (degenerate)", sense: "max", c: ["3", "9"], A: [["1", "4"], ["1", "2"]], rel: ["<=", "<="], b: ["8", "4"] },
+  { name: "Multiple optimal solutions", sense: "max", c: ["2", "4"], A: [["1", "2"], ["1", "1"]], rel: ["<=", "<="], b: ["5", "4"] },
+  { name: "Unbounded problem", sense: "max", c: ["2", "1"], A: [["1", "-1"], ["2", "0"]], rel: ["<=", "<="], b: ["10", "40"] },
+  { name: "Origin NOT feasible (≥ constraint)", sense: "max", c: ["2", "3"], A: [["1", "1"], ["1", "0"], ["0", "1"]], rel: [">=", "<=", "<="], b: ["2", "4", "5"] },
+  { name: "Origin NOT feasible (negative RHS)", sense: "max", c: ["1", "1"], A: [["-1", "-1"], ["1", "2"]], rel: ["<=", "<="], b: ["-2", "8"] }
+];
+const LS_KEY = "fo-simplex-tabular-examples";
+function loadSaved() { try { const v = JSON.parse(localStorage.getItem(LS_KEY) || "[]"); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
+function storeSaved(arr) { try { localStorage.setItem(LS_KEY, JSON.stringify(arr)); return true; } catch (e) { return false; } }
+
+/* ================= editor ================= */
+let draft = clone(PRESETS[0]);
+function clone(p) { return JSON.parse(JSON.stringify({ sense: p.sense, c: p.c, A: p.A, rel: p.rel, b: p.b })); }
+const $ = id => document.getElementById(id);
+
+function fillPresetSelect(selVal) {
+  const saved = loadSaved();
+  let h = `<optgroup label="Course examples">` + PRESETS.map((p, i) => `<option value="p${i}">${esc(p.name)}</option>`).join("") + `</optgroup>`;
+  if (saved.length) h += `<optgroup label="My examples (this browser)">` + saved.map((p, i) => `<option value="s${i}">${esc(p.name)}</option>`).join("") + `</optgroup>`;
+  h += `<option value="blank">Blank problem</option>`;
+  $("preset").innerHTML = h;
+  if (selVal) $("preset").value = selVal;
+  $("delEx").hidden = !String($("preset").value).startsWith("s");
+}
+function renderEditor() {
+  const n = draft.c.length, m = draft.b.length;
+  $("nVal").textContent = n; $("mVal").textContent = m;
+  $("nDec").disabled = n <= 1; $("nInc").disabled = n >= 6;
+  $("mDec").disabled = m <= 1; $("mInc").disabled = m >= 6;
+  const ed = $("ed");
+  ed.style.gridTemplateColumns = `auto repeat(${n}, auto) auto auto`;
+  let h = `<div></div>` + Array.from({ length: n }, (_, j) => `<div class="hd">${V(j)}</div>`).join("") + `<div></div><div class="hd">RHS</div>`;
+  h += `<div class="lab"><select class="sel" id="sense" aria-label="Objective sense"><option value="max">Max</option><option value="min">Min</option></select></div>`;
+  for (let j = 0; j < n; j++) h += `<input class="num" id="c_${j}" data-k="c" data-j="${j}" value="${esc(draft.c[j])}" aria-label="Objective coefficient of x${j + 1}" inputmode="text">`;
+  h += `<div></div><div></div>`;
+  for (let i = 0; i < m; i++) {
+    h += `<div class="lab">(${i + 1})</div>`;
+    for (let j = 0; j < n; j++) h += `<input class="num" id="a_${i}_${j}" data-k="A" data-i="${i}" data-j="${j}" value="${esc(draft.A[i][j])}" aria-label="Constraint ${i + 1}, coefficient of x${j + 1}">`;
+    h += `<select class="sel" id="rel_${i}" data-k="rel" data-i="${i}" aria-label="Relation of constraint ${i + 1}"><option value="<=">≤</option><option value=">=">≥</option><option value="=">=</option></select>`;
+    h += `<input class="num" id="b_${i}" data-k="b" data-i="${i}" value="${esc(draft.b[i])}" aria-label="Right-hand side of constraint ${i + 1}">`;
+  }
+  ed.innerHTML = h;
+  $("sense").value = draft.sense;
+  for (let i = 0; i < m; i++) $("rel_" + i).value = draft.rel[i];
+  validate();
+}
+function validate() {
+  let bad = 0;
+  document.querySelectorAll("#ed .num").forEach(inp => { const ok = parseQ(inp.value) !== null; inp.classList.toggle("bad", !ok); if (!ok) bad++; });
+  $("err").textContent = bad ? `${bad} entr${bad === 1 ? "y is" : "ies are"} not a number. Use forms like 3, −1.5 or 2/7.` : "";
+  return !bad;
+}
+function readModel() {
+  if (!validate()) return null;
+  const c = draft.c.map(parseQ), A = draft.A.map(r => r.map(parseQ)), b = draft.b.map(parseQ);
+  if (c.every(q => q.isZero())) { $("err").textContent = "The objective is all zeros. Give at least one variable a nonzero coefficient."; return null; }
+  return { sense: draft.sense, c, A, rel: draft.rel.slice(), b, n: c.length, m: b.length };
+}
+function onDraftChange() {
+  animCancel();
+  if (S.stages.length) { S.stages = []; S.flash = "The problem changed, so the worksheet restarted."; }
+  render();
+}
+$("ed").addEventListener("input", e => {
+  const t = e.target; if (!t.dataset.k || t.tagName === "SELECT") return;
+  const k = t.dataset.k, i = +t.dataset.i, j = +t.dataset.j;
+  if (k === "c") draft.c[j] = t.value; else if (k === "A") draft.A[i][j] = t.value; else if (k === "b") draft.b[i] = t.value;
+  validate(); onDraftChange();
+});
+$("ed").addEventListener("change", e => {
+  const t = e.target;
+  if (t.id === "sense") { draft.sense = t.value; onDraftChange(); }
+  else if (t.dataset.k === "rel") { draft.rel[+t.dataset.i] = t.value; onDraftChange(); }
+});
+function resize(dn, dm) {
+  const n = draft.c.length + dn, m = draft.b.length + dm;
+  if (n < 1 || n > 6 || m < 1 || m > 6) return;
+  if (dn > 0) { draft.c.push("0"); draft.A.forEach(r => r.push("0")); }
+  if (dn < 0) { draft.c.pop(); draft.A.forEach(r => r.pop()); }
+  if (dm > 0) { draft.A.push(Array(n).fill("0")); draft.rel.push("<="); draft.b.push("0"); }
+  if (dm < 0) { draft.A.pop(); draft.rel.pop(); draft.b.pop(); }
+  renderEditor(); onDraftChange();
+}
+$("nDec").onclick = () => resize(-1, 0); $("nInc").onclick = () => resize(1, 0);
+$("mDec").onclick = () => resize(0, -1); $("mInc").onclick = () => resize(0, 1);
+$("preset").addEventListener("change", () => {
+  const v = $("preset").value;
+  if (v === "blank") draft = { sense: "max", c: ["0", "0"], A: [["0", "0"], ["0", "0"]], rel: ["<=", "<="], b: ["0", "0"] };
+  else if (v[0] === "p") draft = clone(PRESETS[+v.slice(1)]);
+  else { const s = loadSaved()[+v.slice(1)]; if (s) draft = clone(s); }
+  $("delEx").hidden = v[0] !== "s";
+  animCancel(); renderEditor(); S.stages = []; render();
+});
+$("saveEx").onclick = () => {
+  if (!validate()) { $("saveMsg").textContent = "Fix the highlighted entries first."; return; }
+  const saved = loadSaved();
+  const name = `My example ${saved.length + 1} (${draft.c.length} var, ${draft.b.length} con)`;
+  saved.push(Object.assign({ name }, clone(draft)));
+  if (storeSaved(saved)) { fillPresetSelect("s" + (saved.length - 1)); $("saveMsg").textContent = `Saved as “${name}” in this browser.`; }
+  else $("saveMsg").textContent = "This browser is blocking storage, so the example could not be saved.";
+};
+$("delEx").onclick = () => {
+  const v = $("preset").value; if (v[0] !== "s") return;
+  const saved = loadSaved(); saved.splice(+v.slice(1), 1); storeSaved(saved);
+  fillPresetSelect("p0"); draft = clone(PRESETS[0]); renderEditor(); S.stages = []; render();
+  $("saveMsg").textContent = "Saved example removed.";
+};
+
+/* ================= simplex engine ================= */
+const S = { model: null, std: null, stages: [], flash: "" };
+const MAX_IT = 50;
+
+function standardize(M) {
+  const n = M.n, m = M.m;
+  let N = n; const extra = []; // extra variable per row: {j, sign}
+  for (let i = 0; i < m; i++) {
+    if (M.rel[i] === "<=") extra.push({ j: N++, sign: 1 });
+    else if (M.rel[i] === ">=") extra.push({ j: N++, sign: -1 });
+    else extra.push(null);
+  }
+  const cmax = M.c.map(q => M.sense === "min" ? q.neg() : q);
+  const rows = M.A.map((r, i) => {
+    const coefs = Array.from({ length: N }, (_, j) => j < n ? r[j] : ZERO);
+    if (extra[i]) coefs[extra[i].j] = new Q(extra[i].sign);
+    return { coefs, rhs: M.b[i] };
+  });
+  return { n, m, N, extra, cmax, rows };
+}
+function pad(arr, N) { return Array.from({ length: N }, (_, j) => arr[j] || ZERO); }
+function applyOp(T, op) {
+  const rows = T.rows.map(r => ({ coefs: r.coefs.slice(), rhs: r.rhs }));
+  if (op.kind === "scale") {
+    const r = rows[op.row]; r.coefs = r.coefs.map(c => c.mul(op.f)); r.rhs = r.rhs.mul(op.f);
+  } else {
+    const s = rows[op.src], t = rows[op.row];
+    t.coefs = t.coefs.map((c, j) => c.add(s.coefs[j].mul(op.f))); t.rhs = t.rhs.add(s.rhs.mul(op.f));
+  }
+  return { rows, N: T.N };
+}
+function planGE(T, basis) {
+  const ops = []; let cur = T;
+  for (let i = 1; i < basis.length; i++) {
+    const b = basis[i], a = cur.rows[i].coefs[b];
+    if (!a.isOne()) { const op = { kind: "scale", row: i, f: ONE.div(a), v: b, before: cur }; cur = applyOp(cur, op); op.after = cur; ops.push(op); }
+    for (let r = 0; r < cur.rows.length; r++) {
+      if (r === i) continue;
+      const c = cur.rows[r].coefs[b];
+      if (c.isZero()) continue;
+      const op = { kind: "elim", row: r, src: i, f: c.neg(), v: b, before: cur }; cur = applyOp(cur, op); op.after = cur; ops.push(op);
+    }
+  }
+  return { ops, final: cur };
+}
+function nonbasicOf(basis, N) { const set = new Set(basis.slice(1)); return Array.from({ length: N }, (_, j) => j).filter(j => !set.has(j)); }
+function basicSorted(basis) { return basis.slice(1).slice().sort((a, b) => a - b); }
+function bfsValues(T, basis) {
+  const vals = Array.from({ length: T.N }, () => ZERO);
+  for (let i = 1; i < basis.length; i++) vals[basis[i]] = T.rows[i].rhs;
+  return vals;
+}
+function ratioTest(T, basis, e) {
+  const tests = [];
+  for (let i = 1; i < basis.length; i++) {
+    const a = T.rows[i].coefs[e], rhs = T.rows[i].rhs;
+    tests.push({ row: i, b: basis[i], a, rhs, ratio: a.sign() > 0 ? rhs.div(a) : null });
+  }
+  let min = null;
+  for (const t of tests) if (t.ratio && (min === null || t.ratio.cmp(min) < 0)) min = t.ratio;
+  const ties = min === null ? [] : tests.filter(t => t.ratio && t.ratio.cmp(min) === 0).map(t => t.row);
+  return { tests, min, ties };
+}
+
+const smooth = () => (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) ? "auto" : "smooth";
+function stageHead(kicker, title) { return `<div class="stage__h"><span class="stage__k">${kicker}</span><span class="stage__t">${title}</span></div>`; }
+
+/* ---------- animation clock (shared with the Algebraic Form tool) ---------- */
+const ANIM = { L: null, op: null, phase: null, timer: null, playing: false };
+const SPEEDS = { slow: 1.8, normal: 1, fast: 0.45 };
+let SPEED = "normal";
+const DUR = { select: 1300, add: 1500, apply: 1200, hold: 700 };
+function animCancel() { clearTimeout(ANIM.timer); ANIM.timer = null; ANIM.op = null; ANIM.phase = null; ANIM.playing = false; ANIM.L = null; }
+function animTick() {
+  const L = last();
+  if (!L || L.type !== "ge") { animCancel(); render(); return; }
+  const n = L.plan.ops.length, k = SPEEDS[SPEED];
+  if (ANIM.op == null) {
+    if (L.shown >= n) { animCancel(); render(); return; }
+    ANIM.L = L; ANIM.op = L.shown; ANIM.phase = "select";
+  } else if (ANIM.phase === "select") ANIM.phase = "add";
+  else if (ANIM.phase === "add") ANIM.phase = "apply";
+  else {
+    L.shown = ANIM.op + 1; ANIM.op = null; ANIM.phase = null;
+    const more = ANIM.playing && L.shown < n;
+    if (!more) { const keepL = L; animCancel(); render(); return keepL; }
+    render(); ANIM.timer = setTimeout(animTick, DUR.hold * k); return;
+  }
+  render(); ANIM.timer = setTimeout(animTick, DUR[ANIM.phase] * k);
+}
+/* one operation: animate it, or finish the one in progress */
+function geStep() {
+  const L = last(); if (!L || L.type !== "ge") return false;
+  if (ANIM.op != null) { clearTimeout(ANIM.timer); L.shown = ANIM.op + 1; animCancel(); render(); return true; }
+  if (L.shown >= L.plan.ops.length) return false;
+  clearTimeout(ANIM.timer); ANIM.playing = false; animTick(); return true;
+}
+function gePlay() {
+  const L = last(); if (!L || L.type !== "ge") return;
+  if (ANIM.playing) { ANIM.playing = false; if (ANIM.op == null) clearTimeout(ANIM.timer); render(); return; }   // pause after the current operation
+  if (L.shown >= L.plan.ops.length) L.shown = 0;                  // replay
+  ANIM.playing = true;
+  if (ANIM.op == null) animTick(); else render();
+}
+function geSet(n) { const L = last(); if (!L || L.type !== "ge") return; animCancel(); L.shown = Math.max(0, Math.min(n, L.plan.ops.length)); render(); }
+const reduced = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+function renderFinal(L) {
+  const M = S.model, n = M.n, N = L.T.N, z = L.T.rows[0].rhs;
+  const x = L.vals.slice(0, n);
+  let check = ZERO; for (let j = 0; j < n; j++) check = check.add(M.c[j].mul(x[j]));
+  const alt = L.rcs.filter(r => r.v.isZero());
+  let h = `<div class="pane final"><p class="pane__t">Optimal solution</p>`;
+  h += `<div class="kv">${x.map((v, j) => `<span>${V(j)}* = ${numHtml(v)}</span>`).join("")}</div>`;
+  if (N > n) h += `<div class="kv" style="color:var(--ink-2);font-size:.95rem">${L.vals.slice(n).map((v, j) => `<span>${V(n + j)} = ${numHtml(v)}</span>`).join("")}</div>`;
+  if (M.sense === "max") h += `<div class="big">Maximum value <i class="v-z">z</i>* = ${numHtml(z)}</div>`;
+  else h += `<div class="big">Maximum of ${exprHtml(S.std.cmax)} is ${numHtml(z)}, so the minimum of ${exprHtml(M.c)} is ${numHtml(z.neg())}</div>`;
+  h += `<p class="note">Check in the original objective: ${M.c.map((c, j) => `${c.sign() < 0 ? "(" + numHtml(c) + ")" : numHtml(c)}·${numHtml(x[j])}`).join(" + ")} = ${numHtml(check)}.</p>`;
+  if (alt.length) h += `<p class="note"><b>Multiple optima?</b> Non-basic ${listVars(alt.map(r => r.j))} ${alt.length === 1 ? "has" : "have"} reduced cost 0, so bringing ${alt.length === 1 ? "it" : "one"} into the basis would not change <i class="v-z">z</i>. There may be other optimal solutions.</p>`;
+  return h + `</div>`;
+}
+
+/* ================= steps =================
+   prep          : standard form + origin check (+ initial tableau data)
+   tab  (k = 0)  : the initial tableau
+   ge   (k >= 1) : tableau k built from tableau k-1, one row operation at a time
+   pc   (k)      : optimality test on row (0) -> pivot column
+   pr   (k)      : minimum ratio test -> pivot row                               */
+const last = () => S.stages[S.stages.length - 1];
+function isEnded() {
+  const L = last(); if (!L) return false;
+  return (L.type === "prep" && !L.ok) || (L.type === "pc" && L.optimal) || (L.type === "pr" && L.unbounded) || L.type === "cap";
+}
+const geBusy = L => L && L.type === "ge" && (ANIM.op != null || L.shown < L.plan.ops.length);
+function nextLabel() {
+  const L = last();
+  if (!L) return "Prepare the problem";
+  if (isEnded()) return "Done";
+  switch (L.type) {
+    case "prep": return "Iteration 0 · initial tableau";
+    case "tab": return "Pivot column";
+    case "ge": return ANIM.op != null ? "Finish this row" : L.shown < L.plan.ops.length ? `Row operation ${L.shown + 1} of ${L.plan.ops.length}` : `Iteration ${L.k} · pivot column`;
+    case "pc": return "Pivot row (ratio test)";
+    case "pr": return `Build tableau ${L.k + 1}`;
+  }
+  return "Next";
+}
+function statusText() {
+  const L = last();
+  if (!L) return "<b>Ready.</b> Next: standardize and check the origin.";
+  const it = L.k !== undefined ? `Iteration ${L.k} · ` : "Preparation · ";
+  const map = {
+    prep: L.ok ? "Standard form written; the origin is feasible." : "Stopped: the origin is not feasible.",
+    tab: "Initial tableau. Next: choose the pivot column.",
+    ge: L.plan ? (ANIM.op != null ? `building the new tableau, row operation ${ANIM.op + 1} of ${L.plan.ops.length}.` : L.shown < L.plan.ops.length ? `building the new tableau, ${L.shown} of ${L.plan.ops.length} rows done.` : "new tableau complete.") : "",
+    pc: L.optimal ? "Optimal tableau reached." : "Pivot column chosen.",
+    pr: L.unbounded ? "Stopped: the problem is unbounded." : "Pivot row found by the minimum ratio test.",
+    cap: "Stopped after too many iterations."
+  };
+  return `<b>${it}</b>${map[L.type] || ""}`;
+}
+/* the tableau and basis that iteration k works with */
+function tabOf(k) {
+  for (const s of S.stages) if ((s.type === "tab" || s.type === "ge") && s.k === k) return s.type === "tab" ? { T: s.T, basis: s.basis } : { T: s.plan.final, basis: s.basis };
+  return null;
+}
+function planPivot(T, e, r) {
+  const N = T.N, p = T.rows[r].coefs[e];
+  const piv = { coefs: T.rows[r].coefs.map(c => c.div(p)), rhs: T.rows[r].rhs.div(p) };
+  const rows = []; rows[r] = piv;
+  const ops = [{ kind: "scale", row: r, p }];
+  for (let i = 0; i < T.rows.length; i++) {
+    if (i === r) continue;
+    const c = T.rows[i].coefs[e], f = c.neg();
+    rows[i] = { coefs: T.rows[i].coefs.map((x, j) => x.add(f.mul(piv.coefs[j]))), rhs: T.rows[i].rhs.add(f.mul(piv.rhs)) };
+    ops.push({ kind: c.isZero() ? "copy" : "elim", row: i, f, g: c.neg().div(p), c, src: r });
+  }
+  return { ops, final: { rows, N }, e, r, p };
+}
+function next() {
+  const L = last();
+  if (!L) {
+    const M = readModel(); if (!M) { $("problem").scrollIntoView({ behavior: smooth() }); return false; }
+    S.model = M; S.std = standardize(M);
+    const relOk = M.rel.map(r => r === "<="), rhsOk = M.b.map(q => q.sign() >= 0);
+    const atOrigin = M.b.map((q, i) => M.rel[i] === "<=" ? q.sign() >= 0 : M.rel[i] === ">=" ? q.sign() <= 0 : q.isZero());
+    S.stages.push({ type: "prep", relOk, rhsOk, atOrigin, ok: relOk.every(Boolean) && rhsOk.every(Boolean) }); return true;
+  }
+  if (isEnded()) return false;
+  const st = S.std;
+  switch (L.type) {
+    case "prep": {
+      const N = st.N;
+      const rows = [{ coefs: pad(st.cmax.map(q => q.neg()), N), rhs: ZERO }].concat(st.rows.map(r => ({ coefs: r.coefs.slice(), rhs: r.rhs })));
+      S.stages.push({ type: "tab", k: 0, T: { rows, N }, basis: [null].concat(st.extra.map(x => x.j)) }); return true;
+    }
+    case "ge":
+      if (L.shown < L.plan.ops.length) { L.shown++; return true; }
+    // falls through
+    case "tab": {
+      const { T, basis } = tabOf(L.k);
+      const nb = nonbasicOf(basis, T.N);
+      const rcs = nb.map(j => ({ j, v: T.rows[0].coefs[j] }));
+      const negs = rcs.filter(r => r.v.sign() < 0);
+      let most = null; for (const r of negs) if (!most || r.v.cmp(most.v) < 0) most = r;
+      S.stages.push({ type: "pc", k: L.k, T, basis, vals: bfsValues(T, basis), rcs, negs, most: most ? most.j : null, choice: most ? most.j : null, optimal: !negs.length });
+      return true;
+    }
+    case "pc": {
+      if (L.choice == null) return false;
+      const rt = ratioTest(L.T, L.basis, L.choice);
+      S.stages.push({ type: "pr", k: L.k, T: L.T, basis: L.basis, e: L.choice, rt, choice: rt.ties.length ? rt.ties[0] : null, unbounded: !rt.ties.length, z0: L.T.rows[0].rhs, rce: L.T.rows[0].coefs[L.choice] });
+      return true;
+    }
+    case "pr": {
+      if (L.k + 1 >= MAX_IT) { S.stages.push({ type: "cap", k: L.k + 1 }); return true; }
+      const basis = L.basis.slice(); const leave = basis[L.choice]; basis[L.choice] = L.e;
+      S.stages.push({ type: "ge", k: L.k + 1, basis, prev: { e: L.e, l: leave, row: L.choice }, plan: planPivot(L.T, L.e, L.choice), from: L.T, shown: 0 });
+      return true;
+    }
+  }
+  return false;
+}
+function back() {
+  const L = last(); if (!L) return false;
+  if (L.type === "ge" && L.shown > 0) { L.shown--; return true; }
+  S.stages.pop(); return true;
+}
+
+/* ================= tableau rendering ================= */
+const cellNum = q => q.isZero() ? `<span class="z0">0</span>` : numHtml(q);
+const zOf = i => (i === 0 ? ONE : ZERO);
+const par = q => q.sign() < 0 ? `(${numHtml(q)})` : numHtml(q);
+/* o: {pc, pr, ratio:{rt, win}, rowCls:{i:cls}, chip:{row,html}, rings:[{row,col,cls}], gutter, enterRow,
+       basicCols:Set, rcNeg:Set, rowMode:{i:"blank"|[html...]}} */
+function tableau(T, basis, o = {}) {
+  const N = T.N, g = !!o.gutter, R = o.ratio;
+  let h = `<div class="tw"><div class="tabw"${g ? " data-ge" : ""}><table class="tab"><thead><tr>`;
+  if (g) h += `<th class="gut"></th><th class="gap"></th>`;
+  h += `<th class="bv">Basic</th><th class="eq">Eq.</th><th class="vh zcol"><i>z</i></th>`;
+  for (let j = 0; j < N; j++) h += `<th class="vh ${o.pc === j ? "pc" : ""} ${o.basicCols && o.basicCols.has(j) ? "hb" : ""}">${V(j)}</th>`;
+  h += `<th class="rhsc">RHS</th>`;
+  if (R) h += `<th class="sp"></th><th class="rt">Ratio test<br><span style="font-weight:400">RHS ÷ ${V(o.pc)} entry</span></th>`;
+  h += `</tr></thead><tbody>`;
+  const ringAt = (i, j) => { const r = (o.rings || []).find(x => x.row === i && x.col === j); return r ? " " + r.cls : ""; };
+  T.rows.forEach((r, i) => {
+    const mode = o.rowMode ? o.rowMode[i] : undefined;
+    const trc = [i === 0 ? "r0" : "", (o.rowCls && o.rowCls[i]) || "", o.pr === i ? "pr" : "", R && R.win === i ? "win" : ""].join(" ");
+    h += `<tr class="${trc}">`;
+    if (g) h += `<td class="gut">${o.chip && o.chip.row === i ? o.chip.html : ""}</td><td class="gap"></td>`;
+    let bl, bc = "bv";
+    if (i === 0) bl = `<i>z</i>`;
+    else if (o.enterRow === i) bl = Vc(basis[i], "v-e");
+    else { bl = V(basis[i]); bc += " bvb"; }
+    h += `<td class="${bc}" data-r="${i}">${bl}</td><td class="eq">(${i})</td>`;
+    const cells = [cellNum(zOf(i))].concat(r.coefs.map(cellNum), [numHtml(r.rhs)]);
+    const cls = j => (j === -1 ? "zcol" : j === N ? "rhsc" : "") + (o.pc === j ? " pc" : "") + (o.pr === i && o.pc === j ? " pe" : "") + (j >= 0 && j < N ? ringAt(i, j) : "") + (i === 0 && o.rcNeg && o.rcNeg.has(j) ? " rcn" : "");
+    for (let j = -1; j <= N; j++) {
+      let v = cells[j + 1], extra = "";
+      if (mode === "blank") { v = `<span class="blank">·</span>`; }
+      else if (Array.isArray(mode)) { v = mode[j + 1]; extra = " ex"; }
+      h += `<td class="${cls(j)}${extra}">${v}</td>`;
+    }
+    if (R) {
+      h += `<td class="sp"></td>`;
+      if (i === 0) h += `<td class="rt"></td>`;
+      else {
+        const t = R.rt.tests[i - 1];
+        let body = t.ratio ? `${numHtml(t.rhs)} ÷ ${numHtml(t.a)} = <b>${numHtml(t.ratio)}</b>`
+          : `<span class="imp">impossible</span> <span class="why">(${t.a.isZero() ? "entry is 0" : "entry " + numHtml(t.a) + " &lt; 0"})</span>`;
+        if (R.win === i) body += `<span class="mintag">min</span>`;
+        else if (R.rt.ties.length > 1 && R.rt.ties.includes(i)) body += `<span class="mintag tie">tie</span>`;
+        h += `<td class="rt">${body}</td>`;
+      }
+    }
+    h += `</tr>`;
+  });
+  return h + `</tbody></table>${o.svg || ""}</div></div>`;
+}
+
+/* ---------- building the next tableau ---------- */
+function geState(L, current) {
+  const ops = L.plan.ops;
+  if (current && ANIM.op != null && ANIM.L === L) return { i: ANIM.op, op: ops[ANIM.op], phase: ANIM.phase, applied: ANIM.op };
+  const s = current ? L.shown : ops.length;
+  return s ? { i: s - 1, op: ops[s - 1], phase: "done", applied: s } : { i: -1, op: null, phase: null, applied: 0 };
+}
+function opNotation(op) {
+  if (op.kind === "scale") return `new R<sub>${op.row}</sub> = R<sub>${op.row}</sub> ÷ ${numHtml(op.p)}`;
+  if (op.kind === "copy") return `new R<sub>${op.row}</sub> = R<sub>${op.row}</sub>`;
+  return `new R<sub>${op.row}</sub> = R<sub>${op.row}</sub> ${op.g.sign() < 0 ? "−" : "+"} ${op.g.abs().isOne() ? "" : absHtml(op.g) + "·"}R<sub>${op.src}</sub>`;
+}
+function geCaption(st, L) {
+  const { op } = st, xe = Vc(L.plan.e, "v-e");
+  if (!op) return `Press <b>▶ Play all</b> to build the whole tableau, or <b>Next row ▶</b> to build one row at a time. Every operation uses the rows of the tableau above; the result goes into the new tableau. The pivot row is done first.`;
+  const p = numHtml(op.kind === "scale" ? op.p : L.plan.p);
+  if (op.kind === "scale") return `<b>New row (${op.row}) = old row (${op.row}) ÷ ${p}</b>. ${p} is the pivot element, so ${xe} gets a 1 in its own row.`;
+  if (op.kind === "copy") return `<b>New row (${op.row}) = old row (${op.row})</b>. Its entry in the ${xe} column is already 0, so the row is copied unchanged.`;
+  return `<b>New row (${op.row}) = old row (${op.row}) ${op.g.sign() < 0 ? "−" : "+"} ${absHtml(op.g)} × old pivot row (${op.src})</b>. Why ${numHtml(op.g)}? Old row (${op.row}) has ${numHtml(op.c)} in the ${xe} column and the pivot element is ${p}: ${numHtml(op.c)} + (${numHtml(op.g)}) × ${p} = 0.`;
+}
+function buildTable(L, current) {
+  const st = geState(L, current), ops = L.plan.ops, T = L.plan.final;
+  const done = new Set(ops.slice(0, st.applied).map(o => o.row));
+  const rowMode = {}, rowCls = {};
+  T.rows.forEach((_, i) => { if (!done.has(i)) rowMode[i] = "blank"; });
+  if (st.op) {
+    const t = st.op.row;
+    if (st.phase === "done") rowCls[t] = "rdone";
+    else { rowCls[t] = "rtgt" + (st.phase === "apply" ? " rnew" : ""); if (st.phase !== "apply") rowMode[t] = "blank"; else delete rowMode[t]; }
+  }
+  return tableau(T, L.basis, { gutter: true, rowMode, rowCls, pc: L.plan.e, enterRow: L.plan.r });  // empty gutter keeps columns under the tableau above
+}
+/* the operation is drawn on the previous tableau: multiplier chip on the pivot row,
+   an arrow with "+" into the row being changed (or a "÷" loop on the pivot row) */
+function prevHighlights(L, current) {
+  const st = geState(L, current);
+  const o = { gutter: true };
+  if (!st.op) return o;
+  const op = st.op, e = L.plan.e, ph = st.phase, live = ph !== "done";
+  const src = op.kind === "copy" ? -1 : op.kind === "scale" ? op.row : op.src;
+  o.rowCls = {};
+  if (op.kind === "scale") o.rowCls[op.row] = live ? "rsrc" : "";
+  else { if (live) o.rowCls[op.row] = "rold"; if (op.kind === "elim" && live) o.rowCls[op.src] = "rsrc"; }
+  o.rings = live ? [{ row: op.row, col: e, cls: op.kind === "scale" ? "tone" : op.kind === "copy" ? "tzero" : "tkill" }] : [];
+  if (src >= 0) {
+    const label = op.kind === "scale" ? "÷ " + numHtml(op.p) : "× " + numHtml(op.g);
+    o.chip = { row: src, html: `<span class="mult${ph === "select" ? " pop" : ""}${live ? "" : " dim"}">${label}</span>` };
+    if (ph !== "select") o.svg = `<svg class="ga${live ? "" : " dim"}" data-src="${src}" data-tgt="${op.row}" data-kind="${op.kind}" data-phase="${ph}" aria-hidden="true"></svg>`;
+  }
+  return o;
+}
+function player(L, st) {
+  const n = L.plan.ops.length, animating = ANIM.op != null && ANIM.L === L, doneAll = L.shown >= n && !animating;
+  const names = !st.op ? null : st.op.kind === "scale" ? ["Pick the pivot row", "Divide by the pivot element", "Write the new row"] : st.op.kind === "copy" ? ["Check the pivot-column entry", "Copy", "Write the new row"] : ["Multiply the pivot row", "Add it to row (" + st.op.row + ")", "Write the new row"];
+  const at = st.op ? { select: 0, add: 1, apply: 2, done: 3 }[st.phase] : -1;
+  return `<div class="player" role="group" aria-label="Row operation player">
+    <div class="player__ctl">
+      <button type="button" class="btn btn--sm" data-gact="reset" aria-label="Back to the empty tableau" title="Back to the empty tableau" ${L.shown === 0 && !animating ? "disabled" : ""}>⏮</button>
+      <button type="button" class="btn btn--sm" data-gact="prev" ${L.shown === 0 && !animating ? "disabled" : ""}>◀ Previous</button>
+      <button type="button" class="btn btn--sm btn--solid pbig" data-gact="play">${ANIM.playing ? "❚❚ Pause" : doneAll ? "↺ Replay" : "▶ Play all"}</button>
+      <button type="button" class="btn btn--sm" data-gact="step" ${doneAll ? "disabled" : ""}>${animating ? "Finish row ⏭" : "Next row ▶"}</button>
+      <span class="player__count">Row ${animating ? st.i + 1 : L.shown} of ${n}${animating ? "" : " done"}</span>
+    </div>
+    <div class="player__ctl">
+      ${names ? `<span class="phases" aria-hidden="true">${names.map((nm, i) => `<span class="${i < at ? "done" : i === at ? "on" : ""}">${nm}</span>`).join("")}</span>` : ""}
+      <span class="seg" role="group" aria-label="Animation speed">${Object.keys(SPEEDS).map(s => `<button type="button" data-speed="${s}" aria-pressed="${SPEED === s}">${s[0].toUpperCase() + s.slice(1)}</button>`).join("")}</span>
+    </div>
+  </div>`;
+}
+
+/* ================= cards ================= */
+function renderPrep(L) {
+  const M = S.model, st = S.std, n = M.n;
+  const orig = [{ label: M.sense === "max" ? "Max" : "Min", coefs: pad(M.c, n), rhs: null }].concat(M.A.map((r, i) => ({ label: i === 0 ? "s.t." : "", coefs: r, rel: M.rel[i], rhs: M.b[i] })));
+  const newVars = new Set(st.extra.filter(Boolean).map(x => x.j));
+  const stdR = [{ label: "Max", coefs: pad(st.cmax, st.N), rhs: null }].concat(st.rows.map((r, i) => ({ label: i === 0 ? "s.t." : "", coefs: r.coefs, rel: "=", rhs: r.rhs })));
+  let h = `<div class="pair"><div class="pane"><p class="pane__t">Original</p>${sys(orig, { N: n, nonneg: n })}</div>
+    <div class="pair__arrow" aria-hidden="true"><span>➜</span><small>standard form${M.sense === "min" ? ", min → max" : ""}</small></div>
+    <div class="pane"><p class="pane__t">Standard form</p>${sys(stdR, { N: st.N, newVars, nonneg: st.N })}</div></div>`;
+  const bad = M.A.map((_, i) => i).filter(i => !(L.relOk[i] && L.rhsOk[i]));
+  if (L.ok) h += `<p class="nl ok"><b>Origin feasible?</b> Every constraint is “≤” and every right-hand side is ≥ 0, so <b>yes</b>: the slacks start as the basic variables. Row (0): <span class="mx">${exprHtml(pad(st.cmax.map(q => q.neg()), st.N), { z: true })} = 0</span>, goal: maximize <i class="v-z">z</i>.</p>`;
+  else if (L.atOrigin.every(Boolean)) h += `<p class="ans ans--bad"><b>Not in the required form:</b> ${bad.map(i => `constraint (${i + 1}) is “${relSym(M.rel[i])}”${L.rhsOk[i] ? "" : ` with right-hand side ${numHtml(M.b[i])}`}`).join("; ")}. The origin does satisfy ${bad.length === 1 ? "it" : "them"}, but this tool needs every constraint written as “≤” with a right-hand side ≥ 0 (for example, multiply a “≥” row with a right-hand side ≤ 0 by −1). Rewrite the problem above and the worksheet will start.</p>`;
+  else h += `<p class="ans ans--bad"><b>The origin is not feasible:</b> ${M.A.map((_, i) => i).filter(i => !L.atOrigin[i]).map(i => `constraint (${i + 1}) fails at the origin (0 ${relSym(M.rel[i])} ${numHtml(M.b[i])} is false)`).join("; ")}. A different starting method is needed (covered later in the course), so this tool stops here.</p>`;
+  return `<article class="itcard" id="card-prep"><div class="itcard__h"><h2>Preparation</h2></div>${h}</article>`;
+}
+function renderIter(k, tbl, pc, pr, nextGe) {
+  const lastStep = last();
+  const isCur = s => s && s === lastStep;
+  let T, basis, built = true, h = "";
+  if (tbl.type === "tab") { T = tbl.T; basis = tbl.basis; }
+  else { T = tbl.plan.final; basis = tbl.basis; built = !isCur(tbl) || (tbl.shown >= tbl.plan.ops.length && ANIM.op == null); }
+  const head = `<div class="itcard__h"><h2>Iteration ${k}</h2><span class="group__meta mx">basic: ${listVars(basicSorted(basis), "v-b")}</span></div>`;
+  if (!built) {
+    const st = geState(tbl, true);
+    h += `<p class="nl">${Vc(tbl.prev.e, "v-e")} replaces ${Vc(tbl.prev.l, "v-l")} in the Basic column of row (${tbl.prev.row}). The row operations are drawn on the tableau above; each result is written here.</p>`;
+    h += buildTable(tbl, true);
+    h += `<p class="cap nl" aria-live="polite">${geCaption(st, tbl)}</p>`;
+    h += player(tbl, st);
+    return `<article class="itcard is-current" id="card-${k}">${head}${h}</article>`;
+  }
+  // full tableau with overlays
+  const o = {};
+  if (pc && !pc.optimal) { o.pc = pc.choice; if (!pr) o.rcNeg = new Set(pc.negs.map(r => r.j)); }
+  if (pc && pc.optimal) o.rcNeg = undefined;
+  if (pr) { o.pc = pr.e; o.ratio = { rt: pr.rt, win: pr.unbounded ? null : pr.choice }; if (!pr.unbounded) o.pr = pr.choice; }
+  if (nextGe && isCur(nextGe)) Object.assign(o, prevHighlights(nextGe, true));
+  h += (tbl.type === "ge" && isCur(tbl)) ? buildTable(tbl, true) : tableau(T, basis, o);
+  if (tbl.type === "ge" && isCur(tbl)) {
+    const st = geState(tbl, true);
+    h += `<p class="cap nl">${geCaption(st, tbl)}</p>` + player(tbl, st);
+  } else if (tbl.type === "ge") {
+    h += `<p class="nl small">Built from the rows R of iteration ${k - 1}: ${tbl.plan.ops.map(opNotation).join(" · ")}</p>`;
+  } else {
+    h += `<p class="nl small">The slack columns are unit columns (1 in their own row, 0 elsewhere, including row (0)), so the slacks are basic.</p>`;
+  }
+  const vals = bfsValues(T, basis);
+  h += `<p class="nl"><b>Solution:</b> <span class="mx">(${Array.from({ length: T.N }, (_, j) => V(j)).join(", ")}) = (${vals.map(numHtml).join(", ")})</span>, <span class="mx"><i class="v-z">z</i> = ${numHtml(T.rows[0].rhs)}</span> <span class="small">(basic = RHS of its row, non-basic = 0)</span></p>`;
+  if (pc) {
+    if (pc.optimal) {
+      h += `<p class="ans ans--ok"><b>Pivot column?</b> No entry of row (0) is negative, so this tableau is <b>optimal</b>.</p>` + renderFinal(pc);
+    } else {
+      h += `<p class="nl"><b>Pivot column:</b> negative entries in row (0): ${pc.negs.map(r => `${V(r.j)} (${numHtml(r.v)})`).join(", ")}. ${Vc(pc.choice, "v-e")} enters${pc.choice === pc.most && pc.negs.length > 1 ? " (most negative)" : ""}.</p>`;
+      if (isCur(pc) && pc.negs.length > 1) h += `<div class="choices">` + pc.negs.map(r => `<button type="button" class="choice" data-enter="${r.j}" aria-pressed="${pc.choice === r.j}"><span class="mx">${V(r.j)}</span><small>${numText(r.v)}${r.v.cmp(pc.T.rows[0].coefs[pc.most]) === 0 ? " · most negative" : ""}</small></button>`).join("") + `</div>`;
+    }
+  }
+  if (pr) {
+    if (pr.unbounded) h += `<p class="ans ans--bad"><b>Unbounded.</b> Every entry in the ${Vc(pr.e, "v-e")} column is ≤ 0, so every row is impossible: ${V(pr.e)} can grow forever and <i class="v-z">z</i> grows without limit. No optimal solution.</p>`;
+    else {
+      const lv = pr.basis[pr.choice], p = pr.T.rows[pr.choice].coefs[pr.e], th = pr.rt.min;
+      h += `<p class="nl"><b>Pivot row:</b> the minimum ratio is ${numHtml(th)} in row (${pr.choice}), so ${Vc(lv, "v-l")} leaves. Pivot element = ${numHtml(p)}. ${th.isZero() ? "(Ratio 0: a degenerate step.)" : ""}</p>`;
+      if (isCur(pr) && pr.rt.ties.length > 1) h += `<div class="choices">` + pr.rt.ties.map(r => `<button type="button" class="choice" data-leave="${r}" aria-pressed="${pr.choice === r}"><span class="mx">row (${r})</span><small>${V(pr.basis[r])} leaves</small></button>`).join("") + `</div>`;
+    }
+  }
+  const cur = isCur(tbl) || isCur(pc) || isCur(pr);
+  return `<article class="itcard${cur ? " is-current" : ""}" id="card-${k}">${head}${h}</article>`;
+}
+
+/* ================= page ================= */
+function render() {
+  if (ANIM.L && ANIM.L !== last()) animCancel();
+  const stages = S.stages;
+  let h = S.flash ? `<p class="ans ans--info" style="margin-bottom:1rem">${esc(S.flash)}</p>` : "";
+  S.flash = "";
+  if (!stages.length) h += `<div class="empty">The worksheet is empty. Check the problem above, then press <b>Next</b>.</div>`;
+  else {
+    h += renderPrep(stages[0]);
+    const its = [];
+    for (const s of stages) {
+      if (s.type === "tab" || s.type === "ge") its[s.k] = Object.assign(its[s.k] || {}, { tbl: s });
+      if (s.type === "pc") its[s.k].pc = s;
+      if (s.type === "pr") its[s.k].pr = s;
+    }
+    its.forEach((c, k) => { h += renderIter(k, c.tbl, c.pc, c.pr, its[k + 1] && its[k + 1].tbl); });
+    const L = last();
+    if (L.type === "cap") h += `<p class="ans ans--bad">The method has run ${MAX_IT} iterations without finishing (cycling). Try a different entering variable or tie choice.</p>`;
+  }
+  const fa = document.activeElement, fkey = fa && fa.closest && fa.closest("#sheet") ? ["data-gact", "data-enter", "data-leave", "data-speed"].map(a => fa.getAttribute(a) != null ? `[${a}="${fa.getAttribute(a)}"]` : "").join("") : "";
+  $("sheet").innerHTML = h;
+  if (fkey) { const el = $("sheet").querySelector(fkey); if (el && !el.disabled) el.focus({ preventScroll: true }); }
+  $("next").textContent = nextLabel() + (isEnded() ? "" : " →");
+  $("next").disabled = isEnded();
+  $("back").disabled = !stages.length;
+  $("auto").disabled = isEnded();
+  $("status").innerHTML = statusText();
+  drawArrows();
+}
+function drawArrows() {
+  document.querySelectorAll("[data-ge] > svg.ga").forEach(svg => {
+    const wrap = svg.parentElement, W = wrap.getBoundingClientRect();
+    const a = wrap.querySelector(`td.bv[data-r="${svg.dataset.src}"]`), b = wrap.querySelector(`td.bv[data-r="${svg.dataset.tgt}"]`);
+    if (!a || !b) return;
+    const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+    const x = ra.left - W.left - 4, ys = ra.top - W.top + ra.height / 2, yt = rb.top - W.top + rb.height / 2;
+    let d, bx, by, sym, hx = x, hy = yt;
+    if (svg.dataset.kind === "elim") {
+      const w = 46; d = `M ${x} ${ys} C ${x - w} ${ys}, ${x - w} ${yt}, ${x} ${yt}`; bx = x - w * 0.75; by = (ys + yt) / 2; sym = "+";
+    } else {
+      d = `M ${x} ${ys - 8} C ${x - 40} ${ys - 26}, ${x - 40} ${ys + 26}, ${x} ${ys + 8}`; bx = x - 30; by = ys; sym = "÷"; hy = ys + 8;
+    }
+    const animate = svg.dataset.phase === "add" && !reduced();
+    svg.innerHTML = `<path class="ga-path" d="${d}"/><polygon class="ga-head${animate ? " late" : ""}" points="${hx},${hy} ${hx - 8},${hy - 4.5} ${hx - 8},${hy + 4.5}"/><g class="${animate ? "late2" : ""}"><circle class="ga-badge" cx="${bx}" cy="${by}" r="11"/><text class="ga-txt" x="${bx}" y="${by}" text-anchor="middle" dominant-baseline="central">${sym}</text></g>`;
+    if (animate) {
+      const p = svg.querySelector("path"), len = p.getTotalLength(), k = SPEEDS[SPEED];
+      p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
+      svg.style.setProperty("--draw", (0.75 * k) + "s");
+      p.getBoundingClientRect();
+      p.style.transition = `stroke-dashoffset ${0.75 * k}s ease-in-out`; p.style.strokeDashoffset = 0;
+    }
+  });
+}
+let rsz; window.addEventListener("resize", () => { clearTimeout(rsz); rsz = setTimeout(drawArrows, 120); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawArrows);
+function focusLast() {
+  const L = last(); if (!L) return;
+  let el;
+  if (L.type === "prep") el = $("card-prep");
+  else if (L.type === "ge" && L.k > 0) el = document.getElementById("card-" + (L.k - 1));   // keep the previous tableau in view
+  else el = document.getElementById("card-" + L.k);
+  if (!el) return;
+  const r = el.getBoundingClientRect();
+  if (r.top < 0 || r.top > window.innerHeight * 0.5) el.scrollIntoView({ behavior: smooth(), block: "start" });
+}
+const inGE = () => geBusy(last());
+
+/* ================= wiring ================= */
+$("next").onclick = () => {
+  if (inGE()) { geStep(); focusLast(); return; }
+  animCancel();
+  if (next()) { render(); focusLast(); }
+};
+$("back").onclick = () => {
+  const L = last();
+  if (L && L.type === "ge" && ANIM.op != null) { animCancel(); render(); return; }
+  animCancel();
+  if (back()) { render(); focusLast(); }
+};
+$("auto").onclick = () => { animCancel(); let guard = 0; while (!isEnded() && guard++ < 3000) { if (!next()) break; } render(); focusLast(); };
+$("restart").onclick = () => { animCancel(); S.stages = []; render(); $("worksheet").scrollIntoView({ behavior: smooth() }); };
+$("sheet").addEventListener("click", e => {
+  const L = last();
+  const g = e.target.closest("[data-gact]");
+  if (g && !g.disabled) {
+    const act = g.dataset.gact;
+    if (act === "play") gePlay();
+    else if (act === "step") geStep();
+    else if (act === "prev") { if (ANIM.op != null) geSet(L.shown); else geSet(L.shown - 1); }
+    else if (act === "reset") geSet(0);
+    return;
+  }
+  const sp = e.target.closest("[data-speed]");
+  if (sp) { SPEED = sp.dataset.speed; if (ANIM.op == null) render(); else document.querySelectorAll("[data-speed]").forEach(x => x.setAttribute("aria-pressed", x.dataset.speed === SPEED)); return; }
+  const b = e.target.closest("button.choice"); if (!b || b.disabled) return;
+  if (b.dataset.enter !== undefined && L.type === "pc") { L.choice = +b.dataset.enter; render(); }
+  if (b.dataset.leave !== undefined && L.type === "pr") { L.choice = +b.dataset.leave; render(); }
+});
+function setMode(m) { MODE = m; $("fmtFrac").setAttribute("aria-pressed", m === "frac"); $("fmtDec").setAttribute("aria-pressed", m === "dec"); render(); }
+$("fmtFrac").onclick = () => setMode("frac");
+$("fmtDec").onclick = () => setMode("dec");
+document.addEventListener("keydown", e => {
+  const tag = (e.target.tagName || "").toLowerCase();
+  if (tag === "input" || tag === "select" || tag === "textarea" || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === "ArrowRight") { e.preventDefault(); $("next").click(); }
+  else if (e.key === "ArrowLeft") { e.preventDefault(); $("back").click(); }
+  else if (e.key === " " && last() && last().type === "ge" && !(e.target.closest && e.target.closest("button,a,[role=button],summary"))) { e.preventDefault(); gePlay(); }
+});
+
+fillPresetSelect("p0");
+renderEditor();
+render();
+window.__simplex = { S, ANIM, geStep, gePlay, next, back, isEnded, parseQ, PRESETS, setDraft: p => { draft = clone(p); renderEditor(); S.stages = []; render(); } };
+})();
+</script>
+</body>
+</html>
