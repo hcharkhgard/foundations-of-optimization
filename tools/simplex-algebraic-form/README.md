@@ -66,4 +66,4 @@ double-click `index.html`. The only external request is Google Fonts; offline, t
 
 ## Terms of use
 
-Developed by Dr. Hadi Gard (Charkhgard) for teaching the Foundations of Optimization course only. © 2026 Hadi Charkhgard. All rights reserved — see [LICENSE](../../LICENSE).
+Developed by Dr. Hadi Gard (Charkhgard) for teaching the Foundations of Optimization course only. © 2026 Hadi Gard (Charkhgard). All rights reserved — see [LICENSE](../../LICENSE).
