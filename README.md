@@ -14,6 +14,7 @@ Every tool is a single self-contained web page — no installation, no build ste
 | Standard Form Worksheet | Converting a general LP to standard form one rule at a time | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/standard-form-worksheet/) | [`tools/standard-form-worksheet`](tools/standard-form-worksheet) |
 | Simplex method interactive tool: Algebraic Form | The simplex method step by step when the origin is feasible: basis, Gaussian elimination, reduced costs, minimum ratio test | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/simplex-algebraic-form/) | [`tools/simplex-algebraic-form`](tools/simplex-algebraic-form) |
 | Simplex method interactive tool: Tabular Form | The simplex method on a tableau when the origin is feasible: initial tableau, pivot column, ratio test box, animated pivoting | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/simplex-tabular-form/) | [`tools/simplex-tabular-form`](tools/simplex-tabular-form) |
+| Simplex method interactive tool: Big M Method | The Big M method when the origin is not feasible: right-hand sides ≥ 0, artificial variables, −M penalty, pre-processing (iteration 0′), simplex tableau, infeasible / unbounded detection | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/simplex-big-m/) | [`tools/simplex-big-m`](tools/simplex-big-m) |
 
 ## Repository layout
 
@@ -32,9 +33,13 @@ foundations-of-optimization/
     ├── simplex-algebraic-form/
     │   ├── index.html
     │   └── README.md
-    └── simplex-tabular-form/
+    ├── simplex-tabular-form/
+    │   ├── index.html
+    │   └── README.md
+    └── simplex-big-m/
         ├── index.html
-        └── README.md
+        ├── README.md
+        └── EXAMPLES.md             ← ready-to-use class examples with answers
 ```
 
 ## Adding a new tool
@@ -50,6 +55,6 @@ foundations-of-optimization/
 
 Served by GitHub Pages from the `main` branch (root folder). Any push to `main` republishes the site.
 
-## License
+## Terms of use
 
-MIT — see [LICENSE](LICENSE). Free to use, adapt, and share for teaching.
+© 2026 Hadi Gard (Charkhgard). All rights reserved. These tools were developed by Dr. Hadi Gard (Charkhgard) and are provided for teaching the Foundations of Optimization course only — see [LICENSE](LICENSE).
