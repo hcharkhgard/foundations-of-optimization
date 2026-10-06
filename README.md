@@ -15,6 +15,7 @@ Every tool is a single self-contained web page — no installation, no build ste
 | Simplex method interactive tool: Algebraic Form | The simplex method step by step when the origin is feasible: basis, Gaussian elimination, reduced costs, minimum ratio test | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/simplex-algebraic-form/) | [`tools/simplex-algebraic-form`](tools/simplex-algebraic-form) |
 | Simplex method interactive tool: Tabular Form | The simplex method on a tableau when the origin is feasible: initial tableau, pivot column, ratio test box, animated pivoting | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/simplex-tabular-form/) | [`tools/simplex-tabular-form`](tools/simplex-tabular-form) |
 | Simplex method interactive tool: Big M Method | The Big M method when the origin is not feasible: right-hand sides ≥ 0, artificial variables, −M penalty, pre-processing (iteration 0′), simplex tableau, infeasible / unbounded detection | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/simplex-big-m/) | [`tools/simplex-big-m`](tools/simplex-big-m) |
+| Simplex method interactive tool: Two-Phase Method | The two-phase method when the origin is not feasible: Phase I (maximize −sum of artificials, iteration 0 and 0′), end-of-Phase-I checks, Phase II (original objective, iteration 0 and 0′) | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/simplex-two-phase/) | [`tools/simplex-two-phase`](tools/simplex-two-phase) |
 
 ## Repository layout
 
@@ -36,10 +37,14 @@ foundations-of-optimization/
     ├── simplex-tabular-form/
     │   ├── index.html
     │   └── README.md
-    └── simplex-big-m/
+    ├── simplex-big-m/
+    │   ├── index.html
+    │   ├── README.md
+    │   └── EXAMPLES.md             ← ready-to-use class examples with answers
+    └── simplex-two-phase/
         ├── index.html
         ├── README.md
-        └── EXAMPLES.md             ← ready-to-use class examples with answers
+        └── EXAMPLES.md
 ```
 
 ## Adding a new tool
