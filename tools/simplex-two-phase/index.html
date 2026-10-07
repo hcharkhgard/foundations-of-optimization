@@ -482,7 +482,7 @@ table.tab{border-collapse:separate;border-spacing:0;font-family:var(--serif);fon
         <ol>
           <li><b>Step 1. Standard form.</b> Make the objective a <b>maximization</b>. Add a slack (<span class="mx">+</span>) to each “≤” row and subtract a surplus (<span class="mx">−</span>) from each “≥” row.</li>
           <li><b>Step 2. Right-hand sides ≥ 0.</b> Multiply every row with a negative right-hand side by <span class="mx">−1</span>.</li>
-          <li><b>Step 3. Artificial variables.</b> Every row whose slack does not have coefficient <span class="mx">+1</span> (originally “≥”, “=”, or “≤” with a negative right-hand side) gets an artificial variable <span class="mx"><i class="xb">x</i></span>.</li>
+          <li><b>Step 3. Artificial variables.</b> After Step 2, a “≤” constraint (right-hand side ≥ 0) needs no artificial variable: its slack starts as basic. Every “≥” or “=” constraint gets its own artificial variable <span class="mx"><i class="xb">x</i></span>. (So originally: “≥”, “=”, and “≤” with a negative right-hand side; a “≥” with a negative right-hand side becomes “≤” in Step 2 and needs none.)</li>
           <li><b>Step 4. Phase I objective.</b> Maximize <span class="mx"><i>z</i> = −(<i class="xb">x</i> + <i class="xb">x</i> + …)</span>; row (0): <span class="mx"><i>z</i> + <i class="xb">x</i> + <i class="xb">x</i> + … = 0</span>.</li>
           <li><b>Phase I iterations.</b> Iteration 0, then iteration 0′: new row (0) = row (0) − row (<i>i</i>) for each artificial basic in row (<i>i</i>). Then the usual tableau iterations until optimal.</li>
           <li><b>End of Phase I.</b> Optimal <span class="mx"><i>z</i> &lt; 0</span>: the original problem is <b>infeasible</b>. Optimal <span class="mx"><i>z</i> = 0</span>: feasible, go to Phase II. (An artificial still basic at 0 is pivoted out, or its redundant row is deleted.)</li>
@@ -1263,23 +1263,26 @@ function renderArt(cur) {
   const M = S.model, st = S.std, F = S.flip, B = S.big;
   let rows = "";
   st.rows.forEach((_, i) => {
-    const x = st.extra[i], s = F.slackSign[i], fl = F.flips[i];
-    let why, act;
-    if (!x) { why = `“=” constraint: it has no slack variable`; }
-    else if (s === 1) why = fl ? `after × (−1), surplus ${V(x.j)} has coefficient <b>+1</b>` : `slack ${V(x.j)} has coefficient <b>+1</b>`;
-    else why = fl ? `after × (−1), slack ${V(x.j)} has coefficient <b>−1</b>` : `surplus ${V(x.j)} has coefficient <b>−1</b>`;
-    if (B.need[i]) act = `<span class="tagA">add artificial ${Vc(B.artOf[i], "v-a")}</span>`;
-    else act = `<span class="tagS">${Vc(x.j, "v-b")} starts basic</span>`;
-    rows += `<tr><td class="lbl">(${i + 1})</td><td class="lbl">${relSym(M.rel[i])} ${numHtml(M.b[i])}</td><td class="why2">${why}</td><td>${act}</td></tr>`;
+    const x = st.extra[i], fl = F.flips[i], rel = M.rel[i], b = M.b[i];
+    const rel2 = fl ? (rel === "<=" ? ">=" : rel === ">=" ? "<=" : "=") : rel, b2 = fl ? b.neg() : b;
+    let why;
+    if (rel === "=") why = `“=” constraint`;
+    else if (rel === "<=" && !fl) why = `“≤” with right-hand side ≥ 0`;
+    else if (rel === "<=") why = `“≤” with a negative right-hand side: after × (−1) it is a “≥” constraint`;
+    else if (!fl) why = `“≥” constraint`;
+    else why = `“≥” with a negative right-hand side: after × (−1) it is a “≤” constraint with right-hand side ≥ 0`;
+    const act = B.need[i] ? `<span class="tagA">yes: add ${Vc(B.artOf[i], "v-a")}</span>`
+      : `<span class="tagS">no: ${Vc(x.j, "v-b")} = ${numHtml(b2)} starts basic</span>`;
+    rows += `<tr><td class="lbl">(${i + 1})</td><td class="lbl">${relSym(rel)} ${numHtml(b)}</td><td class="lbl">${relSym(rel2)} ${numHtml(b2)}</td><td class="why2">${why}</td><td>${act}</td></tr>`;
   });
-  let h = `<p class="nl">Every row needs one variable that can start as basic: coefficient <b>+1</b> in that row and nowhere else. A slack with +1 works. A surplus with −1 does not (it would equal −RHS &lt; 0), and an equation has no slack at all. Those rows get an <b>artificial variable</b>.</p>`;
-  h += `<div class="tw"><table class="tab mini chk"><thead><tr><th>Row</th><th>Original</th><th>Usable starting variable?</th><th>Action</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  let h = `<p class="nl"><b>Rule:</b> after Step 2 every right-hand side is ≥ 0. A constraint that is <b>“≤” with a nonnegative right-hand side</b> needs no artificial variable: its slack can start as the basic variable of that row (slack = right-hand side ≥ 0). Every other constraint, <b>“≥” or “=”</b>, gets an <b>artificial variable</b>.</p>`;
+  h += `<div class="tw"><table class="tab mini chk"><thead><tr><th>Row</th><th>Original</th><th>After Step 2</th><th>Why</th><th>Artificial needed?</th></tr></thead><tbody>${rows}</tbody></table></div>`;
   if (S.hasArt) {
     const cons = B.rows.map((r, i) => ({ label: `(${i + 1})`, coefs: r.coefs, rel: "=", rhs: r.rhs, basicVar: B.basis[i + 1] }));
     h += `<div class="pane"><p class="pane__t">Constraints with artificial variables (starting basic variables in green)</p>${sys(cons, { N: B.N, newVars: ART, nonneg: B.N })}</div>`;
     h += `<p class="nl small">Artificial variables have no meaning in the original problem. They only give the simplex method a starting basis, and a solution of the original problem needs all of them equal to 0.</p>`;
   } else {
-    h += `<p class="ans ans--ok"><b>No artificial variable is needed.</b> Every row has a slack with coefficient +1, so the slacks form the starting basis: Phase I is not needed: Phase II (the ordinary simplex method) starts right away.</p>`;
+    h += `<p class="ans ans--ok"><b>No artificial variable is needed.</b> After Step 2 every constraint is “≤” with a nonnegative right-hand side, so the slacks form the starting basis. Phase I is not needed: Phase II (the ordinary simplex method) starts right away.</p>`;
   }
   return card("card-art", "Step 3 · Add artificial variables", h, cur, `<span class="group__meta">Preparation</span>`);
 }

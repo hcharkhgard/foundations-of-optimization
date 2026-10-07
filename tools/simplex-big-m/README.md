@@ -28,10 +28,10 @@ controls, with four preparation steps and a pre-processing iteration added in fr
 1. **Standard form.** The model is shown next to its standard form: a slack for each `≤` row, a surplus for each `≥` row,
    and `min` turned into `max`.
 2. **Right-hand sides ≥ 0.** Each row with a negative right-hand side is multiplied by −1 (shown before and after).
-3. **Artificial variables.** A table checks every row. A row whose slack has coefficient **+1** already has a starting
-   basic variable. Every other row gets an artificial variable `x̄`: rows from `=`, from `≥` with a right-hand side ≥ 0,
-   and from `≤` with a negative right-hand side. (A `≥` row with a negative right-hand side needs no artificial: after
-   × (−1) its surplus has coefficient +1. One example shows this.)
+3. **Artificial variables.** A table checks every row. After Step 2, a `≤` constraint (right-hand side ≥ 0) needs no
+   artificial: its slack starts as basic. Every `≥` or `=` constraint gets an artificial variable `x̄`. In terms of the
+   original problem, that means `≥` rows, `=` rows and `≤` rows with a negative right-hand side. A `≥` row with a negative
+   right-hand side becomes `≤` in Step 2, so it needs none; one example shows this.
 4. **Big M objective.** Maximize *original objective − M x̄ − M x̄ − …*, and row (0) `z − … + M x̄ + … = 0`.
 
 **Iteration 0** is the initial tableau. Artificial columns are marked in the header, and the `M` entries in row (0) are

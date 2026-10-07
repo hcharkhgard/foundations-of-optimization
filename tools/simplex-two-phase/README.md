@@ -16,7 +16,8 @@ no big penalty `M`, so every number in the tableau stays an ordinary number.
 **Preparation** (one card per step)
 1. **Standard form**: a slack for each `≤` row, a surplus for each `≥` row, and `min` turned into `max`.
 2. **Right-hand sides ≥ 0**: rows with a negative right-hand side are multiplied by −1 (shown before and after).
-3. **Artificial variables**: a row-by-row check. Every row whose slack does not have coefficient +1 gets an artificial `x̄`.
+3. **Artificial variables**: a row-by-row check. After Step 2, a `≤` constraint (right-hand side ≥ 0) needs no artificial,
+   because its slack starts as basic. Every `≥` or `=` constraint gets an artificial `x̄`.
    If no row needs one, Phase I is skipped.
 4. **Phase I objective**: maximize `z = −(sum of the artificials)`, with row (0) `z + x̄ + x̄ + … = 0`.
 
