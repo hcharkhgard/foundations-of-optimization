@@ -18,16 +18,13 @@ problem, with `≤`, `≥` and `=` constraints and variables that are nonnegativ
 3. **Rewrite the primal (optional)**: apply valid operations as often as you like, with undo:
    objective × (−1) (max ↔ min), constraint × (−1), split an equation into `≤` and `≥`, add a slack or surplus,
    replace `x ≤ 0` by `−x′`, and replace an unrestricted `x` by `x⁺ − x⁻`.
-4. **Write the dual, step by step** (separate tabs for the original and the rewritten primal):
-   1. max ↔ min
-   2. one dual variable per constraint
-   3. dual objective from the right-hand sides
-   4. one dual constraint per primal variable, read from its column (click a variable to highlight its column)
-   5. constraint directions from the primal variable signs
-   6. dual variable signs from the primal constraint types
-   7. the finished dual
-
-   Each step shows a small cheat sheet beside it with the rows it uses highlighted.
+4. **Write the dual, step by step** (tabs for the original and the rewritten primal). The primal is shown with an
+   empty dual area below it, which fills in one piece at a time with **▶ Play** or **Next / Previous** (also `→` / `←`):
+   max ↔ min; a dual variable tag `yᵢ` beside each constraint; the right-hand sides circled and multiplied by `y₁, y₂, …`
+   for the dual objective; for each primal variable, its column circled and its objective coefficient boxed, written out as
+   `a₁ⱼ·y₁ + a₂ⱼ·y₂ + …` with right-hand side `cⱼ`; then each variable's sign circled to fix that constraint's direction,
+   and each constraint's relation circled to fix the sign of its `y`. A one-line rule from the cheat sheet goes with every
+   step.
 5. **Compare and check**: both duals side by side, the optimal values from an exact solver (strong duality), and a note
    for each operation explaining why the two duals are equivalent.
 

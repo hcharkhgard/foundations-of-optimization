@@ -484,6 +484,22 @@ details.box{border:1px solid var(--rule);border-radius:4px;background:var(--card
 details.box>summary{cursor:pointer;padding:.7rem 1rem;font:600 .9rem/1.3 var(--sans)}
 details.box>div{padding:0 1rem 1rem}
 .ed .sgn{font-size:.78rem}
+.ring{display:inline-block;border:2px solid var(--leave);border-radius:999px;padding:0 .3em;line-height:1.25;background:var(--leave-soft)}
+.ring2{display:inline-block;border:2px solid var(--enter);border-radius:4px;padding:0 .3em;line-height:1.25;background:var(--enter-soft)}
+.yt{display:inline-block;font-family:var(--serif);font-size:.95rem;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:0 .45em;background:var(--accent-soft);animation:fadein .4s ease-out both}
+.sc.ytag{padding-right:.5rem}
+.ph{display:inline-block;color:var(--ink-3);border:1px dashed var(--rule-2);border-radius:4px;padding:.05rem .5rem;font:400 .8rem/1.5 var(--sans)}
+.ph i{font-family:var(--serif)}
+.new{animation:fadein .5s ease-out both}
+.eqs{color:var(--ink-2);margin-left:.3rem}
+.rule{display:inline-block;margin-left:.3rem;font:400 .8rem/1.4 var(--sans);color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:.12rem .6rem}
+.rule b{font-weight:600}
+.cap2{margin:.9rem 0;font-size:.95rem;line-height:1.6;min-height:3.2em;max-width:80ch}
+.pane--p{margin-bottom:.8rem}
+.pane--d{border-style:dashed;border-color:var(--accent);background:var(--card)}
+.sys.dv .sc.tm{gap:0}
+@media (prefers-reduced-motion: reduce){.new,.yt{animation:none}}
+
 .presets{min-width:0;max-width:100%}
 .presets .sel{max-width:100%;min-width:0}
 </style>
@@ -542,7 +558,7 @@ details.box>div{padding:0 1rem 1rem}
 
   <!-- ============ DUAL ============ -->
   <section class="section" id="dual">
-    <div class="section__head"><div><h2>4 · Write the dual, step by step</h2><p>Seven steps, each showing the rule it uses. Use the tabs to switch between the original primal and your rewritten one.</p></div>
+    <div class="section__head"><div><h2>4 · Write the dual, step by step</h2><p>The dual is written below the primal, one piece at a time: press <b>▶ Play</b>, or step with <b>Next</b> / <b>Previous</b> (also <kbd>→</kbd> / <kbd>←</kbd>). The tabs switch between the original and the rewritten primal.</p></div>
       <div class="btnrow"><span class="seg" role="group" aria-label="Number format"><button type="button" id="fmtFrac" aria-pressed="true">Fractions</button><button type="button" id="fmtDec" aria-pressed="false">Decimals</button></span></div></div>
     <div class="card"><div class="card__body" id="dualBody"></div></div>
   </section>
@@ -920,72 +936,143 @@ $("manipBody").addEventListener("click", e => {
 $("undo").onclick = () => { S.ops.pop(); S.step.manip = 0; if (!S.ops.length && S.tab === "manip") S.tab = "orig"; renderAll(); };
 $("resetOps").onclick = () => { S.ops = []; S.tab = "orig"; renderAll(); };
 
-/* ================= section 4: the derivation ================= */
-const STEPS = ["Max ↔ min", "Dual variables", "Dual objective", "Dual constraints", "Constraint directions", "Variable signs", "The dual"];
-/* detached-coefficient table of the primal: o = {col, rhs, rowsHl:Set, relHl:Set, signHl:Set, yCol} */
-function dataTable(F, o = {}) {
-  const N = F.vars.length;
-  let h = `<div class="tw"><table class="dt"><thead><tr><th></th>${o.yCol ? "<th>dual var.</th>" : ""}${F.vars.map((v, j) => `<th class="v${o.col === j ? " c-hl" : ""}">${nm(v)}</th>`).join("")}<th class="rel${o.relHl ? " " : ""}">rel.</th><th class="rhs${o.rhs ? " c-hl" : ""}">RHS</th></tr></thead><tbody>`;
-  h += `<tr class="obj"><td class="l">objective (${F.sense})</td>${o.yCol ? "<td></td>" : ""}${F.c.map((c, j) => `<td class="${o.col === j ? "x-hl" : ""}">${c.isZero() ? '<span class="z0">0</span>' : numHtml(c)}</td>`).join("")}<td class="rel"></td><td class="rhs"></td></tr>`;
-  F.rows.forEach((r, i) => {
-    const rh = o.rowsHl && o.rowsHl.has(i) ? " r-hl" : "";
-    h += `<tr><td class="l${rh}">constraint ${lab(r)}</td>${o.yCol ? `<td class="yv${rh}">${nm(yOf(r.label))}</td>` : ""}${r.coefs.map((c, j) => `<td class="${o.col === j ? "c-hl" : ""}${rh}">${c.isZero() ? '<span class="z0">0</span>' : numHtml(c)}</td>`).join("")}<td class="rel${o.relHl && o.relHl.has(i) ? " x-hl" : rh}">${REL[r.rel]}</td><td class="rhs${o.rhs ? " x-hl" : rh}">${numHtml(r.rhs)}</td></tr>`;
-  });
-  h += `<tr class="sg"><td class="l">sign</td>${o.yCol ? "<td></td>" : ""}${F.vars.map((v, j) => `<td class="${o.signHl && o.signHl.has(j) ? "x-hl" : o.col === j ? "c-hl" : ""}">${SIGN[v.sign]}</td>`).join("")}<td class="rel"></td><td class="rhs"></td></tr>`;
-  return h + `</tbody></table></div>`;
+/* ================= section 4: writing the dual under the primal ================= */
+/* the sequence of small steps for a formulation F */
+function stepsOf(F) {
+  return [{ k: "sense" }, { k: "vars" }, { k: "obj" }]
+    .concat(F.vars.map((_, j) => ({ k: "con", j })))
+    .concat(F.vars.map((_, j) => ({ k: "rel", j })))
+    .concat(F.rows.map((_, i) => ({ k: "sign", i })))
+    .concat([{ k: "done" }]);
 }
 const linExpr = (coefs, vars) => { let h = "", first = true; coefs.forEach((c, j) => { if (c.isZero()) return; const s = c.sign() < 0 ? "−" : first ? "" : "+"; h += (s ? (first ? s : ` ${s} `) : "") + coefHtml(c) + nm(vars[j]); first = false; }); return h || "0"; };
-function stepView(F, key) {
-  const D = dualOf(F), k = S.step[key], sense = F.sense, dsense = D.sense;
-  const dirTxt = sense === "max" ? "The primal is a maximization: read the cheat sheet from left to right." : "The primal is a minimization: read the cheat sheet from right to left.";
-  let main = "", on = new Set(), extra = "";
-  const nRows = F.rows.length, nVars = F.vars.length;
-  const head = (t) => `<div class="steph"><span class="k">Step ${k + 1} of 7</span><span class="t">${t}</span></div>`;
-  const focus = Math.min(S.focus[key], nVars - 1);
-  if (k === 0) {
-    on.add("obj");
-    main = head("The objective sense flips") + `<p class="nl">The primal ${sense === "max" ? "maximizes" : "minimizes"}, so the dual <b>${dsense === "max" ? "maximizes" : "minimizes"}</b>. We call the dual objective <span class="mx"><i class="v-z">w</i></span>.</p>`
-      + `<div class="pair"><div class="pane"><p class="pane__t">Primal</p>${lpHtml(F)}</div><div class="pair__arrow" aria-hidden="true"><span>➜</span><small>${sense} → ${dsense}</small></div><div class="pane"><p class="pane__t">Dual so far</p>${lpHtml(D, { hideObj: true, hideRows: true })}</div></div>`;
-  } else if (k === 1) {
-    main = head("One dual variable for each primal constraint") + `<p class="nl">The primal has ${nRows} constraint${nRows === 1 ? "" : "s"}, so the dual has ${nRows} variable${nRows === 1 ? "" : "s"}. Constraint ${lab(F.rows[0])} gets ${nm(yOf(F.rows[0].label))}, and so on.</p>`
-      + `<ul class="maplist">${F.rows.map(r => `<li><span>constraint ${lab(r)}: ${linExpr(r.coefs, F.vars)} ${REL[r.rel]} ${numHtml(r.rhs)}</span><span class="arr">→</span><span>${nm(yOf(r.label))}</span></li>`).join("")}</ul>`
-      + dataTable(F, { yCol: true, rowsHl: new Set(F.rows.map((_, i) => i)) });
-  } else if (k === 2) {
-    on.add("data1");
-    main = head("Dual objective: the right-hand sides become the objective coefficients") + `<p class="nl">Multiply each dual variable by the right-hand side of its constraint and add them up${F.rows.every(r => r.rhs.isZero()) ? " (all right-hand sides are 0 here, so the dual objective is <span class=\"mx\">w = 0</span>)" : ""}.</p>`
-      + dataTable(F, { yCol: true, rhs: true })
-      + `<div class="pane"><p class="pane__t">Dual so far</p>${lpHtml(D, { hideRows: true, showSigns: false })}</div>`;
-  } else if (k === 3) {
-    on.add("data2"); on.add("data3");
-    const v = F.vars[focus];
-    main = head("Dual constraints: one per primal variable, built from its column") + `<p class="nl">Read the primal <b>column</b> of each variable. Its constraint coefficients become the coefficients of ${F.rows.map(r => nm(yOf(r.label))).join(", ")}, and its objective coefficient becomes the right-hand side. The direction is decided in the next step.</p>`
-      + `<div class="chipsel"><span class="l">Column of</span>${F.vars.map((w, j) => `<button type="button" data-focus="${j}" aria-pressed="${j === focus}">${nm(w)}</button>`).join("")}</div>`
-      + dataTable(F, { yCol: true, col: focus })
-      + `<p class="nl">Column of ${nm(v)}: ${F.rows.map(r => `${numHtml(r.coefs[focus])}·${nm(yOf(r.label))}`).join(" + ")} <span class="unk">?</span> ${numHtml(F.c[focus])}, giving dual constraint (${nm(v)}): <span class="mx">${linExpr(D.rows[focus].coefs, D.vars)} <span class="unk">?</span> ${numHtml(D.rows[focus].rhs)}</span>.</p>`
-      + `<div class="pane"><p class="pane__t">Dual so far (directions still unknown)</p>${dualRows(D, { relUnknown: true, signUnknown: true, hlRow: focus })}</div>`;
-  } else if (k === 4) {
-    F.vars.forEach(v => on.add(rowForVar(sense, v.sign)));
-    main = head("Direction of each dual constraint: from the sign of its primal variable") + `<p class="nl">Look up each primal variable’s sign in the cheat sheet (highlighted rows).</p>`
-      + `<ul class="maplist">${F.vars.map((v, j) => `<li><span>${signTxt(v, v.sign)}</span><span class="arr">→</span><span>dual constraint (${nm(v)}) is “${REL[D.rows[j].rel]}”</span><span class="why">${sense} problem, variable ${SIGN[v.sign]} ↔ ${dsense} problem, constraint ${REL[D.rows[j].rel]}</span></li>`).join("")}</ul>`
-      + dataTable(F, { signHl: new Set(F.vars.map((_, j) => j)) })
-      + `<div class="pane"><p class="pane__t">Dual so far</p>${dualRows(D, { signUnknown: true })}</div>`;
-  } else if (k === 5) {
-    F.rows.forEach(r => on.add(rowForCon(sense, r.rel)));
-    main = head("Sign of each dual variable: from the type of its primal constraint") + `<p class="nl">Look up each primal constraint’s type in the cheat sheet (highlighted rows).</p>`
-      + `<ul class="maplist">${F.rows.map((r, i) => `<li><span>constraint ${lab(r)} is “${REL[r.rel]}”</span><span class="arr">→</span><span>${signTxt(D.vars[i], D.vars[i].sign)}</span><span class="why">${sense} problem, constraint ${REL[r.rel]} ↔ ${dsense} problem, variable ${SIGN[D.vars[i].sign]}</span></li>`).join("")}</ul>`
-      + dataTable(F, { yCol: true, relHl: new Set(F.rows.map((_, i) => i)) })
-      + `<div class="pane"><p class="pane__t">Dual so far</p>${dualRows(D)}</div>`;
-  } else {
-    F.rows.forEach(r => on.add(rowForCon(sense, r.rel))); F.vars.forEach(v => on.add(rowForVar(sense, v.sign))); on.add("obj");
-    main = head("The dual problem") + `<div class="pair"><div class="pane"><p class="pane__t">Primal</p>${lpHtml(F)}</div><div class="pair__arrow" aria-hidden="true"><span>➜</span><small>dual</small></div><div class="pane"><p class="pane__t">Dual</p>${dualRows(D)}</div></div>`
-      + `<p class="nl small">Check: ${nRows} primal constraint${nRows === 1 ? "" : "s"} → ${nRows} dual variable${nRows === 1 ? "" : "s"}; ${nVars} primal variable${nVars === 1 ? "" : "s"} → ${nVars} dual constraint${nVars === 1 ? "" : "s"}. Taking the dual of this dual gives back the primal.</p>`;
-  }
-  const nav = `<div class="stepnav"><div class="dots" role="group" aria-label="Steps">${STEPS.map((t, i) => `<button type="button" data-step="${i}" ${i === k ? 'aria-current="step"' : ""} class="${i < k ? "done" : ""}">${i + 1} · ${t}</button>`).join("")}</div>
-    <div class="btnrow"><button class="btn btn--sm" data-nav="prev" ${k === 0 ? "disabled" : ""}>◀ Previous</button><button class="btn btn--sm btn--solid" data-nav="next" ${k === 6 ? "disabled" : ""}>Next step ▶</button><button class="btn btn--sm" data-nav="all">Show the complete dual</button></div></div>`;
-  const side = `<div class="pane"><p class="pane__t">Cheat sheet · rows used in this step</p><div class="tw">${cheat(on, true)}</div><p class="note" style="margin-top:.4rem">${dirTxt}</p></div>`;
-  return nav + `<div class="stepbody"><div class="stepmain">${main}</div>${side}</div>`;
+const ringed = h => `<span class="ring">${h}</span>`;
+const boxed = h => `<span class="ring2">${h}</span>`;
+const prodTerm = (c, v, first) => `${first ? "" : " + "}${c.sign() < 0 ? `(${numHtml(c)})` : numHtml(c)}·${nm(v)}`;
+const prodExpr = (coefs, vars) => coefs.map((c, i) => prodTerm(c, vars[i], i === 0)).join("");
+/* the primal, written out, with highlights.
+   o: {ytag, rhsRing, col, relRing (row idx), signHl (var idx), senseHl} */
+function primalView(F, o = {}) {
+  const N = F.vars.length;
+  /* one line of terms; hl = function(j) -> wrapper for the highlighted column, or null */
+  const line = (coefs, wrap) => {
+    let h = "", first = true;
+    const cells = coefs.map((c, j) => {
+      if (o.col === j) { const t = `<div class="sc sg">${first ? "" : "+"}</div><div class="sc tm"><span>${wrap(numHtml(c))}${nm(F.vars[j])}</span></div>`; first = false; return t; }
+      if (c.isZero()) return null;
+      const t = `<div class="sc sg">${c.sign() < 0 ? "−" : first ? "" : "+"}</div><div class="sc tm"><span>${coefHtml(c)}${nm(F.vars[j])}</span></div>`; first = false; return t;
+    });
+    if (cells.every(x => x === null)) cells[0] = `<div class="sc sg"></div><div class="sc tm">0</div>`;
+    return cells.map(x => x || `<div class="sc sg"></div><div class="sc tm"></div>`).join("");
+  };
+  let h = `<div class="sysw"><div class="sys pv" style="grid-template-columns:auto auto auto repeat(${N},auto auto) auto auto">`;
+  const sw = F.sense === "max" ? "Max" : "Min";
+  h += `<div class="sc"></div><div class="sc lab">${o.senseHl ? boxed(sw) : sw}</div><div class="sc"><span><i class="v-z">${F.obj}</i>&nbsp;=</span></div>${line(F.c, boxed)}<div class="sc"></div><div class="sc"></div>`;
+  F.rows.forEach((r, i) => {
+    h += `<div class="sc ytag">${o.ytag ? `<span class="yt">${nm(yOf(r.label))}</span>` : ""}</div><div class="sc lab">${lab(r)}</div><div class="sc"></div>${line(r.coefs, ringed)}`;
+    h += `<div class="sc rel">${o.relRing === i ? ringed(REL[r.rel]) : REL[r.rel]}</div><div class="sc rhs">${o.rhsRing ? ringed(numHtml(r.rhs)) : numHtml(r.rhs)}</div>`;
+  });
+  h += `</div></div><div class="signrow">${F.vars.map((v, j) => `<span>${o.signHl === j ? ringed(signTxt(v, v.sign)) : signTxt(v, v.sign)}</span>`).join("")}</div>`;
+  return h;
 }
-/* dual display: constraints labelled by primal variable */
+/* the dual being written. st: {sense, vars, obj:"none"|"prod"|"done", cons (#written), curCon, rels (#known), curRel, signs (#known), curSign} */
+function dualView(F, D, st) {
+  const N = D.vars.length, M = D.rows.length;
+  const ph = t => `<span class="ph">${t}</span>`;
+  let h = `<div class="sysw"><div class="sys dv" style="grid-template-columns:auto auto auto auto auto">`;
+  // objective line
+  const sense = st.sense ? `<span class="${st.newSense ? "new" : ""}">${D.sense === "max" ? "Max" : "Min"}</span>` : ph("Max / Min ?");
+  let obj;
+  if (st.obj === "prod") obj = `<span class="new">${prodExpr(D.c, D.vars)}${D.c.every(c => c.isZero()) ? "" : ` <span class="eqs">= ${linExpr(D.c, D.vars)}</span>`}</span>`;
+  else if (st.obj === "done") obj = linExpr(D.c, D.vars);
+  else obj = ph("objective");
+  h += `<div class="sc lab"><span>${sense}</span></div><div class="sc"><span><i class="v-z">w</i>&nbsp;=</span></div><div class="sc tm" style="grid-column:span 3;justify-content:flex-start"><span>${obj}</span></div>`;
+  // constraint lines, one per primal variable
+  D.rows.forEach((r, j) => {
+    const lbl = `<span class="small">(${nm(F.vars[j])})</span>`;
+    let lhs, rel, rhs;
+    if (j < st.cons) { lhs = linExpr(r.coefs, D.vars); rhs = numHtml(r.rhs); }
+    else if (j === st.curCon) { lhs = `<span class="new">${prodExpr(r.coefs, D.vars)} <span class="eqs">= ${linExpr(r.coefs, D.vars)}</span></span>`; rhs = `<span class="new">${boxed(numHtml(r.rhs))}</span>`; }
+    else { lhs = ph(`constraint for ${nm(F.vars[j])}`); rhs = ""; }
+    if (j < st.rels) rel = REL[r.rel];
+    else if (j === st.curRel) rel = `<span class="new">${ringed(REL[r.rel])}</span>`;
+    else rel = j < st.cons || j === st.curCon ? `<span class="unk">?</span>` : "";
+    h += `<div class="sc lab">${j === 0 ? "s.t. " : ""}${lbl}</div><div class="sc"></div><div class="sc tm" style="justify-content:flex-start"><span>${lhs}</span></div><div class="sc rel"><span>${rel}</span></div><div class="sc rhs"><span>${rhs}</span></div>`;
+  });
+  h += `</div></div>`;
+  // variable signs
+  if (st.vars) h += `<div class="signrow">${D.vars.map((v, i) => `<span>${i < st.signs ? signTxt(v, v.sign) : i === st.curSign ? `<span class="new">${nm(v)} ${ringed(v.sign === "free" ? "unrestricted" : SIGN[v.sign])}</span>` : `${nm(v)} <span class="unk">?</span>`}</span>`).join("")}</div>`;
+  else h += `<div class="signrow">${ph("dual variables")}</div>`;
+  return h;
+}
+const ruleChip = (left, right) => `<span class="rule">Rule: ${left} <b>↔</b> ${right}</span>`;
+function frame(F, key) {
+  const D = dualOf(F), steps = stepsOf(F), s = Math.min(S.step[key], steps.length - 1), cur = steps[s];
+  const sense = F.sense, dsense = D.sense, P = sense === "max" ? "max problem" : "min problem", Dp = dsense === "max" ? "max problem" : "min problem";
+  const nV = F.vars.length, nR = F.rows.length;
+  const idx = k => steps.findIndex(x => x.k === k);
+  const conStart = idx("con"), relStart = idx("rel"), signStart = idx("sign"), doneAt = idx("done");
+  const st = {
+    sense: s >= 0, newSense: s === 0, vars: s >= 1,
+    obj: s < 2 ? "none" : s === 2 ? "prod" : "done",
+    cons: Math.max(0, Math.min(nV, s - conStart)), curCon: cur.k === "con" ? cur.j : -1,
+    rels: Math.max(0, Math.min(nV, s - relStart)), curRel: cur.k === "rel" ? cur.j : -1,
+    signs: Math.max(0, Math.min(nR, s - signStart)), curSign: cur.k === "sign" ? cur.i : -1
+  };
+  if (cur.k === "con") st.cons = cur.j;
+  if (cur.k === "done") { st.cons = nV; st.rels = nV; st.signs = nR; }
+  const po = { ytag: s >= 1 };
+  let title, text, rule = "";
+  switch (cur.k) {
+    case "sense":
+      po.senseHl = true; title = `${sense === "max" ? "Max" : "Min"} becomes ${dsense === "max" ? "Max" : "Min"}`;
+      text = `The primal ${sense === "max" ? "maximizes" : "minimizes"}, so the dual ${dsense === "max" ? "maximizes" : "minimizes"}. The dual objective is called <i class="v-z">w</i>.`;
+      rule = ruleChip("max", "min"); break;
+    case "vars":
+      title = "One dual variable for each primal constraint";
+      text = `The primal has ${nR} constraint${nR === 1 ? "" : "s"}, so the dual has ${nR} variable${nR === 1 ? "" : "s"}: ${F.rows.map(r => `${nm(yOf(r.label))} for ${lab(r)}`).join(", ")}.`; break;
+    case "obj":
+      po.rhsRing = true; title = "Dual objective: right-hand sides × dual variables, added up";
+      text = `Multiply each right-hand side (circled) by the dual variable of its row and add: ${prodExpr(D.c, D.vars)}${D.c.every(c => c.isZero()) ? " = 0" : ` = ${linExpr(D.c, D.vars)}`}.`;
+      rule = ruleChip("right-hand side of constraint <i>i</i>", "objective coefficient of <i>y<sub>i</sub></i>"); break;
+    case "con": {
+      const j = cur.j, v = F.vars[j];
+      po.col = j; title = `Dual constraint for ${nm(v)}: its column`;
+      text = `Take the column of ${nm(v)} (circled). Multiply each coefficient by the dual variable of its row and add: ${prodExpr(D.rows[j].coefs, D.vars)} = ${linExpr(D.rows[j].coefs, D.vars)}. The right-hand side is the objective coefficient of ${nm(v)} (boxed): ${numHtml(F.c[j])}. The direction comes later.`;
+      rule = ruleChip("coefficient of <i>x<sub>j</sub></i> in constraint <i>i</i>", "coefficient of <i>y<sub>i</sub></i> in constraint <i>j</i>"); break;
+    }
+    case "rel": {
+      const j = cur.j, v = F.vars[j];
+      po.signHl = j; title = `Direction of the constraint for ${nm(v)}`;
+      text = `${signTxt(v, v.sign)} (circled), so its dual constraint is “${REL[D.rows[j].rel]}”.`;
+      rule = ruleChip(`${P}: variable ${SIGN[v.sign]}`, `${Dp}: constraint ${REL[D.rows[j].rel]}`); break;
+    }
+    case "sign": {
+      const i = cur.i, r = F.rows[i], y = D.vars[i];
+      po.relRing = i; title = `Sign of ${nm(y)}`;
+      text = `Constraint ${lab(r)} is “${REL[r.rel]}” (circled), so ${signTxt(y, y.sign)}.`;
+      rule = ruleChip(`${P}: constraint ${REL[r.rel]}`, `${Dp}: variable ${SIGN[y.sign]}`); break;
+    }
+    default:
+      title = "The dual is complete";
+      text = `${nR} primal constraint${nR === 1 ? "" : "s"} gave ${nR} dual variable${nR === 1 ? "" : "s"}, and ${nV} primal variable${nV === 1 ? "" : "s"} gave ${nV} dual constraint${nV === 1 ? "" : "s"}. The dual of this dual is the primal again.`;
+  }
+  const playing = PLAY.on && PLAY.key === key;
+  const ctl = `<div class="stepnav"><div class="btnrow">
+      <button class="btn btn--sm" data-nav="first" ${s === 0 ? "disabled" : ""} aria-label="Back to the start" title="Back to the start">⏮</button>
+      <button class="btn btn--sm" data-nav="prev" ${s === 0 ? "disabled" : ""}>◀ Previous</button>
+      <button class="btn btn--sm btn--solid pbig" data-nav="play">${playing ? "❚❚ Pause" : s === doneAt ? "↺ Replay" : "▶ Play"}</button>
+      <button class="btn btn--sm" data-nav="next" ${s === doneAt ? "disabled" : ""}>Next ▶</button>
+      <button class="btn btn--sm" data-nav="all" ${s === doneAt ? "disabled" : ""}>Show the complete dual</button></div>
+    <span class="player__count">Step ${s + 1} of ${steps.length}</span></div>`;
+  const which = key === "orig" ? "Original" : "Rewritten";
+  let h = ctl;
+  h += `<div class="cap2"><b>${title}.</b> ${text} ${rule}</div>`;
+  h += `<div class="pane pane--p"><p class="pane__t">Primal · ${which}</p>${primalView(F, po)}</div>`;
+  h += `<div class="pane pane--d"><p class="pane__t">Dual · written step by step</p>${dualView(F, D, st)}</div>`;
+  return h;
+}
+/* dual display for the comparison: constraints labelled by primal variable */
 function dualRows(D, o = {}) {
   const N = D.vars.length;
   let h = `<div class="sysw"><div class="sys" style="grid-template-columns:auto auto repeat(${N},auto auto) auto auto">`;
@@ -993,32 +1080,55 @@ function dualRows(D, o = {}) {
   const t0 = terms(D.c, D.vars); h += t0.empty ? `<div class="sc" style="grid-column:span ${2 * N}">0</div>` : t0.h;
   h += `<div class="sc"></div><div class="sc"></div>`;
   D.rows.forEach((r, i) => {
-    const rc = o.hlRow === i ? " hl" : "";
-    h += `<div class="sc lab${rc}">${i === 0 ? "s.t. " : ""}${dlab(r)}</div><div class="sc${rc}"></div>`;
-    const t = terms(r.coefs, D.vars); h += t.empty ? `<div class="sc tm${rc}" style="grid-column:span ${2 * N};justify-content:flex-end">0</div>` : t.h.replace(/class="sc (sg|tm)"/g, `class="sc $1${rc}"`);
-    h += `<div class="sc rel${rc}">${o.relUnknown ? '<span class="unk">?</span>' : REL[r.rel]}</div><div class="sc rhs${rc}">${numHtml(r.rhs)}</div>`;
+    h += `<div class="sc lab">${i === 0 ? "s.t. " : ""}${dlab(r)}</div><div class="sc"></div>`;
+    const t = terms(r.coefs, D.vars); h += t.empty ? `<div class="sc tm" style="grid-column:span ${2 * N};justify-content:flex-end">0</div>` : t.h;
+    h += `<div class="sc rel">${REL[r.rel]}</div><div class="sc rhs">${numHtml(r.rhs)}</div>`;
   });
-  h += `</div></div><div class="signrow">${D.vars.map(v => `<span>${o.signUnknown ? `${nm(v)} <span class="unk">?</span>` : signTxt(v, v.sign)}</span>`).join("")}</div>`;
+  h += `</div></div><div class="signrow">${D.vars.map(v => `<span>${signTxt(v, v.sign)}</span>`).join("")}</div>`;
   return h;
 }
+const PLAY = { on: false, key: null, timer: null };
+function stopPlay() { clearTimeout(PLAY.timer); PLAY.on = false; PLAY.key = null; }
+function tick() {
+  const key = PLAY.key, F = key === "orig" ? S.P : currentF(), n = stepsOf(F).length;
+  if (!PLAY.on) return;
+  if (S.step[key] >= n - 1) { stopPlay(); renderDual(); return; }
+  S.step[key]++; renderDual();
+  if (S.step[key] >= n - 1) { stopPlay(); renderDual(); return; }
+  PLAY.timer = setTimeout(tick, reducedMotion() ? 1200 : 2200);
+}
+const reducedMotion = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
 function renderDual() {
   const has = S.ops.length > 0;
   if (!has && S.tab === "manip") S.tab = "orig";
   const F = S.tab === "orig" ? S.P : currentF();
-  let h = `<div class="tabs" role="tablist"><button class="tabbtn" role="tab" data-tab="orig" aria-selected="${S.tab === "orig"}">Dual of the original primal</button><button class="tabbtn" role="tab" data-tab="manip" aria-selected="${S.tab === "manip"}" ${has ? "" : 'disabled title="Apply an operation in section 3 first"'}>Dual of the rewritten primal${has ? "" : " (no operation yet)"}</button></div>`;
-  h += stepView(F, S.tab);
+  let h = `<div class="tabs" role="tablist"><button class="tabbtn" role="tab" data-tab="orig" aria-selected="${S.tab === "orig"}">Original primal</button><button class="tabbtn" role="tab" data-tab="manip" aria-selected="${S.tab === "manip"}" ${has ? "" : 'disabled title="Apply an operation in section 3 first"'}>Rewritten primal${has ? "" : " (no operation yet)"}</button></div>`;
+  h += frame(F, S.tab);
   $("dualBody").innerHTML = h;
 }
 $("dualBody").addEventListener("click", e => {
-  const t = e.target.closest("[data-tab]"); if (t && !t.disabled) { S.tab = t.dataset.tab; renderDual(); return; }
-  const s = e.target.closest("[data-step]"); if (s) { S.step[S.tab] = +s.dataset.step; renderDual(); return; }
-  const f = e.target.closest("[data-focus]"); if (f) { S.focus[S.tab] = +f.dataset.focus; renderDual(); return; }
+  const t = e.target.closest("[data-tab]"); if (t && !t.disabled) { stopPlay(); S.tab = t.dataset.tab; renderDual(); return; }
   const n = e.target.closest("[data-nav]"); if (!n || n.disabled) return;
-  const k = S.step[S.tab];
-  if (n.dataset.nav === "prev") S.step[S.tab] = Math.max(0, k - 1);
-  else if (n.dataset.nav === "next") S.step[S.tab] = Math.min(6, k + 1);
-  else S.step[S.tab] = 6;
+  const key = S.tab, F = key === "orig" ? S.P : currentF(), last = stepsOf(F).length - 1, k = S.step[key];
+  const act = n.dataset.nav;
+  if (act === "play") {
+    if (PLAY.on) { stopPlay(); renderDual(); return; }
+    if (k >= last) S.step[key] = 0;
+    PLAY.on = true; PLAY.key = key; renderDual(); PLAY.timer = setTimeout(tick, reducedMotion() ? 1200 : 2200); return;
+  }
+  stopPlay();
+  if (act === "prev") S.step[key] = Math.max(0, k - 1);
+  else if (act === "next") S.step[key] = Math.min(last, k + 1);
+  else if (act === "first") S.step[key] = 0;
+  else S.step[key] = last;
   renderDual();
+});
+document.addEventListener("keydown", e => {
+  const tag = (e.target.tagName || "").toLowerCase();
+  if (tag === "input" || tag === "select" || tag === "textarea" || e.metaKey || e.ctrlKey || e.altKey) return;
+  const r = $("dual").getBoundingClientRect(); if (r.bottom < 0 || r.top > window.innerHeight) return;   // only when section 4 is on screen
+  const btn = e.key === "ArrowRight" ? "next" : e.key === "ArrowLeft" ? "prev" : null;
+  if (btn) { const b = $("dualBody").querySelector(`[data-nav="${btn}"]`); if (b && !b.disabled) { e.preventDefault(); b.click(); } }
 });
 
 /* ================= section 5: compare ================= */
