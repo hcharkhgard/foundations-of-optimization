@@ -16,6 +16,7 @@ Every tool is a single self-contained web page — no installation, no build ste
 | Simplex method interactive tool: Tabular Form | The simplex method on a tableau when the origin is feasible: initial tableau, pivot column, ratio test box, animated pivoting | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/simplex-tabular-form/) | [`tools/simplex-tabular-form`](tools/simplex-tabular-form) |
 | Simplex method interactive tool: Big M Method | The Big M method when the origin is not feasible: right-hand sides ≥ 0, artificial variables, −M penalty, pre-processing (iteration 0′), simplex tableau, infeasible / unbounded detection | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/simplex-big-m/) | [`tools/simplex-big-m`](tools/simplex-big-m) |
 | Simplex method interactive tool: Two-Phase Method | The two-phase method when the origin is not feasible: Phase I (maximize −sum of artificials, iteration 0 and 0′), end-of-Phase-I checks, Phase II (original objective, iteration 0 and 0′) | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/simplex-two-phase/) | [`tools/simplex-two-phase`](tools/simplex-two-phase) |
+| Duality interactive tool: Writing the Dual | Writing the dual of any LP step by step: duality cheat sheet, optional rewrites of the primal, seven-step derivation, comparison of both duals with an exact strong-duality check | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/duality/) | [`tools/duality`](tools/duality) |
 
 ## Repository layout
 
@@ -41,7 +42,11 @@ foundations-of-optimization/
     │   ├── index.html
     │   ├── README.md
     │   └── EXAMPLES.md             ← ready-to-use class examples with answers
-    └── simplex-two-phase/
+    ├── simplex-two-phase/
+    │   ├── index.html
+    │   ├── README.md
+    │   └── EXAMPLES.md
+    └── duality/
         ├── index.html
         ├── README.md
         └── EXAMPLES.md

@@ -1,0 +1,1078 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta property="og:title" content="Duality interactive tool: Writing the Dual">
+<meta property="og:description" content="Write the dual of any linear program step by step, with a duality cheat sheet, optional manipulations and an exact strong-duality check.">
+<meta property="og:type" content="website">
+<style>
+:root{color-scheme:light dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Duality interactive tool: Writing the Dual</title>
+<meta name="description" content="Interactive, step-by-step teaching tool for writing the dual of a linear program.">
+<meta name="author" content="Hadi Gard (Charkhgard)">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
+<style>
+:root{
+  --paper:#f5f3f4; --card:#ffffff; --card-2:#faf8f9;
+  --ink:#1c1719; --ink-2:#5f5559; --ink-3:#8d8286;
+  --rule:#e4dee0; --rule-2:#cfc6ca;
+  --accent:#7a2f52; --accent-soft:#f7ecf1;
+  --basic:#2f7a3e; --basic-soft:#e8f3ea;
+  --zrow:#b3261e; --zrow-soft:#fbeceb;
+  --enter:#1f5fa8; --enter-soft:#e7eff9;
+  --leave:#985a10; --leave-soft:#f8eedd;
+  --hi:#fff4c2; --on-accent:#ffffff; --src:#efe3f7; --src-line:#7a2f52;
+  --shadow:0 1px 2px rgba(28,23,25,.05), 0 8px 24px -18px rgba(28,23,25,.45);
+  --sans:'IBM Plex Sans',ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;
+  --serif:'STIX Two Text',Cambria,'Times New Roman',Georgia,serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#171416; --card:#1e1a1d; --card-2:#241f23;
+    --ink:#ece7e9; --ink-2:#a9a0a4; --ink-3:#7a7276;
+    --rule:#302a2e; --rule-2:#433b40;
+    --accent:#e8a0be; --accent-soft:#33202a;
+    --basic:#7fd08f; --basic-soft:#1b2a1f;
+    --zrow:#f08a80; --zrow-soft:#2f1c1b;
+    --enter:#8ab8ee; --enter-soft:#1a2533;
+    --leave:#e3ad62; --leave-soft:#2d2419;
+    --hi:#3a3319; --on-accent:#241016; --src:#35243a; --src-line:#e8a0be;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -20px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#171416; --card:#1e1a1d; --card-2:#241f23;
+  --ink:#ece7e9; --ink-2:#a9a0a4; --ink-3:#7a7276;
+  --rule:#302a2e; --rule-2:#433b40;
+  --accent:#e8a0be; --accent-soft:#33202a;
+  --basic:#7fd08f; --basic-soft:#1b2a1f;
+  --zrow:#f08a80; --zrow-soft:#2f1c1b;
+  --enter:#8ab8ee; --enter-soft:#1a2533;
+  --leave:#e3ad62; --leave-soft:#2d2419;
+  --hi:#3a3319; --on-accent:#241016; --src:#35243a; --src-line:#e8a0be;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -20px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1000px;margin:0 auto;padding-inline:20px;padding-block:2.4rem 7rem}
+@media(max-width:480px){.wrap{padding-inline:16px}}
+.eyebrow{font:500 .7rem/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 .85rem}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(1.9rem,1.25rem + 2.4vw,2.8rem);line-height:1.1;letter-spacing:-.015em;margin:0 0 .8rem;text-wrap:balance}
+h1 em{color:var(--accent);font-style:italic}
+.lede{max-width:68ch;margin:0;color:var(--ink-2);font-size:1.01rem}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(1.3rem,1.1rem + .8vw,1.65rem);letter-spacing:-.01em;margin:0;text-wrap:balance}
+h3{font:600 .98rem/1.35 var(--sans);margin:0}
+.section{margin-top:2.6rem}
+.section__head{display:flex;flex-wrap:wrap;gap:.7rem 1.4rem;align-items:baseline;justify-content:space-between;padding-bottom:.8rem;margin-bottom:1.2rem;border-bottom:1px solid var(--rule)}
+.section__head p{margin:.25rem 0 0;color:var(--ink-2);font-size:.88rem;max-width:62ch}
+.legend{display:flex;flex-wrap:wrap;gap:.35rem .9rem;margin-top:1rem;font-size:.8rem;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:.35rem}
+.sw{width:.8rem;height:.8rem;border-radius:2px;display:inline-block}
+
+/* math */
+.mx{font-family:var(--serif);font-size:1.04rem;font-variant-numeric:lining-nums tabular-nums}
+.mx i,.sys i{font-style:italic}
+sub{font-size:.66em;position:relative;bottom:-.1em;line-height:0;font-style:normal}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;font-size:.74em;text-align:center;line-height:1.08;margin:0 .06em}
+.fr>span:first-child{border-bottom:1px solid currentColor;padding:0 .12em}
+.v-b{color:var(--basic);font-weight:600}
+.v-e{color:var(--enter);font-weight:600}
+.v-l{color:var(--leave);font-weight:600}
+.v-z{color:var(--zrow)}
+
+/* buttons */
+.btn{font:500 .8rem/1 var(--sans);cursor:pointer;border:1px solid var(--rule-2);background:var(--card);color:var(--ink-2);border-radius:999px;padding:.5rem .85rem;transition:border-color .16s,color .16s,background .16s}
+.btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn--solid{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn--solid{color:#241016}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn--solid{color:#241016}}
+.btn--solid:hover:not(:disabled){opacity:.88;color:#fff}
+.btn--sm{font-size:.74rem;padding:.34rem .6rem}
+.btnrow{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--rule);border-radius:4px;box-shadow:var(--shadow)}
+.card__head{display:flex;flex-wrap:wrap;gap:.6rem 1rem;align-items:center;justify-content:space-between;padding:.85rem 1.1rem;border-bottom:1px solid var(--rule)}
+.card__title{font:500 .68rem/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0}
+.card__body{padding:1.1rem}
+
+/* editor */
+.edwrap{overflow-x:auto;padding-bottom:.4rem}
+.ed{display:grid;gap:.4rem .45rem;align-items:center;justify-content:start;min-width:max-content}
+.ed .hd{font-family:var(--serif);font-size:1rem;text-align:center;color:var(--ink-2)}
+.ed .lab{font:500 .78rem/1.2 var(--sans);color:var(--ink-2);white-space:nowrap;padding-right:.3rem}
+.num{width:3.8rem;padding:.34rem .2rem;text-align:center;border:1px solid var(--rule-2);border-radius:3px;background:var(--card-2);color:var(--ink);font:400 .95rem/1.2 var(--serif)}
+.num:focus{border-color:var(--accent);background:var(--card);outline:none}
+.num.bad{border-color:var(--zrow);background:var(--zrow-soft)}
+.sel{padding:.32rem .3rem;border:1px solid var(--rule-2);border-radius:3px;background:var(--card-2);color:var(--ink);font:400 .85rem/1.2 var(--sans);cursor:pointer}
+.dims{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;align-items:center;margin-top:1rem;padding-top:.9rem;border-top:1px solid var(--rule)}
+.dims .g{display:flex;align-items:center;gap:.4rem}
+.dims .gl{font:500 .74rem/1 var(--sans);color:var(--ink-3)}
+.stepper{display:inline-flex;border:1px solid var(--rule-2);border-radius:999px;overflow:hidden}
+.stepper button{appearance:none;border:0;background:var(--card-2);color:var(--ink-2);font:500 .85rem/1 var(--sans);padding:.34rem .62rem;cursor:pointer}
+.stepper button:hover:not(:disabled){background:var(--accent-soft);color:var(--accent)}
+.stepper button:disabled{opacity:.35;cursor:not-allowed}
+.stepper .v{padding:.34rem .5rem;font:500 .82rem/1 var(--sans);background:var(--card);min-width:1.7rem;text-align:center;font-variant-numeric:tabular-nums}
+.errline{margin:.7rem 0 0;color:var(--zrow);font-size:.84rem;min-height:1.2em}
+.presets{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:center}
+.presets label{font:500 .74rem/1 var(--sans);color:var(--ink-3)}
+.presets .sel{max-width:100%}
+.note{font-size:.84rem;color:var(--ink-2);margin:0}
+
+/* worksheet */
+.toolbar{display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.seg{display:inline-flex;border:1px solid var(--rule-2);border-radius:999px;overflow:hidden}
+.seg button{appearance:none;border:0;background:var(--card);color:var(--ink-2);font:500 .74rem/1 var(--sans);padding:.4rem .7rem;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.empty{padding:1.4rem 1.1rem;color:var(--ink-2);font-size:.92rem;border:1px dashed var(--rule-2);border-radius:4px;background:var(--card-2)}
+.group{margin-top:1.4rem}
+.group>summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap;padding:.3rem 0 .6rem;border-bottom:2px solid var(--ink)}
+.group>summary::-webkit-details-marker{display:none}
+.group>summary h2::before{content:"▾";display:inline-block;font-size:.8em;color:var(--ink-3);margin-right:.4rem;transition:transform .15s}
+.group:not([open])>summary h2::before{transform:rotate(-90deg)}
+.group__meta{font-size:.82rem;color:var(--ink-2)}
+.goal{font:600 .82rem/1 var(--sans);color:var(--ink-2)}
+.goal .v-z{font-family:var(--serif);font-style:italic;font-size:1rem}
+.stages{display:flex;flex-direction:column;gap:1rem;margin-top:1rem}
+.stage{background:var(--card);border:1px solid var(--rule);border-radius:4px;box-shadow:var(--shadow);padding:1rem 1.1rem 1.1rem;display:flex;flex-direction:column;gap:.85rem;min-width:0;scroll-margin-top:1rem;scroll-margin-bottom:6rem}
+.stage.is-current{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),var(--shadow)}
+.stage__h{display:flex;flex-wrap:wrap;gap:.2rem .7rem;align-items:baseline}
+.stage__k{font:600 .7rem/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.stage__t{font:600 1rem/1.35 var(--sans)}
+.stage p{margin:0;max-width:72ch}
+.q{font-weight:600}
+.ans{padding:.55rem .75rem;border-radius:3px;font-size:.93rem}
+.ans--yes{background:var(--zrow-soft);color:var(--ink)}
+.ans--ok{background:var(--basic-soft)}
+.ans--bad{background:var(--zrow-soft)}
+.ans--info{background:var(--card-2);border:1px solid var(--rule)}
+.ans b.v{font-weight:600}
+
+/* system of equations */
+.sysw{overflow-x:auto;padding:.15rem 0}
+.sys{display:inline-grid;align-items:stretch;grid-auto-rows:minmax(2.1rem,auto);font-family:var(--serif);font-size:1.06rem;font-variant-numeric:lining-nums tabular-nums;min-width:max-content}
+.sc{padding:.18rem .1rem;white-space:nowrap;display:flex;align-items:center}
+.sc.lab{font:500 .76rem/1.2 var(--sans);color:var(--ink-3);padding-right:.9rem;justify-content:flex-end}
+.sc.sg{justify-content:center;padding-inline:.32rem;color:var(--ink-2)}
+.sc.tm{justify-content:flex-end}
+.sc.rel{padding-inline:.5rem;color:var(--ink-2)}
+.sc.rhs{justify-content:flex-end;padding-right:.3rem}
+.sc.zc{color:var(--zrow);font-style:italic}
+.r0 .sc, .sc.r0{color:var(--zrow)}
+.sc.r0.lab{color:var(--zrow)}
+.sc.tb{color:var(--basic);font-weight:600}
+.sc.tn{color:var(--accent);font-weight:600}
+.sc.ce{background:var(--enter-soft)}
+.sc.rh{background:var(--hi)}
+.sc.rl{background:var(--leave-soft)}
+.sc.rs{border-top:1px solid var(--ink-2)}
+.sc.nn{font-size:.95rem;color:var(--ink-2);padding-top:.3rem}
+.sc.dim{opacity:.35}
+
+.pair{display:grid;gap:.8rem;align-items:center}
+@media(min-width:760px){.pair{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}}
+.pair__arrow{display:flex;flex-direction:column;align-items:center;gap:.2rem;color:var(--accent);font-family:var(--serif);font-size:1.5rem;line-height:1}
+.pair__arrow small{font:500 .7rem/1.3 var(--sans);color:var(--ink-3);text-align:center;max-width:9rem}
+@media(max-width:759px){.pair__arrow{flex-direction:row;justify-content:center}.pair__arrow span{transform:rotate(90deg)}}
+.pane{background:var(--card-2);border:1px solid var(--rule);border-radius:3px;padding:.6rem .75rem;min-width:0}
+.pane__t{font:500 .64rem/1 var(--sans);letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin:0 0 .45rem}
+
+/* basis table */
+.bt{border-collapse:collapse;font-family:var(--serif);font-size:1.02rem;min-width:15rem}
+.bt th{font:600 .74rem/1.25 var(--sans);letter-spacing:.02em;background:var(--accent);color:#fff;padding:.5rem .8rem;text-align:center}
+:root[data-theme="dark"] .bt th{color:#241016}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .bt th{color:#241016}}
+.bt td{padding:.36rem .9rem;text-align:center;border-bottom:1px solid var(--card);background:var(--accent-soft)}
+.bt tr:nth-child(even) td{background:var(--card-2)}
+.bt td.b{color:var(--basic);font-weight:600}
+.bt td.new{box-shadow:inset 3px 0 0 var(--enter)}
+.bt td.out{box-shadow:inset 3px 0 0 var(--leave)}
+.btw{overflow-x:auto}
+.row2{display:flex;flex-wrap:wrap;gap:1rem 1.6rem;align-items:flex-start}
+.row2>div{min-width:0}
+
+/* GE */
+.ops{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.4rem}
+.op{display:grid;grid-template-columns:1.6rem minmax(0,1fr);gap:.1rem .5rem;padding:.5rem .65rem;border:1px solid var(--rule);border-radius:3px;background:var(--card-2);font-size:.9rem}
+.op__n{font:600 .78rem/1.6 var(--sans);color:var(--ink-3)}
+.op__not{grid-column:2;font-family:var(--serif);font-size:.98rem;color:var(--ink-2)}
+.op.done{border-color:var(--rule-2);background:var(--card)}
+.op.done .op__n{color:var(--basic)}
+.op.last{border-color:var(--accent);background:var(--accent-soft)}
+.op.pend{opacity:.55}
+.work{display:flex;flex-direction:column;gap:.8rem}
+
+
+/* GE player */
+.op{grid-template-columns:1.6rem minmax(0,1fr)}
+.op__body{display:flex;flex-direction:column;gap:.1rem;text-align:left;background:none;border:0;padding:0;font:inherit;color:inherit}
+button.op__body{cursor:pointer}
+button.op__body:hover .op__not{color:var(--accent)}
+.op.live{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 1px var(--accent)}
+.op.live .op__n{color:var(--accent)}
+.op__not{grid-column:auto}
+.player{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;justify-content:space-between;padding:.6rem .75rem;border:1px solid var(--rule-2);border-radius:4px;background:var(--card-2);scroll-margin-top:1rem}
+.player__ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+.player__count{font:500 .78rem/1 var(--sans);color:var(--ink-2);font-variant-numeric:tabular-nums}
+.pbig{min-width:7.2rem}
+.phases{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}
+.phases span{font:500 .74rem/1 var(--sans);padding:.34rem .6rem;border-radius:999px;border:1px solid var(--rule-2);color:var(--ink-3);transition:background .2s,color .2s}
+.phases span.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.phases span.done{color:var(--basic);border-color:var(--basic)}
+.cap{font-size:1rem;min-height:1.7em}
+.gebox{display:grid;gap:.8rem}
+@media(min-width:900px){.gebox{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}}
+.gesys{position:relative;display:inline-block;min-width:max-content}
+.gesys>svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.sc.chipc{justify-content:flex-end;padding-right:.1rem}
+.sc.rsrc{background:var(--src)}
+.sc.rtgt{background:var(--hi)}
+.sc.rdone{background:var(--basic-soft)}
+.sc.rnew{animation:rownew 1.1s ease-out both}
+@keyframes rownew{0%{background:var(--hi)}30%{background:var(--basic-soft);box-shadow:0 0 0 0 transparent}100%{background:var(--basic-soft)}}
+.sc.tkill{box-shadow:inset 0 0 0 2px var(--zrow);border-radius:3px}
+.sc.tone{box-shadow:inset 0 0 0 2px var(--basic);border-radius:3px}
+.mult{display:inline-flex;align-items:center;font-family:var(--serif);font-size:1rem;line-height:1.2;background:var(--src-line);color:var(--on-accent);border-radius:999px;padding:.1rem .55rem;white-space:nowrap}
+.mult.pop{animation:pop .5s cubic-bezier(.2,1.5,.4,1) both}
+.mult.dim{opacity:.45}
+@keyframes pop{from{transform:scale(.2);opacity:0}}
+.ga-path{fill:none;stroke:var(--src-line);stroke-width:2.4;stroke-linecap:round}
+.ga-head{fill:var(--src-line)}
+.ga-badge{fill:var(--src-line)}
+.ga-txt{fill:var(--on-accent);font:700 16px var(--sans)}
+svg.ga.dim{opacity:.35}
+svg.ga .late{animation:fadein .2s ease-out both;animation-delay:var(--draw,.7s)}
+svg.ga .late2{animation:pop2 .35s ease-out both;animation-delay:calc(var(--draw,.7s) * .5)}
+@keyframes pop2{from{opacity:0}}
+.worked.fadein{animation:fadein .45s ease-out both}
+@keyframes fadein{from{opacity:0}}
+@media (prefers-reduced-motion: reduce){.mult.pop,.sc.rnew,.worked.fadein,svg.ga .late,svg.ga .late2{animation:none}}
+
+/* ratio */
+.tests{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.3rem;font-family:var(--serif);font-size:1.02rem}
+.tests li{padding:.3rem .6rem;border-radius:3px;display:flex;flex-wrap:wrap;gap:.2rem .6rem;align-items:baseline}
+.tests li.win{background:var(--hi)}
+.tests .why{font:400 .78rem/1.4 var(--sans);color:var(--ink-3)}
+.imp{color:var(--zrow);font-style:italic}
+
+/* choices */
+.choices{display:flex;flex-wrap:wrap;gap:.5rem}
+.choice{appearance:none;cursor:pointer;border:1px solid var(--rule-2);background:var(--card);border-radius:4px;padding:.5rem .8rem;font:inherit;color:var(--ink);display:flex;flex-direction:column;gap:.1rem;align-items:flex-start;text-align:left}
+.choice:hover:not(:disabled){border-color:var(--accent)}
+.choice[aria-pressed="true"]{border-color:var(--enter);background:var(--enter-soft);box-shadow:0 0 0 1px var(--enter)}
+.choice:disabled{cursor:default}
+.choice small{font:400 .72rem/1.3 var(--sans);color:var(--ink-3)}
+.choice .mx{font-size:1.05rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.chip{display:inline-flex;gap:.4rem;align-items:baseline;padding:.3rem .6rem;border-radius:999px;border:1px solid var(--rule-2);font-family:var(--serif);font-size:1rem;background:var(--card)}
+.chip.neg{border-color:var(--zrow);background:var(--zrow-soft)}
+.chip.zero{border-style:dashed}
+
+.final{display:grid;gap:.6rem}
+.kv{display:flex;flex-wrap:wrap;gap:.3rem 1.2rem;font-family:var(--serif);font-size:1.05rem}
+.big{font-family:var(--serif);font-size:1.35rem}
+
+/* sticky bar */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--card);border-top:1px solid var(--rule-2);box-shadow:0 -8px 24px -20px rgba(0,0,0,.5);padding:.65rem 16px calc(.65rem + env(safe-area-inset-bottom,0px))}
+.bar__in{max-width:1000px;margin:0 auto;display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:center;justify-content:space-between}
+.bar__status{font-size:.82rem;color:var(--ink-2);min-width:0;flex:1 1 14rem}
+.bar__status b{color:var(--ink);font-weight:600}
+.bar .btn--solid{padding:.6rem 1.05rem;font-size:.84rem}
+kbd{font:500 .7rem/1 var(--sans);border:1px solid var(--rule-2);border-bottom-width:2px;border-radius:3px;padding:.1rem .3rem;color:var(--ink-3)}
+
+/* reference */
+.ref{display:grid;gap:1rem}
+@media(min-width:760px){.ref{grid-template-columns:1fr 1fr}}
+.ref ol{margin:.4rem 0 0;padding-left:1.2rem;font-size:.9rem;color:var(--ink-2)}
+.ref li{margin:.25rem 0}
+.foot{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--rule);font-size:.78rem;color:var(--ink-3)}
+.foot a{color:var(--ink-2)}
+a{color:var(--accent)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+/* ================= tableau ================= */
+.tw{overflow-x:auto;padding:.15rem 0 .3rem}
+.tabw{position:relative;display:inline-block;min-width:max-content}
+.tabw>svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+table.tab{border-collapse:separate;border-spacing:0;font-family:var(--serif);font-size:1.06rem;font-variant-numeric:lining-nums tabular-nums}
+.tab th{font:600 .7rem/1.2 var(--sans);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2);padding:.5rem .7rem;border-bottom:2px solid var(--ink);text-align:center;white-space:nowrap;vertical-align:bottom}
+.tab th.vh{font:italic 400 1.06rem/1.2 var(--serif);letter-spacing:0;text-transform:none;color:var(--ink)}
+.tab td{padding:.42rem .75rem;text-align:center;border-bottom:1px solid var(--rule);white-space:nowrap;min-width:2.7rem;background:var(--card);transition:background .25s}
+.tab .bv{text-align:left;border-right:1px solid var(--rule-2);min-width:3.2rem}
+.tab .eq{font:500 .76rem/1.2 var(--sans);color:var(--ink-3);border-right:1px solid var(--rule-2)}
+.tab .zcol{border-right:1px solid var(--rule-2)}
+.tab .rhsc{border-left:2px solid var(--ink-2);min-width:3.3rem}
+.tab tr.r0 td{color:var(--zrow);border-bottom:2px solid var(--rule-2)}
+.tab tr.r0 td.eq{color:var(--zrow)}
+.tab td.bvb{color:var(--basic);font-weight:600}
+.tab .z0{color:var(--ink-3)}
+.tab tr.r0 .z0{color:inherit;opacity:.6}
+.tab th.hb{color:var(--basic);box-shadow:inset 0 -3px 0 var(--basic)}
+.tab th.pc{background:var(--enter);color:var(--on-accent)}
+.tab td.pc{background:var(--enter-soft)}
+.tab tr.pr td:not(.gut):not(.gap):not(.sp){background:var(--leave-soft)}
+.tab tr.pr td.pc{background:color-mix(in srgb,var(--leave-soft) 50%,var(--enter-soft))}
+.tab td.pe{box-shadow:inset 0 0 0 2.5px var(--leave);font-weight:600;border-radius:4px}
+.tab td.rcn{box-shadow:inset 0 0 0 2px var(--zrow);border-radius:4px;font-weight:600}
+.tab tr.rsrc td:not(.gut):not(.gap):not(.sp){background:var(--src)}
+.tab tr.rtgt td:not(.gut):not(.gap):not(.sp){background:var(--hi)}
+.tab tr.rdone td:not(.gut):not(.gap):not(.sp){background:var(--basic-soft)}
+.tab tr.rnew td:not(.gut):not(.gap):not(.sp){animation:rownew 1.1s ease-out both}
+.tab tr.rs td{border-top:2px solid var(--ink-2)}
+.tab td.tkill{box-shadow:inset 0 0 0 2.5px var(--zrow);border-radius:4px}
+.tab td.tone{box-shadow:inset 0 0 0 2.5px var(--basic);border-radius:4px}
+.tab .gut,.tab .gap,.tab .sp{border:0!important;background:transparent!important;min-width:0;padding:0}
+.tab td.gut{text-align:right;padding-right:.15rem}
+.tab th.gut{min-width:4.2rem}
+.tab .gap{width:3.4rem;min-width:3.4rem}
+.tab .sp{width:1rem;min-width:1rem}
+.tab th.rt{background:var(--card-2);border:1px solid var(--rule-2);border-bottom:2px solid var(--ink);border-radius:4px 4px 0 0;text-transform:none;letter-spacing:0;font-size:.76rem;line-height:1.35}
+.tab td.rt{background:var(--card-2);border-left:1px solid var(--rule-2);border-right:1px solid var(--rule-2);text-align:left;min-width:12rem;color:var(--ink)}
+.tab tr:last-child td.rt{border-bottom:1px solid var(--rule-2)}
+.tab tr.r0 td.rt{color:var(--ink-3);font:400 .74rem/1.2 var(--sans)}
+.tab tr.win td.rt{background:var(--hi)}
+.tab td.rt .why{font:400 .74rem/1.3 var(--sans);color:var(--ink-3)}
+.mintag{display:inline-block;font:600 .64rem/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--on-accent);background:var(--leave);border-radius:999px;padding:.22rem .45rem;margin-left:.35rem;vertical-align:middle}
+.mintag.tie{background:var(--ink-3)}
+.tab.mini{font-size:.98rem}
+.tab.mini td{padding:.3rem .6rem}
+.tab.mini td.lbl{font:500 .76rem/1.2 var(--sans);color:var(--ink-2);white-space:nowrap}
+.qm{color:var(--ink-3);font-style:normal}
+.side{display:grid;gap:1rem;align-items:start}
+@media(min-width:900px){.side{grid-template-columns:auto minmax(0,1fr)}}
+@media (prefers-reduced-motion: reduce){.tab tr.rnew td{animation:none!important}}
+
+/* ================= compact iteration cards ================= */
+#sheet{display:flex;flex-direction:column;gap:1rem}
+.itcard{background:var(--card);border:1px solid var(--rule);border-radius:4px;box-shadow:var(--shadow);padding:.8rem 1rem .9rem;display:flex;flex-direction:column;gap:.55rem;min-width:0;scroll-margin-top:.8rem}
+.itcard.is-current{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),var(--shadow)}
+.itcard__h{display:flex;flex-wrap:wrap;gap:.2rem 1rem;align-items:baseline}
+.itcard__h h2{font-size:1.2rem}
+.nl{margin:0;font-size:.9rem;color:var(--ink);max-width:80ch}
+.nl.ok{color:var(--ink-2)}
+.small{font-size:.8rem;color:var(--ink-3)}
+.nl.small{font-size:.8rem;color:var(--ink-3)}
+.cap.nl{min-height:2.6em;font-size:.92rem}
+.tab td.ex{font-size:.8rem;color:var(--ink);padding-inline:.4rem}
+.tab td.ex .fr{font-size:.85em}
+.blank{color:var(--rule-2)}
+.tab tr.rold td:not(.gut):not(.gap):not(.sp){background:var(--hi)}
+.tab td.tzero{box-shadow:inset 0 0 0 2px var(--ink-3);border-radius:4px}
+.itcard .choices{gap:.35rem}
+.itcard .choice{padding:.3rem .6rem}
+.itcard .player{padding:.45rem .6rem}
+.itcard .phases span{font-size:.68rem;padding:.28rem .5rem}
+.itcard .pair .pane{padding:.45rem .6rem}
+.itcard .sys{font-size:.98rem;grid-auto-rows:minmax(1.8rem,auto)}
+.itcard .final{padding:.6rem .75rem}
+.itcard .mult{font-size:1.08rem;padding:.15rem .6rem}
+.itcard .mult .fr{font-size:.82em}
+@media(max-width:520px){.tab th.gut{min-width:3.4rem}.tab .gap{width:2.9rem;min-width:2.9rem}.itcard{padding-inline:.7rem}}
+
+/* ================= Big M additions ================= */
+.xb{text-decoration:overline;text-decoration-thickness:1px;text-underline-offset:0}
+.mm{font-style:italic;font-family:var(--serif)}
+.mv{white-space:nowrap}
+.v-a{color:var(--accent);font-weight:600}
+.v-n{color:var(--accent);font-weight:600}
+.tab th.ah{color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
+.tab td.bva{color:var(--accent);font-weight:600}
+.itcard__h h2 .sub{font:500 .72rem/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-left:.4rem;vertical-align:middle}
+.tab.chk td{text-align:left;white-space:normal}
+.tab.chk th{text-align:left}
+.tab.chk td.why2{font:400 .86rem/1.4 var(--sans);color:var(--ink-2);min-width:14rem}
+.tagA,.tagS{display:inline-block;font:500 .8rem/1.3 var(--sans);border-radius:999px;padding:.2rem .6rem;white-space:nowrap}
+.tagA{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent)}
+.tagS{background:var(--basic-soft);color:var(--basic);border:1px solid var(--basic)}
+.tagA .v-a,.tagS .v-b{color:inherit}
+.itcard .worked .tab.mini td.lbl{text-align:right}
+.tab.mini tr.rsrc td{background:var(--src)}
+.tab.mini tr.rtgt td{background:var(--hi)}
+.tab.mini tr.rs td{border-top:2px solid var(--ink-2)}
+.tab.mini tr.rnew td{animation:rownew 1.1s ease-out both}
+.tab.mini tr.r0 td{color:var(--zrow)}
+.tab.mini tr.r0 td.lbl{color:var(--ink-2)}
+#sheet>.ans{margin:0}
+
+/* ================= duality tool ================= */
+.cheat{border-collapse:separate;border-spacing:0;width:100%;font-size:.92rem}
+.cheat th{font:600 .7rem/1.2 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);padding:.55rem .7rem;border-bottom:2px solid var(--ink);text-align:left}
+.cheat th.mid,.cheat td.mid{text-align:center;color:var(--ink-3);width:2.5rem}
+.cheat td{padding:.45rem .7rem;border-bottom:1px solid var(--rule);vertical-align:middle}
+.cheat td .mx{font-size:1rem}
+.cheat tr.grp td{font:600 .68rem/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--accent);background:var(--card-2);padding:.5rem .7rem}
+.cheat tr.on td{background:var(--hi)}
+.cheat tr.on td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+.cheat.mini{font-size:.82rem}
+.cheat.mini td{padding:.3rem .5rem}
+.cheat.mini th{padding:.4rem .5rem;font-size:.62rem}
+.cheat .dirnote{font:400 .78rem/1.4 var(--sans);color:var(--ink-3)}
+.mnem{display:grid;gap:.6rem;margin-top:.9rem}
+@media(min-width:760px){.mnem{grid-template-columns:repeat(3,1fr)}}
+.mnem div{background:var(--card-2);border:1px solid var(--rule);border-radius:4px;padding:.55rem .7rem;font-size:.84rem;color:var(--ink-2)}
+.mnem b{color:var(--ink)}
+.signrow{display:flex;flex-wrap:wrap;gap:.35rem .8rem;font-family:var(--serif);font-size:1rem;color:var(--ink-2);padding:.35rem 0 0}
+.signrow .hl{background:var(--hi);border-radius:3px;padding:0 .25rem}
+.unk{display:inline-block;min-width:1.4em;text-align:center;border:1px dashed var(--rule-2);border-radius:3px;color:var(--ink-3);font-family:var(--sans);font-size:.8rem;padding:0 .2rem}
+.sc.hl{background:var(--hi)}
+.sc.hl2{background:var(--enter-soft)}
+.y{color:var(--accent)}
+.ops2{display:flex;flex-direction:column;gap:.45rem}
+.oprow{display:flex;flex-wrap:wrap;gap:.35rem .6rem;align-items:center;padding:.45rem .6rem;border:1px solid var(--rule);border-radius:4px;background:var(--card-2)}
+.oprow .who{font:600 .82rem/1.3 var(--sans);min-width:7.5rem}
+.oprow .who .mx{font-weight:400}
+.oprow .none{font-size:.8rem;color:var(--ink-3)}
+.hist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.3rem;counter-reset:h}
+.hist li{counter-increment:h;font-size:.86rem;color:var(--ink-2);padding:.35rem .55rem;border-left:2px solid var(--accent);background:var(--card-2)}
+.hist li::before{content:counter(h) ". ";font-weight:600;color:var(--accent)}
+.tabs{display:flex;flex-wrap:wrap;gap:.3rem;border-bottom:1px solid var(--rule);margin-bottom:1rem}
+.tabbtn{appearance:none;border:1px solid transparent;border-bottom:0;background:transparent;padding:.55rem .9rem;font:600 .86rem/1.2 var(--sans);color:var(--ink-2);cursor:pointer;border-radius:4px 4px 0 0;margin-bottom:-1px}
+.tabbtn[aria-selected="true"]{background:var(--card);border-color:var(--rule);color:var(--accent)}
+.tabbtn:disabled{opacity:.45;cursor:not-allowed}
+.stepnav{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:center;justify-content:space-between;padding:.6rem .75rem;border:1px solid var(--rule-2);border-radius:4px;background:var(--card-2)}
+.dots{display:flex;flex-wrap:wrap;gap:.3rem}
+.dots button{appearance:none;border:1px solid var(--rule-2);background:var(--card);color:var(--ink-2);font:500 .72rem/1 var(--sans);padding:.35rem .55rem;border-radius:999px;cursor:pointer}
+.dots button[aria-current="step"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.dots button.done{color:var(--basic);border-color:var(--basic)}
+.stepbody{display:grid;gap:1rem;margin-top:1rem}
+@media(min-width:980px){.stepbody{grid-template-columns:minmax(0,1fr) 19rem;align-items:start}}
+.stepmain{display:flex;flex-direction:column;gap:.8rem;min-width:0}
+.steph{display:flex;flex-wrap:wrap;gap:.2rem .7rem;align-items:baseline}
+.steph .k{font:600 .7rem/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.steph .t{font:600 1.05rem/1.35 var(--sans)}
+.maplist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.3rem;font-family:var(--serif);font-size:1rem}
+.maplist li{display:flex;flex-wrap:wrap;gap:.2rem .6rem;align-items:baseline;padding:.3rem .55rem;border-radius:3px;background:var(--card-2);border:1px solid var(--rule)}
+.maplist li.sel{background:var(--hi);border-color:var(--rule-2)}
+.maplist .arr{color:var(--accent)}
+.maplist .why{font:400 .78rem/1.4 var(--sans);color:var(--ink-3)}
+.chipsel{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+.chipsel span.l{font:500 .74rem/1 var(--sans);color:var(--ink-3)}
+.chipsel button{appearance:none;border:1px solid var(--rule-2);background:var(--card);border-radius:999px;padding:.25rem .6rem;font:400 .95rem/1.2 var(--serif);cursor:pointer;color:var(--ink)}
+.chipsel button[aria-pressed="true"]{border-color:var(--enter);background:var(--enter-soft)}
+table.dt{border-collapse:separate;border-spacing:0;font-family:var(--serif);font-size:1.02rem;font-variant-numeric:lining-nums tabular-nums}
+.dt th,.dt td{padding:.38rem .7rem;text-align:center;white-space:nowrap;border-bottom:1px solid var(--rule)}
+.dt th{font:600 .7rem/1.2 var(--sans);letter-spacing:.04em;color:var(--ink-2);border-bottom:2px solid var(--ink)}
+.dt th.v{font:italic 400 1.04rem/1.2 var(--serif);letter-spacing:0;color:var(--ink)}
+.dt td.l{font:500 .78rem/1.2 var(--sans);color:var(--ink-3);text-align:left}
+.dt td.yv{font-family:var(--serif);color:var(--accent);text-align:left}
+.dt tr.obj td{color:var(--zrow);border-bottom:2px solid var(--rule-2)}
+.dt td.rel,.dt th.rel{border-left:1px solid var(--rule-2)}
+.dt td.rhs,.dt th.rhs{border-left:2px solid var(--ink-2)}
+.dt tr.sg td{font-size:.86rem;color:var(--ink-2);border-bottom:0}
+.dt .z0{color:var(--ink-3)}
+.dt .c-hl{background:var(--enter-soft)}
+.dt .r-hl{background:var(--hi)}
+.dt .x-hl{background:var(--hi);box-shadow:inset 0 0 0 2px var(--leave);border-radius:3px}
+.cmp{display:grid;gap:1rem}
+@media(min-width:900px){.cmp{grid-template-columns:1fr 1fr}}
+.checkrow{display:flex;flex-wrap:wrap;gap:.5rem}
+.vchip{display:inline-flex;flex-direction:column;gap:.15rem;padding:.5rem .8rem;border:1px solid var(--rule-2);border-radius:4px;background:var(--card);min-width:10rem}
+.vchip small{font:500 .7rem/1.2 var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.vchip b{font-family:var(--serif);font-size:1.2rem;font-weight:600}
+.vchip.ok{border-color:var(--basic);background:var(--basic-soft)}
+.notes{margin:0;padding-left:1.1rem;font-size:.9rem;color:var(--ink-2);display:flex;flex-direction:column;gap:.35rem}
+details.box{border:1px solid var(--rule);border-radius:4px;background:var(--card)}
+details.box>summary{cursor:pointer;padding:.7rem 1rem;font:600 .9rem/1.3 var(--sans)}
+details.box>div{padding:0 1rem 1rem}
+.ed .sgn{font-size:.78rem}
+.presets{min-width:0;max-width:100%}
+.presets .sel{max-width:100%;min-width:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Foundations of Optimization · Tool 7</p>
+  <h1>Duality interactive tool: <em>Writing the Dual</em></h1>
+  <p class="lede">Type any linear program: maximize or minimize, “≤”, “≥” or “=” constraints, and variables that are nonnegative, nonpositive or unrestricted in sign. Optionally rewrite it with valid operations. Then build the <b>dual problem</b> one step at a time, for the original and for your rewritten version, and check that both duals give the same answer.</p>
+
+  <!-- ============ CHEAT SHEET ============ -->
+  <section class="section" id="cheat">
+    <div class="section__head"><div><h2>1 · Duality cheat sheet</h2><p>Read left → right when the primal is a <b>maximization</b>, right → left when it is a <b>minimization</b>. The dual of the dual is the primal.</p></div></div>
+    <div class="card"><div class="card__body"><div class="tw" id="cheatTop"></div>
+      <div class="mnem">
+        <div><b>Data moves.</b> Objective coefficients ↔ right-hand sides. Coefficient matrix <span class="mx"><i>A</i></span> ↔ its transpose <span class="mx"><i>A</i><sup>T</sup></span>.</div>
+        <div><b>Counts swap.</b> One dual variable per primal constraint, and one dual constraint per primal variable.</div>
+        <div><b>Memory aid.</b> In a max problem, “≤” constraints and “≥ 0” variables are the natural ones; in a min problem, “≥” and “≥ 0”. Natural ↔ natural, odd ↔ odd, “=” ↔ unrestricted.</div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- ============ PRIMAL ============ -->
+  <section class="section" id="problem">
+    <div class="section__head"><div><h2>2 · The primal problem</h2><p>Any coefficient may be 0, including all objective coefficients or all right-hand sides. Coefficients accept integers, decimals or fractions such as <span class="mx">3</span>, <span class="mx">−1.5</span>, <span class="mx">2/7</span>. Choose each variable’s sign below its column.</p></div></div>
+    <div class="card">
+      <div class="card__head">
+        <div class="presets">
+          <label for="preset">Example</label>
+          <select id="preset" class="sel"></select>
+          <button class="btn btn--sm" id="saveEx" type="button">Save as my example</button>
+          <button class="btn btn--sm" id="delEx" type="button" hidden>Remove saved example</button>
+        </div>
+        <span class="note" id="saveMsg" aria-live="polite"></span>
+      </div>
+      <div class="card__body">
+        <div class="edwrap"><div class="ed" id="ed"></div></div>
+        <div class="dims">
+          <div class="g"><span class="gl">Variables <i style="font-family:var(--serif)">n</i></span>
+            <span class="stepper"><button type="button" id="nDec" aria-label="Fewer variables">−</button><span class="v" id="nVal">2</span><button type="button" id="nInc" aria-label="More variables">+</button></span></div>
+          <div class="g"><span class="gl">Constraints <i style="font-family:var(--serif)">m</i></span>
+            <span class="stepper"><button type="button" id="mDec" aria-label="Fewer constraints">−</button><span class="v" id="mVal">3</span><button type="button" id="mInc" aria-label="More constraints">+</button></span></div>
+        </div>
+        <p class="errline" id="err" role="alert"></p>
+        <div class="pane" style="margin-top:.4rem"><p class="pane__t">The primal, as entered</p><div id="primalView"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MANIPULATE ============ -->
+  <section class="section" id="manip">
+    <div class="section__head"><div><h2>3 · Rewrite the primal (optional)</h2><p>Apply any valid operation, as many times as you like, or none at all. Each one gives an equivalent problem, so its dual must give the same answer.</p></div>
+      <div class="btnrow"><button class="btn btn--sm" id="undo" type="button">↶ Undo</button><button class="btn btn--sm" id="resetOps" type="button">Start over</button></div></div>
+    <div class="card"><div class="card__body" id="manipBody"></div></div>
+  </section>
+
+  <!-- ============ DUAL ============ -->
+  <section class="section" id="dual">
+    <div class="section__head"><div><h2>4 · Write the dual, step by step</h2><p>Seven steps, each showing the rule it uses. Use the tabs to switch between the original primal and your rewritten one.</p></div>
+      <div class="btnrow"><span class="seg" role="group" aria-label="Number format"><button type="button" id="fmtFrac" aria-pressed="true">Fractions</button><button type="button" id="fmtDec" aria-pressed="false">Decimals</button></span></div></div>
+    <div class="card"><div class="card__body" id="dualBody"></div></div>
+  </section>
+
+  <!-- ============ COMPARE ============ -->
+  <section class="section" id="compare">
+    <div class="section__head"><div><h2>5 · Compare and check</h2><p>The two duals look different but describe the same problem. An exact solver confirms the optimal values.</p></div></div>
+    <div id="cmpBody"></div>
+  </section>
+
+  <p class="foot">Developed by Dr. Hadi Gard (Charkhgard) for teaching the Foundations of Optimization course only. © 2026 Hadi Gard (Charkhgard). · <a href="https://hcharkhgard.github.io/foundations-of-optimization/" target="_blank" rel="noopener">All course tools</a></p>
+</div>
+
+<script>
+(() => {
+"use strict";
+/* ================= exact rationals ================= */
+const gcd = (a, b) => { a = a < 0n ? -a : a; b = b < 0n ? -b : b; while (b) { [a, b] = [b, a % b]; } return a; };
+class Q {
+  constructor(n, d = 1n) { n = BigInt(n); d = BigInt(d); if (d === 0n) throw new Error("division by zero"); if (d < 0n) { n = -n; d = -d; } const g = gcd(n, d) || 1n; this.n = n / g; this.d = d / g; }
+  add(o) { return new Q(this.n * o.d + o.n * this.d, this.d * o.d); }
+  sub(o) { return new Q(this.n * o.d - o.n * this.d, this.d * o.d); }
+  mul(o) { return new Q(this.n * o.n, this.d * o.d); }
+  div(o) { return new Q(this.n * o.d, this.d * o.n); }
+  neg() { return new Q(-this.n, this.d); }
+  abs() { return this.n < 0n ? this.neg() : this; }
+  sign() { return this.n > 0n ? 1 : this.n < 0n ? -1 : 0; }
+  isZero() { return this.n === 0n; }
+  isOne() { return this.n === this.d; }
+  cmp(o) { return this.sub(o).sign(); }
+  num() { return Number(this.n) / Number(this.d); }
+}
+const ZERO = new Q(0), ONE = new Q(1);
+function parseQ(s) {
+  s = String(s).trim().replace(/[−–]/g, "-").replace(/\s+/g, "");
+  let m;
+  if ((m = s.match(/^([+-]?\d+)\/(\d+)$/))) { if (BigInt(m[2]) === 0n) return null; return new Q(BigInt(m[1]), BigInt(m[2])); }
+  if ((m = s.match(/^([+-]?)(\d*)\.?(\d*)$/))) {
+    if (m[2] === "" && m[3] === "") return null;
+    const sg = m[1] === "-" ? -1n : 1n, fp = m[3] || "", den = 10n ** BigInt(fp.length);
+    return new Q(sg * (BigInt(m[2] || "0") * den + BigInt(fp || "0")), den);
+  }
+  return null;
+}
+
+/* ================= formatting ================= */
+let MODE = "frac";
+const decStr = q => { const x = q.num(); return x !== 0 && Math.abs(x) < 0.001 ? String(+x.toPrecision(3)) : String(+x.toFixed(4)); };
+function absHtml(q) { q = q.abs(); if (q.d === 1n) return String(q.n); if (MODE === "dec") return decStr(q); return `<span class="fr"><span>${q.n}</span><span>${q.d}</span></span>`; }
+const numHtml = q => (q.sign() < 0 ? "−" : "") + absHtml(q);
+const coefHtml = q => (q.abs().isOne() ? "" : absHtml(q));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const REL = { "<=": "≤", ">=": "≥", "=": "=" };
+const SIGN = { ">=0": "≥ 0", "<=0": "≤ 0", "free": "unrestricted" };
+const flipRel = r => r === "<=" ? ">=" : r === ">=" ? "<=" : "=";
+/* names: {b:"x"|"y"|"s", sub:"2", pr:"′"} */
+const nm = v => `<i${v.b === "y" ? ' class="y"' : ""}>${v.b}</i><sub>${v.sub}</sub>${v.pr || ""}`;
+const yOf = label => ({ b: "y", sub: label.sub, pr: label.pr });
+const lab = r => `(${r.label.sub}${r.label.pr || ""})`;
+const signTxt = (v, s) => `${nm(v)} ${s === "free" ? "unrestricted" : SIGN[s]}`;
+
+/* ================= the rules ================= */
+const dualVarSign = (sense, rel) => sense === "max" ? ({ "<=": ">=0", ">=": "<=0", "=": "free" })[rel] : ({ ">=": ">=0", "<=": "<=0", "=": "free" })[rel];
+const dualConRel = (sense, sign) => sense === "max" ? ({ ">=0": ">=", "<=0": "<=", "free": "=" })[sign] : ({ ">=0": "<=", "<=0": ">=", "free": "=" })[sign];
+/* cheat-sheet row used: rows 1–3 = max constraint / min variable, rows 4–6 = max variable / min constraint */
+const rowForCon = (sense, rel) => sense === "max" ? ({ "<=": 1, ">=": 2, "=": 3 })[rel] : ({ ">=": 4, "<=": 5, "=": 6 })[rel];
+const rowForVar = (sense, sign) => sense === "max" ? ({ ">=0": 4, "<=0": 5, "free": 6 })[sign] : ({ ">=0": 1, "<=0": 2, "free": 3 })[sign];
+function cheat(on = new Set(), mini = false, dir = "") {
+  const r = (id, a, b) => `<tr class="${on.has(id) ? "on" : ""}"><td>${a}</td><td class="mid">↔</td><td>${b}</td></tr>`;
+  const g = t => `<tr class="grp"><td colspan="3">${t}</td></tr>`;
+  let h = `<table class="cheat${mini ? " mini" : ""}"><thead><tr><th>Maximization problem</th><th class="mid"></th><th>Minimization problem</th></tr></thead><tbody>`;
+  h += r("obj", "max (objective coefficients)", "min (right-hand sides)");
+  h += g("Constraint of the max ↔ variable of the min");
+  h += r(1, "constraint <i>i</i> is <b>≤</b>", "variable <i>y<sub>i</sub></i> <b>≥ 0</b>");
+  h += r(2, "constraint <i>i</i> is <b>≥</b>", "variable <i>y<sub>i</sub></i> <b>≤ 0</b>");
+  h += r(3, "constraint <i>i</i> is <b>=</b>", "variable <i>y<sub>i</sub></i> <b>unrestricted</b>");
+  h += g("Variable of the max ↔ constraint of the min");
+  h += r(4, "variable <i>x<sub>j</sub></i> <b>≥ 0</b>", "constraint <i>j</i> is <b>≥</b>");
+  h += r(5, "variable <i>x<sub>j</sub></i> <b>≤ 0</b>", "constraint <i>j</i> is <b>≤</b>");
+  h += r(6, "variable <i>x<sub>j</sub></i> <b>unrestricted</b>", "constraint <i>j</i> is <b>=</b>");
+  if (!mini) { h += g("Data"); h += r("data1", "right-hand side <i>b<sub>i</sub></i>", "objective coefficient of <i>y<sub>i</sub></i>"); h += r("data2", "objective coefficient <i>c<sub>j</sub></i>", "right-hand side of constraint <i>j</i>"); h += r("data3", "coefficient <i>a<sub>ij</sub></i> (row <i>i</i>, column <i>j</i>)", "coefficient <i>a<sub>ij</sub></i> (row <i>j</i>, column <i>i</i>)"); }
+  h += `</tbody></table>`;
+  if (dir) h += `<p class="dirnote">${dir}</p>`;
+  return h;
+}
+
+/* ================= formulation model =================
+   F = { sense, obj:"z"|"w", vars:[{b,sub,pr,sign}], c:[Q], rows:[{label:{sub,pr}, coefs:[Q], rel, rhs}] }          */
+function terms(coefs, vars, o = {}) {   // returns grid cells: per var (sign, term)
+  let h = "", first = true;
+  coefs.forEach((c, j) => {
+    const cls = o.col === j ? " hl2" : "";
+    if (c.isZero()) { h += `<div class="sc sg${cls}"></div><div class="sc tm${cls}"></div>`; return; }
+    const s = c.sign() < 0 ? "−" : first ? "" : "+";
+    h += `<div class="sc sg${cls}">${s}</div><div class="sc tm${cls}"><span>${coefHtml(c)}${nm(vars[j])}</span></div>`;
+    first = false;
+  });
+  return { h, empty: first };
+}
+/* o: {hideObj, hideRows, relUnknown, signUnknown, hlRow (index), col, hlSign:Set of var idx, objUnknown} */
+function lpHtml(F, o = {}) {
+  const N = F.vars.length;
+  let h = `<div class="sysw"><div class="sys" style="grid-template-columns:auto auto repeat(${N},auto auto) auto auto">`;
+  // objective
+  h += `<div class="sc lab">${F.sense === "max" ? "Max" : "Min"}</div><div class="sc"><i class="v-z">${F.obj}</i>&nbsp;=</div>`;
+  if (o.hideObj) h += `<div class="sc" style="grid-column:span ${2 * N}"><span class="unk">?</span></div>`;
+  else { const t = terms(F.c, F.vars, o); h += t.empty ? `<div class="sc" style="grid-column:span ${2 * N}">0</div>` : t.h; }
+  h += `<div class="sc"></div><div class="sc"></div>`;
+  if (!o.hideRows) F.rows.forEach((r, i) => {
+    const rc = o.hlRow === i ? " hl" : "";
+    h += `<div class="sc lab${rc}">${i === 0 ? "s.t. " : ""}${lab(r)}</div><div class="sc${rc}"></div>`;
+    const t = terms(r.coefs, F.vars, o);
+    h += t.empty ? `<div class="sc tm${rc}" style="grid-column:span ${2 * N};justify-content:flex-end">0</div>` : t.h;
+    h += `<div class="sc rel${rc}">${o.relUnknown ? '<span class="unk">?</span>' : REL[r.rel]}</div><div class="sc rhs${rc}">${numHtml(r.rhs)}</div>`;
+  });
+  h += `</div></div>`;
+  if (!o.hideRows || o.showSigns) h += `<div class="signrow">${F.vars.map((v, j) => `<span class="${o.hlSign && o.hlSign.has(j) ? "hl" : ""}">${o.signUnknown ? `${nm(v)} <span class="unk">?</span>` : signTxt(v, v.sign)}</span>`).join("")}</div>`;
+  return h;
+}
+function dualOf(F) {
+  const sense = F.sense === "max" ? "min" : "max";
+  return {
+    sense, obj: "w",
+    vars: F.rows.map(r => Object.assign(yOf(r.label), { sign: dualVarSign(F.sense, r.rel) })),
+    c: F.rows.map(r => r.rhs),
+    rows: F.vars.map((v, j) => ({ label: { sub: v.sub, pr: v.pr || "", forVar: v }, coefs: F.rows.map(r => r.coefs[j]), rel: dualConRel(F.sense, v.sign), rhs: F.c[j] }))
+  };
+}
+/* dual constraints are labelled by the primal variable they come from */
+const dlab = (r) => r.label.forVar ? `(${nm(r.label.forVar)})` : lab(r);
+
+/* ================= manipulations ================= */
+const cloneF = F => ({ sense: F.sense, obj: F.obj, negObj: !!F.negObj, vars: F.vars.map(v => Object.assign({}, v)), c: F.c.slice(), rows: F.rows.map(r => ({ label: Object.assign({}, r.label), coefs: r.coefs.slice(), rel: r.rel, rhs: r.rhs })) });
+const OPS = {
+  negRow(F, i) { const r = F.rows[i]; r.coefs = r.coefs.map(c => c.neg()); r.rhs = r.rhs.neg(); r.rel = flipRel(r.rel); r.label.pr = (r.label.pr || "") + "*"; },
+  splitEq(F, i) {
+    const r = F.rows[i];
+    const a = { label: { sub: r.label.sub, pr: (r.label.pr || "") + "′" }, coefs: r.coefs.slice(), rel: "<=", rhs: r.rhs };
+    const b = { label: { sub: r.label.sub, pr: (r.label.pr || "") + "″" }, coefs: r.coefs.slice(), rel: ">=", rhs: r.rhs };
+    F.rows.splice(i, 1, a, b);
+  },
+  addSlack(F, i) {
+    const r = F.rows[i], sgn = r.rel === "<=" ? ONE : ONE.neg();
+    F.vars.push({ b: "s", sub: r.label.sub, pr: r.label.pr || "", sign: ">=0" }); F.c.push(ZERO);
+    F.rows.forEach((q, k) => q.coefs.push(k === i ? sgn : ZERO)); r.rel = "=";
+  },
+  negVar(F, j) { const v = F.vars[j]; v.pr = (v.pr || "") + "′"; v.sign = ">=0"; F.c[j] = F.c[j].neg(); F.rows.forEach(r => { r.coefs[j] = r.coefs[j].neg(); }); },
+  splitVar(F, j) {
+    const v = F.vars[j];
+    const a = { b: v.b, sub: v.sub, pr: (v.pr || "") + "⁺", sign: ">=0" }, b = { b: v.b, sub: v.sub, pr: (v.pr || "") + "⁻", sign: ">=0" };
+    F.vars.splice(j, 1, a, b); const cj = F.c[j]; F.c.splice(j, 1, cj, cj.neg());
+    F.rows.forEach(r => { const a0 = r.coefs[j]; r.coefs.splice(j, 1, a0, a0.neg()); });
+  },
+  negObj(F) { F.sense = F.sense === "max" ? "min" : "max"; F.c = F.c.map(c => c.neg()); F.negObj = !F.negObj; F.obj = F.negObj ? "z̃" : "z"; }
+};
+function opText(op, F) {   // F = formulation before the op
+  switch (op.kind) {
+    case "negRow": return `Multiplied constraint ${lab(F.rows[op.i])} by −1 (it becomes “${REL[flipRel(F.rows[op.i].rel)]}”; renamed ${lab({ label: { sub: F.rows[op.i].label.sub, pr: (F.rows[op.i].label.pr || "") + "*" } })}).`;
+    case "splitEq": return `Split equation ${lab(F.rows[op.i])} into a “≤” and a “≥” constraint.`;
+    case "addSlack": return `Added ${F.rows[op.i].rel === "<=" ? "slack" : "surplus"} ${nm({ b: "s", sub: F.rows[op.i].label.sub, pr: F.rows[op.i].label.pr })} ≥ 0 to constraint ${lab(F.rows[op.i])}, making it an equation.`;
+    case "negVar": return `Replaced ${nm(F.vars[op.j])} ≤ 0 by ${nm(F.vars[op.j])} = −${nm(Object.assign({}, F.vars[op.j], { pr: (F.vars[op.j].pr || "") + "′" }))} with ${nm(Object.assign({}, F.vars[op.j], { pr: (F.vars[op.j].pr || "") + "′" }))} ≥ 0.`;
+    case "splitVar": { const v = F.vars[op.j]; const a = Object.assign({}, v, { pr: (v.pr || "") + "⁺" }), b = Object.assign({}, v, { pr: (v.pr || "") + "⁻" }); return `Replaced unrestricted ${nm(v)} by ${nm(a)} − ${nm(b)} with ${nm(a)}, ${nm(b)} ≥ 0.`; }
+    case "negObj": return `Multiplied the objective by −1: ${F.sense} ${F.obj} becomes ${F.sense === "max" ? "min" : "max"} z̃ with z̃ = −${F.obj}.`;
+  }
+}
+/* why the dual changes the way it does (for the comparison) */
+function opDualNote(op, F) {
+  switch (op.kind) {
+    case "negRow": { const r = F.rows[op.i], y = nm(yOf(r.label)), y2 = nm(yOf({ sub: r.label.sub, pr: (r.label.pr || "") + "*" })); return `${lab(r)} × (−1): its dual variable changes sign, ${y2} = −${y}. Its sign rule flips too (${SIGN[dualVarSign(F.sense, r.rel)]} becomes ${SIGN[dualVarSign(F.sense, flipRel(r.rel))]}), and every place ${y} appeared now shows −${y2}.`; }
+    case "splitEq": { const r = F.rows[op.i]; const a = nm(yOf({ sub: r.label.sub, pr: (r.label.pr || "") + "′" })), b = nm(yOf({ sub: r.label.sub, pr: (r.label.pr || "") + "″" })); return `Splitting ${lab(r)}: the two new rows have identical coefficients, so ${a} and ${b} always appear together as ${a} + ${b}. One is ${SIGN[dualVarSign(F.sense, "<=")]}, the other ${SIGN[dualVarSign(F.sense, ">=")]}, so their sum is unrestricted, exactly like ${nm(yOf(r.label))} for the equation.`; }
+    case "addSlack": { const r = F.rows[op.i], y = nm(yOf(r.label)); return `Slack/surplus on ${lab(r)}: the row becomes “=”, so ${y} becomes unrestricted, but the new variable ${nm({ b: "s", sub: r.label.sub, pr: r.label.pr })} ≥ 0 adds the dual constraint ${r.rel === "<=" ? "" : "−"}${y} ${REL[dualConRel(F.sense, ">=0")]} 0, which gives back ${y} ${SIGN[dualVarSign(F.sense, r.rel)]}.`; }
+    case "negVar": { const v = F.vars[op.j]; return `${nm(v)} ≤ 0 → −${nm(Object.assign({}, v, { pr: (v.pr || "") + "′" }))}: the dual constraint for the new variable is the old one multiplied by −1, so “${REL[dualConRel(F.sense, ">=0")]}” with negated sides is the same as “${REL[dualConRel(F.sense, "<=0")]}”, the rule for a variable ≤ 0.`; }
+    case "splitVar": { const v = F.vars[op.j]; return `Unrestricted ${nm(v)} split into two: the two dual constraints are the old one and the old one × (−1), both “${REL[dualConRel(F.sense, ">=0")]}”. Together they force “=”, the rule for an unrestricted variable.`; }
+    case "negObj": return `Objective × (−1): the primal turns from ${F.sense} into ${F.sense === "max" ? "min" : "max"}, so the dual turns the other way and its variables change sign. Its optimal value is the negative of the other dual’s.`;
+  }
+}
+
+/* ================= exact LP solver (for the check) ================= */
+function solveLP(F) {
+  // variables → nonnegative columns
+  const cols = []; F.vars.forEach((v, j) => { if (v.sign === ">=0") cols.push({ j, s: ONE }); else if (v.sign === "<=0") cols.push({ j, s: ONE.neg() }); else { cols.push({ j, s: ONE }); cols.push({ j, s: ONE.neg() }); } });
+  const cmax = cols.map(k => (F.sense === "max" ? F.c[k.j] : F.c[k.j].neg()).mul(k.s));
+  let rows = F.rows.map(r => ({ a: cols.map(k => r.coefs[k.j].mul(k.s)), rel: r.rel, b: r.rhs }));
+  rows = rows.map(r => r.b.sign() < 0 ? { a: r.a.map(x => x.neg()), rel: flipRel(r.rel), b: r.b.neg() } : r);
+  const m = rows.length, n0 = cols.length;
+  let N = n0; const slack = rows.map(r => r.rel === "=" ? -1 : N++);
+  const art = rows.map(r => r.rel === "<=" ? -1 : N++);
+  const T = rows.map((r, i) => { const a = Array(N).fill(ZERO); r.a.forEach((x, j) => a[j] = x); if (slack[i] >= 0) a[slack[i]] = r.rel === "<=" ? ONE : ONE.neg(); if (art[i] >= 0) a[art[i]] = ONE; return { a, b: r.b }; });
+  const basis = rows.map((r, i) => r.rel === "<=" ? slack[i] : art[i]);
+  const isArt = new Set(art.filter(x => x >= 0));
+  function pivot(obj, r, e) { const p = T[r].a[e]; T[r].a = T[r].a.map(x => x.div(p)); T[r].b = T[r].b.div(p); for (let i = 0; i < T.length; i++) if (i !== r && !T[i].a[e].isZero()) { const f = T[i].a[e]; T[i].a = T[i].a.map((x, k) => x.sub(f.mul(T[r].a[k]))); T[i].b = T[i].b.sub(f.mul(T[r].b)); } if (!obj.a[e].isZero()) { const f = obj.a[e]; obj.a = obj.a.map((x, k) => x.sub(f.mul(T[r].a[k]))); obj.b = obj.b.sub(f.mul(T[r].b)); } basis[r] = e; }
+  function run(obj, allowed) {   // maximize; obj row holds reduced costs (row 0: z − c x = b)
+    for (let it = 0; it < 5000; it++) {
+      let e = -1; for (let j = 0; j < N; j++) if (allowed(j) && !basis.includes(j) && obj.a[j].sign() < 0) { e = j; break; }
+      if (e < 0) return "optimal";
+      let r = -1, best = null;
+      for (let i = 0; i < T.length; i++) { const a = T[i].a[e]; if (a.sign() > 0) { const t = T[i].b.div(a); if (best === null || t.cmp(best) < 0 || (t.cmp(best) === 0 && basis[i] < basis[r])) { best = t; r = i; } } }
+      if (r < 0) return "unbounded";
+      pivot(obj, r, e);
+    }
+    return "cycle";
+  }
+  // Phase I
+  const o1 = { a: Array(N).fill(ZERO).map((_, j) => isArt.has(j) ? ONE : ZERO), b: ZERO };
+  T.forEach((r, i) => { if (isArt.has(basis[i])) { o1.a = o1.a.map((x, k) => x.sub(r.a[k])); o1.b = o1.b.sub(r.b); } });
+  if (isArt.size) { run(o1, () => true); if (o1.b.sign() !== 0) return { status: "infeasible" }; }
+  // drive out artificials at 0
+  for (let i = T.length - 1; i >= 0; i--) if (isArt.has(basis[i])) {
+    const j = T[i].a.findIndex((x, k) => !isArt.has(k) && !x.isZero() && !basis.includes(k));
+    if (j >= 0) pivot({ a: Array(N).fill(ZERO), b: ZERO }, i, j); else { T.splice(i, 1); basis.splice(i, 1); }
+  }
+  // Phase II
+  const o2 = { a: Array(N).fill(ZERO).map((_, j) => j < n0 ? cmax[j].neg() : ZERO), b: ZERO };
+  T.forEach((r, i) => { const cb = basis[i] < n0 ? cmax[basis[i]] : ZERO; if (!cb.isZero()) { o2.a = o2.a.map((x, k) => x.add(cb.mul(r.a[k]))); o2.b = o2.b.add(cb.mul(r.b)); } });
+  const st = run(o2, j => !isArt.has(j));
+  if (st !== "optimal") return { status: st };
+  return { status: "optimal", value: F.sense === "max" ? o2.b : o2.b.neg() };
+}
+
+/* ================= examples ================= */
+const PRESETS = [
+  { name: "Product mix (max, all ≤, x ≥ 0)", sense: "max", c: ["3", "5"], A: [["1", "0"], ["0", "2"], ["3", "2"]], rel: ["<=", "<=", "<="], b: ["4", "12", "18"], sg: [">=0", ">=0"] },
+  { name: "Diet problem (min, all ≥, x ≥ 0)", sense: "min", c: ["2", "3"], A: [["1", "1"], ["2", "1"], ["1", "3"]], rel: [">=", ">=", ">="], b: ["6", "8", "9"], sg: [">=0", ">=0"] },
+  { name: "Mixed max: ≤, ≥, = and all three signs", sense: "max", c: ["2", "3", "1"], A: [["1", "1", "1"], ["1", "0", "-1"], ["0", "1", "1"]], rel: ["<=", ">=", "="], b: ["10", "-2", "3"], sg: [">=0", "<=0", "free"] },
+  { name: "Mixed min: ≥, ≤, = and all three signs", sense: "min", c: ["4", "2", "-1"], A: [["1", "1", "1"], ["1", "-1", "0"], ["0", "2", "1"]], rel: [">=", "<=", "="], b: ["3", "2", "5"], sg: [">=0", "free", "<=0"] },
+  { name: "Equality constraints, unrestricted variables", sense: "max", c: ["1", "2", "-1"], A: [["1", "1", "1"], ["1", "-1", "2"]], rel: ["=", "="], b: ["4", "1"], sg: ["free", ">=0", ">=0"] },
+  { name: "All right-hand sides 0 (unbounded, so the dual is infeasible)", sense: "max", c: ["1", "1"], A: [["1", "-2"], ["-2", "1"]], rel: ["<=", "<="], b: ["0", "0"], sg: [">=0", ">=0"] },
+  { name: "All objective coefficients 0 (feasibility)", sense: "min", c: ["0", "0"], A: [["1", "1"], ["1", "-1"]], rel: [">=", "<="], b: ["2", "1"], sg: [">=0", ">=0"] }
+];
+const LS_KEY = "fo-duality-examples";
+function loadSaved() { try { const v = JSON.parse(localStorage.getItem(LS_KEY) || "[]"); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
+function storeSaved(arr) { try { localStorage.setItem(LS_KEY, JSON.stringify(arr)); return true; } catch (e) { return false; } }
+
+/* ================= editor ================= */
+const $ = id => document.getElementById(id);
+function clone(p) { return JSON.parse(JSON.stringify({ sense: p.sense, c: p.c, A: p.A, rel: p.rel, b: p.b, sg: p.sg })); }
+let draft = clone(PRESETS[2]);
+function fillPresetSelect(selVal) {
+  const saved = loadSaved();
+  let h = `<optgroup label="Course examples">` + PRESETS.map((p, i) => `<option value="p${i}">${esc(p.name)}</option>`).join("") + `</optgroup>`;
+  if (saved.length) h += `<optgroup label="My examples (this browser)">` + saved.map((p, i) => `<option value="s${i}">${esc(p.name)}</option>`).join("") + `</optgroup>`;
+  h += `<option value="blank">Blank problem</option>`;
+  $("preset").innerHTML = h; if (selVal) $("preset").value = selVal;
+  $("delEx").hidden = !String($("preset").value).startsWith("s");
+}
+function renderEditor() {
+  const n = draft.c.length, m = draft.b.length;
+  $("nVal").textContent = n; $("mVal").textContent = m;
+  $("nDec").disabled = n <= 1; $("nInc").disabled = n >= 6; $("mDec").disabled = m <= 1; $("mInc").disabled = m >= 6;
+  const ed = $("ed"); ed.style.gridTemplateColumns = `auto repeat(${n}, auto) auto auto`;
+  let h = `<div></div>` + Array.from({ length: n }, (_, j) => `<div class="hd"><i>x</i><sub>${j + 1}</sub></div>`).join("") + `<div></div><div class="hd">RHS</div>`;
+  h += `<div class="lab"><select class="sel" id="sense" aria-label="Objective sense"><option value="max">Max</option><option value="min">Min</option></select></div>`;
+  for (let j = 0; j < n; j++) h += `<input class="num" id="c_${j}" data-k="c" data-j="${j}" value="${esc(draft.c[j])}" aria-label="Objective coefficient of x${j + 1}">`;
+  h += `<div></div><div></div>`;
+  for (let i = 0; i < m; i++) {
+    h += `<div class="lab">(${i + 1})</div>`;
+    for (let j = 0; j < n; j++) h += `<input class="num" id="a_${i}_${j}" data-k="A" data-i="${i}" data-j="${j}" value="${esc(draft.A[i][j])}" aria-label="Constraint ${i + 1}, coefficient of x${j + 1}">`;
+    h += `<select class="sel" id="rel_${i}" data-k="rel" data-i="${i}" aria-label="Relation of constraint ${i + 1}"><option value="<=">≤</option><option value=">=">≥</option><option value="=">=</option></select>`;
+    h += `<input class="num" id="b_${i}" data-k="b" data-i="${i}" value="${esc(draft.b[i])}" aria-label="Right-hand side of constraint ${i + 1}">`;
+  }
+  h += `<div class="lab">sign</div>`;
+  for (let j = 0; j < n; j++) h += `<select class="sel sgn" id="sg_${j}" data-k="sg" data-j="${j}" aria-label="Sign of x${j + 1}"><option value=">=0">≥ 0</option><option value="<=0">≤ 0</option><option value="free">unrestr.</option></select>`;
+  h += `<div></div><div></div>`;
+  ed.innerHTML = h;
+  $("sense").value = draft.sense;
+  for (let i = 0; i < m; i++) $("rel_" + i).value = draft.rel[i];
+  for (let j = 0; j < n; j++) $("sg_" + j).value = draft.sg[j];
+  validate();
+}
+function validate() {
+  let bad = 0;
+  document.querySelectorAll("#ed .num").forEach(inp => { const ok = parseQ(inp.value) !== null; inp.classList.toggle("bad", !ok); if (!ok) bad++; });
+  $("err").textContent = bad ? `${bad} entr${bad === 1 ? "y is" : "ies are"} not a number. Use forms like 0, 3, −1.5 or 2/7.` : "";
+  return !bad;
+}
+function readModel() {
+  if (!validate()) return null;
+  const n = draft.c.length;
+  return {
+    sense: draft.sense, obj: "z", negObj: false,
+    vars: Array.from({ length: n }, (_, j) => ({ b: "x", sub: String(j + 1), pr: "", sign: draft.sg[j] })),
+    c: draft.c.map(parseQ),
+    rows: draft.A.map((r, i) => ({ label: { sub: String(i + 1), pr: "" }, coefs: r.map(parseQ), rel: draft.rel[i], rhs: parseQ(draft.b[i]) }))
+  };
+}
+$("ed").addEventListener("input", e => {
+  const t = e.target; if (!t.dataset.k || t.tagName === "SELECT") return;
+  const k = t.dataset.k, i = +t.dataset.i, j = +t.dataset.j;
+  if (k === "c") draft.c[j] = t.value; else if (k === "A") draft.A[i][j] = t.value; else if (k === "b") draft.b[i] = t.value;
+  validate(); onModelChange();
+});
+$("ed").addEventListener("change", e => {
+  const t = e.target;
+  if (t.id === "sense") draft.sense = t.value;
+  else if (t.dataset.k === "rel") draft.rel[+t.dataset.i] = t.value;
+  else if (t.dataset.k === "sg") draft.sg[+t.dataset.j] = t.value;
+  else return;
+  onModelChange();
+});
+function resize(dn, dm) {
+  const n = draft.c.length + dn, m = draft.b.length + dm;
+  if (n < 1 || n > 6 || m < 1 || m > 6) return;
+  if (dn > 0) { draft.c.push("0"); draft.A.forEach(r => r.push("0")); draft.sg.push(">=0"); }
+  if (dn < 0) { draft.c.pop(); draft.A.forEach(r => r.pop()); draft.sg.pop(); }
+  if (dm > 0) { draft.A.push(Array(n).fill("0")); draft.rel.push("<="); draft.b.push("0"); }
+  if (dm < 0) { draft.A.pop(); draft.rel.pop(); draft.b.pop(); }
+  renderEditor(); onModelChange();
+}
+$("nDec").onclick = () => resize(-1, 0); $("nInc").onclick = () => resize(1, 0);
+$("mDec").onclick = () => resize(0, -1); $("mInc").onclick = () => resize(0, 1);
+$("preset").addEventListener("change", () => {
+  const v = $("preset").value;
+  if (v === "blank") draft = { sense: "max", c: ["0", "0"], A: [["0", "0"], ["0", "0"]], rel: ["<=", "<="], b: ["0", "0"], sg: [">=0", ">=0"] };
+  else if (v[0] === "p") draft = clone(PRESETS[+v.slice(1)]);
+  else { const s = loadSaved()[+v.slice(1)]; if (s) draft = clone(Object.assign({ sg: Array(s.c.length).fill(">=0") }, s)); }
+  $("delEx").hidden = v[0] !== "s";
+  renderEditor(); onModelChange();
+});
+$("saveEx").onclick = () => {
+  if (!validate()) { $("saveMsg").textContent = "Fix the highlighted entries first."; return; }
+  const saved = loadSaved(); const name = `My example ${saved.length + 1} (${draft.c.length} var, ${draft.b.length} con)`;
+  saved.push(Object.assign({ name }, clone(draft)));
+  if (storeSaved(saved)) { fillPresetSelect("s" + (saved.length - 1)); $("saveMsg").textContent = `Saved as “${name}” in this browser.`; }
+  else $("saveMsg").textContent = "This browser is blocking storage, so the example could not be saved.";
+};
+$("delEx").onclick = () => {
+  const v = $("preset").value; if (v[0] !== "s") return;
+  const saved = loadSaved(); saved.splice(+v.slice(1), 1); storeSaved(saved);
+  fillPresetSelect("p0"); draft = clone(PRESETS[0]); renderEditor(); onModelChange();
+  $("saveMsg").textContent = "Saved example removed.";
+};
+
+/* ================= state ================= */
+const S = { P: null, ops: [], tab: "orig", step: { orig: 0, manip: 0 }, focus: { orig: 0, manip: 0 } };
+function currentF() { let F = cloneF(S.P); for (const op of S.ops) { op.before = cloneF(F); OPS[op.kind](F, op.i ?? op.j); } return F; }
+function onModelChange() {
+  const P = readModel();
+  if (!P) { $("primalView").innerHTML = ""; return; }
+  const changed = !S.P || JSON.stringify(serial(P)) !== JSON.stringify(serial(S.P));
+  S.P = P;
+  if (changed) { S.ops = []; S.tab = "orig"; S.step = { orig: 0, manip: 0 }; S.focus = { orig: 0, manip: 0 }; }
+  renderAll();
+}
+const serial = F => ({ s: F.sense, c: F.c.map(q => q.n + "/" + q.d), r: F.rows.map(r => [r.coefs.map(q => q.n + "/" + q.d), r.rel, r.rhs.n + "/" + r.rhs.d]), v: F.vars.map(v => v.sign) });
+
+/* ================= section 3: manipulate ================= */
+function renderManip() {
+  const F = currentF();
+  let h = `<div class="pane"><p class="pane__t">${S.ops.length ? `Rewritten primal (${S.ops.length} operation${S.ops.length === 1 ? "" : "s"})` : "Current primal (no operation yet)"}</p>${lpHtml(F)}</div>`;
+  h += `<p class="nl" style="margin-top:.9rem"><b>Operations you can apply</b> (each keeps the problem equivalent):</p><div class="ops2">`;
+  h += `<div class="oprow"><span class="who">Objective</span><button class="btn btn--sm" data-op="negObj">× (−1): turn ${F.sense} into ${F.sense === "max" ? "min" : "max"}</button></div>`;
+  F.rows.forEach((r, i) => {
+    let b = `<button class="btn btn--sm" data-op="negRow" data-i="${i}">× (−1)${r.rel !== "=" ? `: make it “${REL[flipRel(r.rel)]}”` : ""}</button>`;
+    if (r.rel === "=") b += `<button class="btn btn--sm" data-op="splitEq" data-i="${i}">split into “≤” and “≥”</button>`;
+    else b += `<button class="btn btn--sm" data-op="addSlack" data-i="${i}">add ${r.rel === "<=" ? "slack" : "surplus"}: make it “=”</button>`;
+    h += `<div class="oprow"><span class="who">Constraint ${lab(r)}</span>${b}</div>`;
+  });
+  F.vars.forEach((v, j) => {
+    let b = "";
+    if (v.sign === "<=0") b = `<button class="btn btn--sm" data-op="negVar" data-j="${j}">replace by −${nm(Object.assign({}, v, { pr: (v.pr || "") + "′" }))} (make it ≥ 0)</button>`;
+    else if (v.sign === "free") b = `<button class="btn btn--sm" data-op="splitVar" data-j="${j}">replace by ${nm(Object.assign({}, v, { pr: (v.pr || "") + "⁺" }))} − ${nm(Object.assign({}, v, { pr: (v.pr || "") + "⁻" }))} (both ≥ 0)</button>`;
+    else b = `<span class="none">already ≥ 0: nothing to do</span>`;
+    h += `<div class="oprow"><span class="who mx">${nm(v)} <span class="small">${SIGN[v.sign]}</span></span>${b}</div>`;
+  });
+  h += `</div>`;
+  if (S.ops.length) { let G = cloneF(S.P); h += `<p class="nl" style="margin-top:.9rem"><b>Operations applied</b></p><ol class="hist">` + S.ops.map(op => { const t = opText(op, G); OPS[op.kind](G, op.i ?? op.j); return `<li>${t}</li>`; }).join("") + `</ol>`; }
+  $("manipBody").innerHTML = h;
+  $("undo").disabled = !S.ops.length; $("resetOps").disabled = !S.ops.length;
+}
+$("manipBody").addEventListener("click", e => {
+  const b = e.target.closest("[data-op]"); if (!b) return;
+  S.ops.push({ kind: b.dataset.op, i: b.dataset.i !== undefined ? +b.dataset.i : undefined, j: b.dataset.j !== undefined ? +b.dataset.j : undefined });
+  S.step.manip = 0; S.focus.manip = 0; renderAll();
+});
+$("undo").onclick = () => { S.ops.pop(); S.step.manip = 0; if (!S.ops.length && S.tab === "manip") S.tab = "orig"; renderAll(); };
+$("resetOps").onclick = () => { S.ops = []; S.tab = "orig"; renderAll(); };
+
+/* ================= section 4: the derivation ================= */
+const STEPS = ["Max ↔ min", "Dual variables", "Dual objective", "Dual constraints", "Constraint directions", "Variable signs", "The dual"];
+/* detached-coefficient table of the primal: o = {col, rhs, rowsHl:Set, relHl:Set, signHl:Set, yCol} */
+function dataTable(F, o = {}) {
+  const N = F.vars.length;
+  let h = `<div class="tw"><table class="dt"><thead><tr><th></th>${o.yCol ? "<th>dual var.</th>" : ""}${F.vars.map((v, j) => `<th class="v${o.col === j ? " c-hl" : ""}">${nm(v)}</th>`).join("")}<th class="rel${o.relHl ? " " : ""}">rel.</th><th class="rhs${o.rhs ? " c-hl" : ""}">RHS</th></tr></thead><tbody>`;
+  h += `<tr class="obj"><td class="l">objective (${F.sense})</td>${o.yCol ? "<td></td>" : ""}${F.c.map((c, j) => `<td class="${o.col === j ? "x-hl" : ""}">${c.isZero() ? '<span class="z0">0</span>' : numHtml(c)}</td>`).join("")}<td class="rel"></td><td class="rhs"></td></tr>`;
+  F.rows.forEach((r, i) => {
+    const rh = o.rowsHl && o.rowsHl.has(i) ? " r-hl" : "";
+    h += `<tr><td class="l${rh}">constraint ${lab(r)}</td>${o.yCol ? `<td class="yv${rh}">${nm(yOf(r.label))}</td>` : ""}${r.coefs.map((c, j) => `<td class="${o.col === j ? "c-hl" : ""}${rh}">${c.isZero() ? '<span class="z0">0</span>' : numHtml(c)}</td>`).join("")}<td class="rel${o.relHl && o.relHl.has(i) ? " x-hl" : rh}">${REL[r.rel]}</td><td class="rhs${o.rhs ? " x-hl" : rh}">${numHtml(r.rhs)}</td></tr>`;
+  });
+  h += `<tr class="sg"><td class="l">sign</td>${o.yCol ? "<td></td>" : ""}${F.vars.map((v, j) => `<td class="${o.signHl && o.signHl.has(j) ? "x-hl" : o.col === j ? "c-hl" : ""}">${SIGN[v.sign]}</td>`).join("")}<td class="rel"></td><td class="rhs"></td></tr>`;
+  return h + `</tbody></table></div>`;
+}
+const linExpr = (coefs, vars) => { let h = "", first = true; coefs.forEach((c, j) => { if (c.isZero()) return; const s = c.sign() < 0 ? "−" : first ? "" : "+"; h += (s ? (first ? s : ` ${s} `) : "") + coefHtml(c) + nm(vars[j]); first = false; }); return h || "0"; };
+function stepView(F, key) {
+  const D = dualOf(F), k = S.step[key], sense = F.sense, dsense = D.sense;
+  const dirTxt = sense === "max" ? "The primal is a maximization: read the cheat sheet from left to right." : "The primal is a minimization: read the cheat sheet from right to left.";
+  let main = "", on = new Set(), extra = "";
+  const nRows = F.rows.length, nVars = F.vars.length;
+  const head = (t) => `<div class="steph"><span class="k">Step ${k + 1} of 7</span><span class="t">${t}</span></div>`;
+  const focus = Math.min(S.focus[key], nVars - 1);
+  if (k === 0) {
+    on.add("obj");
+    main = head("The objective sense flips") + `<p class="nl">The primal ${sense === "max" ? "maximizes" : "minimizes"}, so the dual <b>${dsense === "max" ? "maximizes" : "minimizes"}</b>. We call the dual objective <span class="mx"><i class="v-z">w</i></span>.</p>`
+      + `<div class="pair"><div class="pane"><p class="pane__t">Primal</p>${lpHtml(F)}</div><div class="pair__arrow" aria-hidden="true"><span>➜</span><small>${sense} → ${dsense}</small></div><div class="pane"><p class="pane__t">Dual so far</p>${lpHtml(D, { hideObj: true, hideRows: true })}</div></div>`;
+  } else if (k === 1) {
+    main = head("One dual variable for each primal constraint") + `<p class="nl">The primal has ${nRows} constraint${nRows === 1 ? "" : "s"}, so the dual has ${nRows} variable${nRows === 1 ? "" : "s"}. Constraint ${lab(F.rows[0])} gets ${nm(yOf(F.rows[0].label))}, and so on.</p>`
+      + `<ul class="maplist">${F.rows.map(r => `<li><span>constraint ${lab(r)}: ${linExpr(r.coefs, F.vars)} ${REL[r.rel]} ${numHtml(r.rhs)}</span><span class="arr">→</span><span>${nm(yOf(r.label))}</span></li>`).join("")}</ul>`
+      + dataTable(F, { yCol: true, rowsHl: new Set(F.rows.map((_, i) => i)) });
+  } else if (k === 2) {
+    on.add("data1");
+    main = head("Dual objective: the right-hand sides become the objective coefficients") + `<p class="nl">Multiply each dual variable by the right-hand side of its constraint and add them up${F.rows.every(r => r.rhs.isZero()) ? " (all right-hand sides are 0 here, so the dual objective is <span class=\"mx\">w = 0</span>)" : ""}.</p>`
+      + dataTable(F, { yCol: true, rhs: true })
+      + `<div class="pane"><p class="pane__t">Dual so far</p>${lpHtml(D, { hideRows: true, showSigns: false })}</div>`;
+  } else if (k === 3) {
+    on.add("data2"); on.add("data3");
+    const v = F.vars[focus];
+    main = head("Dual constraints: one per primal variable, built from its column") + `<p class="nl">Read the primal <b>column</b> of each variable. Its constraint coefficients become the coefficients of ${F.rows.map(r => nm(yOf(r.label))).join(", ")}, and its objective coefficient becomes the right-hand side. The direction is decided in the next step.</p>`
+      + `<div class="chipsel"><span class="l">Column of</span>${F.vars.map((w, j) => `<button type="button" data-focus="${j}" aria-pressed="${j === focus}">${nm(w)}</button>`).join("")}</div>`
+      + dataTable(F, { yCol: true, col: focus })
+      + `<p class="nl">Column of ${nm(v)}: ${F.rows.map(r => `${numHtml(r.coefs[focus])}·${nm(yOf(r.label))}`).join(" + ")} <span class="unk">?</span> ${numHtml(F.c[focus])}, giving dual constraint (${nm(v)}): <span class="mx">${linExpr(D.rows[focus].coefs, D.vars)} <span class="unk">?</span> ${numHtml(D.rows[focus].rhs)}</span>.</p>`
+      + `<div class="pane"><p class="pane__t">Dual so far (directions still unknown)</p>${dualRows(D, { relUnknown: true, signUnknown: true, hlRow: focus })}</div>`;
+  } else if (k === 4) {
+    F.vars.forEach(v => on.add(rowForVar(sense, v.sign)));
+    main = head("Direction of each dual constraint: from the sign of its primal variable") + `<p class="nl">Look up each primal variable’s sign in the cheat sheet (highlighted rows).</p>`
+      + `<ul class="maplist">${F.vars.map((v, j) => `<li><span>${signTxt(v, v.sign)}</span><span class="arr">→</span><span>dual constraint (${nm(v)}) is “${REL[D.rows[j].rel]}”</span><span class="why">${sense} problem, variable ${SIGN[v.sign]} ↔ ${dsense} problem, constraint ${REL[D.rows[j].rel]}</span></li>`).join("")}</ul>`
+      + dataTable(F, { signHl: new Set(F.vars.map((_, j) => j)) })
+      + `<div class="pane"><p class="pane__t">Dual so far</p>${dualRows(D, { signUnknown: true })}</div>`;
+  } else if (k === 5) {
+    F.rows.forEach(r => on.add(rowForCon(sense, r.rel)));
+    main = head("Sign of each dual variable: from the type of its primal constraint") + `<p class="nl">Look up each primal constraint’s type in the cheat sheet (highlighted rows).</p>`
+      + `<ul class="maplist">${F.rows.map((r, i) => `<li><span>constraint ${lab(r)} is “${REL[r.rel]}”</span><span class="arr">→</span><span>${signTxt(D.vars[i], D.vars[i].sign)}</span><span class="why">${sense} problem, constraint ${REL[r.rel]} ↔ ${dsense} problem, variable ${SIGN[D.vars[i].sign]}</span></li>`).join("")}</ul>`
+      + dataTable(F, { yCol: true, relHl: new Set(F.rows.map((_, i) => i)) })
+      + `<div class="pane"><p class="pane__t">Dual so far</p>${dualRows(D)}</div>`;
+  } else {
+    F.rows.forEach(r => on.add(rowForCon(sense, r.rel))); F.vars.forEach(v => on.add(rowForVar(sense, v.sign))); on.add("obj");
+    main = head("The dual problem") + `<div class="pair"><div class="pane"><p class="pane__t">Primal</p>${lpHtml(F)}</div><div class="pair__arrow" aria-hidden="true"><span>➜</span><small>dual</small></div><div class="pane"><p class="pane__t">Dual</p>${dualRows(D)}</div></div>`
+      + `<p class="nl small">Check: ${nRows} primal constraint${nRows === 1 ? "" : "s"} → ${nRows} dual variable${nRows === 1 ? "" : "s"}; ${nVars} primal variable${nVars === 1 ? "" : "s"} → ${nVars} dual constraint${nVars === 1 ? "" : "s"}. Taking the dual of this dual gives back the primal.</p>`;
+  }
+  const nav = `<div class="stepnav"><div class="dots" role="group" aria-label="Steps">${STEPS.map((t, i) => `<button type="button" data-step="${i}" ${i === k ? 'aria-current="step"' : ""} class="${i < k ? "done" : ""}">${i + 1} · ${t}</button>`).join("")}</div>
+    <div class="btnrow"><button class="btn btn--sm" data-nav="prev" ${k === 0 ? "disabled" : ""}>◀ Previous</button><button class="btn btn--sm btn--solid" data-nav="next" ${k === 6 ? "disabled" : ""}>Next step ▶</button><button class="btn btn--sm" data-nav="all">Show the complete dual</button></div></div>`;
+  const side = `<div class="pane"><p class="pane__t">Cheat sheet · rows used in this step</p><div class="tw">${cheat(on, true)}</div><p class="note" style="margin-top:.4rem">${dirTxt}</p></div>`;
+  return nav + `<div class="stepbody"><div class="stepmain">${main}</div>${side}</div>`;
+}
+/* dual display: constraints labelled by primal variable */
+function dualRows(D, o = {}) {
+  const N = D.vars.length;
+  let h = `<div class="sysw"><div class="sys" style="grid-template-columns:auto auto repeat(${N},auto auto) auto auto">`;
+  h += `<div class="sc lab">${D.sense === "max" ? "Max" : "Min"}</div><div class="sc"><i class="v-z">w</i>&nbsp;=</div>`;
+  const t0 = terms(D.c, D.vars); h += t0.empty ? `<div class="sc" style="grid-column:span ${2 * N}">0</div>` : t0.h;
+  h += `<div class="sc"></div><div class="sc"></div>`;
+  D.rows.forEach((r, i) => {
+    const rc = o.hlRow === i ? " hl" : "";
+    h += `<div class="sc lab${rc}">${i === 0 ? "s.t. " : ""}${dlab(r)}</div><div class="sc${rc}"></div>`;
+    const t = terms(r.coefs, D.vars); h += t.empty ? `<div class="sc tm${rc}" style="grid-column:span ${2 * N};justify-content:flex-end">0</div>` : t.h.replace(/class="sc (sg|tm)"/g, `class="sc $1${rc}"`);
+    h += `<div class="sc rel${rc}">${o.relUnknown ? '<span class="unk">?</span>' : REL[r.rel]}</div><div class="sc rhs${rc}">${numHtml(r.rhs)}</div>`;
+  });
+  h += `</div></div><div class="signrow">${D.vars.map(v => `<span>${o.signUnknown ? `${nm(v)} <span class="unk">?</span>` : signTxt(v, v.sign)}</span>`).join("")}</div>`;
+  return h;
+}
+function renderDual() {
+  const has = S.ops.length > 0;
+  if (!has && S.tab === "manip") S.tab = "orig";
+  const F = S.tab === "orig" ? S.P : currentF();
+  let h = `<div class="tabs" role="tablist"><button class="tabbtn" role="tab" data-tab="orig" aria-selected="${S.tab === "orig"}">Dual of the original primal</button><button class="tabbtn" role="tab" data-tab="manip" aria-selected="${S.tab === "manip"}" ${has ? "" : 'disabled title="Apply an operation in section 3 first"'}>Dual of the rewritten primal${has ? "" : " (no operation yet)"}</button></div>`;
+  h += stepView(F, S.tab);
+  $("dualBody").innerHTML = h;
+}
+$("dualBody").addEventListener("click", e => {
+  const t = e.target.closest("[data-tab]"); if (t && !t.disabled) { S.tab = t.dataset.tab; renderDual(); return; }
+  const s = e.target.closest("[data-step]"); if (s) { S.step[S.tab] = +s.dataset.step; renderDual(); return; }
+  const f = e.target.closest("[data-focus]"); if (f) { S.focus[S.tab] = +f.dataset.focus; renderDual(); return; }
+  const n = e.target.closest("[data-nav]"); if (!n || n.disabled) return;
+  const k = S.step[S.tab];
+  if (n.dataset.nav === "prev") S.step[S.tab] = Math.max(0, k - 1);
+  else if (n.dataset.nav === "next") S.step[S.tab] = Math.min(6, k + 1);
+  else S.step[S.tab] = 6;
+  renderDual();
+});
+
+/* ================= section 5: compare ================= */
+const valTxt = r => r.status === "optimal" ? numHtml(r.value) : r.status === "infeasible" ? "infeasible" : r.status === "unbounded" ? "unbounded" : "—";
+function renderCompare() {
+  const P = S.P, DP = dualOf(P), rp = solveLP(P), rd = solveLP(DP);
+  let h = `<div class="card"><div class="card__body" style="display:flex;flex-direction:column;gap:.9rem">`;
+  const has = S.ops.length > 0, F = has ? currentF() : null, DF = has ? dualOf(F) : null, rf = has ? solveLP(F) : null, rdf = has ? solveLP(DF) : null;
+  if (has) h += `<div class="cmp"><div class="pane"><p class="pane__t">Dual of the original primal</p>${dualRows(DP)}</div><div class="pane"><p class="pane__t">Dual of the rewritten primal</p>${dualRows(DF)}</div></div>`;
+  else h += `<div class="pane"><p class="pane__t">Dual of the original primal</p>${dualRows(DP)}</div><p class="nl small">Apply an operation in section 3 to compare a second dual with this one.</p>`;
+  h += `<p class="nl"><b>Exact solver check</b> (strong duality: if one side has an optimal solution, so does the other, with the same value).</p><div class="checkrow">`;
+  const ok = rp.status === "optimal" && rd.status === "optimal" && rp.value.cmp(rd.value) === 0;
+  h += `<div class="vchip${ok ? " ok" : ""}"><small>Primal (${P.sense}) z*</small><b>${valTxt(rp)}</b></div><div class="vchip${ok ? " ok" : ""}"><small>Its dual (${DP.sense}) w*</small><b>${valTxt(rd)}</b></div>`;
+  if (has) {
+    const ok2 = rdf.status === rd.status && (rd.status !== "optimal" || rdf.value.cmp(F.negObj ? rd.value.neg() : rd.value) === 0);
+    h += `<div class="vchip${ok2 ? " ok" : ""}"><small>Rewritten primal (${F.sense}) ${F.negObj ? "z̃*" : "z*"}</small><b>${valTxt(rf)}</b></div><div class="vchip${ok2 ? " ok" : ""}"><small>Its dual (${DF.sense}) w*</small><b>${valTxt(rdf)}</b></div>`;
+  }
+  h += `</div>`;
+  let msg;
+  if (rp.status === "optimal") msg = `Both have optimal value ${numHtml(rp.value)}: the primal optimum equals the dual optimum.`;
+  else if (rp.status === "unbounded") msg = `The primal is unbounded, so its dual is <b>infeasible</b> (weak duality: a feasible dual solution would bound the primal).`;
+  else msg = rd.status === "unbounded" ? `The primal is infeasible and its dual is unbounded.` : `The primal is infeasible and so is its dual (this can happen).`;
+  h += `<p class="nl">${msg}${has && F.negObj ? ` The objective was multiplied by −1, so the rewritten problem’s values are the negatives: z̃* = −z*.` : ""}</p>`;
+  if (has) {
+    let G = cloneF(S.P);
+    h += `<p class="nl"><b>Why the two duals are equivalent</b>, operation by operation:</p><ol class="notes">` + S.ops.map(op => { const t = opDualNote(op, G); OPS[op.kind](G, op.i ?? op.j); return `<li>${t}</li>`; }).join("") + `</ol>`;
+  }
+  h += `</div></div>`;
+  $("cmpBody").innerHTML = h;
+}
+
+/* ================= page ================= */
+function renderAll() {
+  if (!S.P) return;
+  $("primalView").innerHTML = lpHtml(S.P);
+  renderManip(); renderDual(); renderCompare();
+}
+function setMode(m) { MODE = m; $("fmtFrac").setAttribute("aria-pressed", m === "frac"); $("fmtDec").setAttribute("aria-pressed", m === "dec"); renderAll(); }
+$("fmtFrac").onclick = () => setMode("frac");
+$("fmtDec").onclick = () => setMode("dec");
+$("cheatTop").innerHTML = cheat(new Set(), false);
+fillPresetSelect("p2");
+renderEditor();
+onModelChange();
+
+/* for automated checks */
+window.__dual = {
+  S, PRESETS, OPS, dualOf, solveLP, cloneF, currentF, serial,
+  load(i) { draft = clone(PRESETS[i]); renderEditor(); onModelChange(); },
+  set(p) { draft = clone(p); renderEditor(); onModelChange(); },
+  apply(kind, idx) { const op = { kind }; if (kind === "negVar" || kind === "splitVar") op.j = idx; else op.i = idx; S.ops.push(op); renderAll(); },
+  model(p) { draft = clone(p); return readModel(); }
+};
+})();
+</script>
+</body>
+</html>
