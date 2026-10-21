@@ -1,4 +1,4 @@
-# Dual simplex method interactive tool
+# Dual Simplex method interactive tool: Tabular Form
 
 An interactive, step-by-step worksheet for the **dual simplex method** on a simplex tableau. It is meant for problems
 where the **optimality condition already holds** (no negative reduced cost in the maximization form) but the starting

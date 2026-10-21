@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta property="og:title" content="Dual simplex method interactive tool">
+<meta property="og:title" content="Dual Simplex method interactive tool: Tabular Form">
 <meta property="og:description" content="Step-by-step dual simplex method on a simplex tableau: keep optimality, remove negative right-hand sides.">
 <meta property="og:type" content="website">
 <style>
@@ -12,7 +12,7 @@ html,body{margin:0}
 img{max-width:100%}
 [hidden]{display:none!important}
 </style>
-<title>Dual simplex method interactive tool</title>
+<title>Dual Simplex method interactive tool: Tabular Form</title>
 <meta name="description" content="Interactive, step-by-step teaching tool for the dual simplex method.">
 <meta name="author" content="Hadi Gard (Charkhgard)">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
@@ -389,7 +389,7 @@ table.tab{border-collapse:separate;border-spacing:0;font-family:var(--serif);fon
 <body>
 <div class="wrap">
   <p class="eyebrow">Foundations of Optimization · Tool 8</p>
-  <h1>Simplex method interactive tool: <em>Tabular Form</em></h1>
+  <h1>Dual Simplex method interactive tool: <em>Tabular Form</em></h1>
   <p class="lede">The dual simplex method is the right choice when the <b>optimality condition already holds</b> (no negative reduced cost in the maximization form) but the current basic solution is <b>not feasible</b> (some right-hand sides are negative). Every iteration keeps row (0) nonnegative and removes a negative right-hand side: the <b>pivot row</b> is the most negative right-hand side, and the <b>pivot column</b> comes from the smallest |reduced cost ÷ pivot-row entry| over the negative entries.</p>
   <div class="legend" aria-label="Colour key">
     <span><i class="sw" style="background:var(--zrow)"></i>row (0): <i style="font-family:var(--serif)">z</i> − (objective) = 0, goal: maximize <i style="font-family:var(--serif)">z</i></span>
