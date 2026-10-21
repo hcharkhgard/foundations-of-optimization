@@ -148,6 +148,14 @@ const TOOLS = [
     description: "Write the dual of any linear program in seven steps: max ↔ min, one dual variable per constraint, the objective from the right-hand sides, one dual constraint per column, then directions and signs from the cheat sheet. Rewrite the primal first if you like, and check that both duals agree.",
     features: ["Duality cheat sheet", "≤ / ≥ / = and ≥ 0 / ≤ 0 / unrestricted", "Optional rewrites with undo", "Exact strong-duality check"],
     icon: "duality"
+  },
+  {
+    folder: "dual-simplex",
+    title: "Dual simplex method interactive tool",
+    topic: "Duality · Tableau · Optimal but infeasible start",
+    description: "For problems whose reduced costs are already nonnegative but whose right-hand sides are not: write the problem as max with all constraints “≤”, then pick the pivot row by the most negative right-hand side and the pivot column by the ratio test, keeping optimality until the tableau is feasible.",
+    features: ["Suitability check (no negative reduced cost)", "Ratio row under the tableau", "Animated row operations", "Optimal, infeasible & not-suitable examples"],
+    icon: "dualsimplex"
   }
 ];
 
@@ -160,6 +168,7 @@ const ICONS = {
   bigm: '<svg viewBox="0 0 96 96" font-family="Newsreader, Georgia, serif" font-style="italic"><text x="6" y="30" font-size="13" fill="var(--obj)">z … + M<tspan text-decoration="overline">x</tspan>₅ = 0</text><line x1="40" y1="40" x2="40" y2="52" stroke="var(--accent)" stroke-width="2"/><polyline points="35,48 40,53 45,48" fill="none" stroke="var(--accent)" stroke-width="2"/><text x="6" y="74" font-size="13" fill="var(--obj)">−3M − 3</text><text x="70" y="74" font-size="13" fill="var(--obj)" font-style="normal">0</text><rect x="64" y="61" width="20" height="18" rx="3" fill="none" stroke="var(--obj)" stroke-width="2"/></svg>',
   twophase: '<svg viewBox="0 0 96 96" font-family="Newsreader, Georgia, serif"><rect x="8" y="14" width="80" height="28" rx="4" fill="var(--accent)" fill-opacity=".14" stroke="var(--accent)" stroke-width="1.5"/><text x="16" y="33" font-size="13" fill="var(--accent)" font-family="sans-serif" font-weight="600">I</text><text x="30" y="33" font-size="13" font-style="italic" fill="var(--obj)">z + <tspan text-decoration="overline">x</tspan>₅ = 0</text><rect x="8" y="54" width="80" height="28" rx="4" fill="var(--obj)" fill-opacity=".1" stroke="var(--obj)" stroke-width="1.5"/><text x="14" y="73" font-size="13" fill="var(--obj)" font-family="sans-serif" font-weight="600">II</text><text x="30" y="73" font-size="13" font-style="italic" fill="var(--obj)">z − cx = 0</text></svg>',
   duality: '<svg viewBox="0 0 96 96" font-family="Newsreader, Georgia, serif" font-style="italic"><text x="8" y="28" font-size="14" fill="var(--obj)">max cx</text><text x="8" y="48" font-size="13" fill="var(--ink-2)">Ax ≤ b</text><path d="M60 22 C 78 30, 78 58, 60 66" fill="none" stroke="var(--accent)" stroke-width="2"/><polygon points="60,66 68,63 64,58" fill="var(--accent)"/><text x="8" y="76" font-size="14" fill="var(--accent)">min by</text><text x="8" y="92" font-size="12" fill="var(--ink-2)">Aᵀy ≥ c</text></svg>',
+  dualsimplex: '<svg viewBox="0 0 96 96" font-family="Newsreader, Georgia, serif" font-size="14"><rect x="6" y="48" width="84" height="22" fill="var(--accent)" fill-opacity=".14"/><rect x="44" y="10" width="22" height="64" fill="var(--obj)" fill-opacity=".1"/><line x1="6" y1="32" x2="90" y2="32" stroke="var(--ink-2)" stroke-width="1.5"/><line x1="70" y1="10" x2="70" y2="74" stroke="var(--ink-2)" stroke-width="1.5"/><text x="10" y="26" fill="var(--obj)" font-style="italic">z</text><text x="25" y="26" fill="var(--obj)">4</text><text x="47" y="26" fill="var(--obj)">12</text><text x="76" y="26" fill="var(--obj)">0</text><text x="25" y="64" fill="var(--ink)">0</text><text x="46" y="64" fill="var(--ink)">−2</text><circle cx="81" cy="59" r="11" fill="none" stroke="var(--obj)" stroke-width="2"/><text x="72" y="64" fill="var(--obj)">−5</text></svg>',
   default: '<svg viewBox="0 0 96 96"><path d="M14 78 L38 44 L58 58 L84 18" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="84" cy="18" r="5" fill="var(--obj)"/></svg>'
 };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
