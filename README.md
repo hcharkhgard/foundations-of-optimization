@@ -18,6 +18,7 @@ Every tool is a single self-contained web page — no installation, no build ste
 | Simplex method interactive tool: Two-Phase Method | The two-phase method when the origin is not feasible: Phase I (maximize −sum of artificials, iteration 0 and 0′), end-of-Phase-I checks, Phase II (original objective, iteration 0 and 0′) | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/simplex-two-phase/) | [`tools/simplex-two-phase`](tools/simplex-two-phase) |
 | Duality interactive tool: Writing the Dual | Writing the dual of any LP step by step: duality cheat sheet, optional rewrites of the primal, seven-step derivation, comparison of both duals with an exact strong-duality check | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/duality/) | [`tools/duality`](tools/duality) |
 | Dual Simplex method interactive tool: Tabular Form | The dual simplex method: suitability check (no negative reduced cost), all constraints “≤”, pivot row by the most negative right-hand side, pivot column by the ratio test, animated pivots | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/dual-simplex/) | [`tools/dual-simplex`](tools/dual-simplex) |
+| Sensitivity Analysis interactive tool: Tabular Form | Sensitivity analysis from the final tableau (y\* and S\*): new decision variables through the dual, re-optimizing after changes (Steps 1–3 with step-by-step matrix products), allowable ranges of b and c with θ | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/sensitivity-analysis/) | [`tools/sensitivity-analysis`](tools/sensitivity-analysis) |
 
 ## Repository layout
 
@@ -51,7 +52,11 @@ foundations-of-optimization/
     │   ├── index.html
     │   ├── README.md
     │   └── EXAMPLES.md
-    └── dual-simplex/
+    ├── dual-simplex/
+    │   ├── index.html
+    │   ├── README.md
+    │   └── EXAMPLES.md
+    └── sensitivity-analysis/
         ├── index.html
         ├── README.md
         └── EXAMPLES.md
