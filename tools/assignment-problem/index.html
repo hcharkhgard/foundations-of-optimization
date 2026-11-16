@@ -1,0 +1,1182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta property="og:title" content="Assignment problem interactive tool: Hungarian Method">
+<meta property="og:description" content="The assignment problem as a linear program, and the Hungarian method step by step.">
+<meta property="og:type" content="website">
+<style>
+:root{color-scheme:light dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Assignment problem interactive tool: Hungarian Method</title>
+<meta name="description" content="Interactive, step-by-step teaching tool for the assignment problem: LP formulation and the Hungarian method.">
+<meta name="author" content="Hadi Gard (Charkhgard)">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap">
+<style>
+:root{
+  --paper:#f5f3f4; --card:#ffffff; --card-2:#faf8f9;
+  --ink:#1c1719; --ink-2:#5f5559; --ink-3:#8d8286;
+  --rule:#e4dee0; --rule-2:#cfc6ca;
+  --accent:#7a2f52; --accent-soft:#f7ecf1;
+  --basic:#2f7a3e; --basic-soft:#e8f3ea;
+  --zrow:#b3261e; --zrow-soft:#fbeceb;
+  --enter:#1f5fa8; --enter-soft:#e7eff9;
+  --leave:#985a10; --leave-soft:#f8eedd;
+  --hi:#fff4c2; --on-accent:#ffffff; --src:#efe3f7; --src-line:#7a2f52;
+  --shadow:0 1px 2px rgba(28,23,25,.05), 0 8px 24px -18px rgba(28,23,25,.45);
+  --sans:'IBM Plex Sans',ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;
+  --serif:'STIX Two Text',Cambria,'Times New Roman',Georgia,serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#171416; --card:#1e1a1d; --card-2:#241f23;
+    --ink:#ece7e9; --ink-2:#a9a0a4; --ink-3:#7a7276;
+    --rule:#302a2e; --rule-2:#433b40;
+    --accent:#e8a0be; --accent-soft:#33202a;
+    --basic:#7fd08f; --basic-soft:#1b2a1f;
+    --zrow:#f08a80; --zrow-soft:#2f1c1b;
+    --enter:#8ab8ee; --enter-soft:#1a2533;
+    --leave:#e3ad62; --leave-soft:#2d2419;
+    --hi:#3a3319; --on-accent:#241016; --src:#35243a; --src-line:#e8a0be;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -20px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#171416; --card:#1e1a1d; --card-2:#241f23;
+  --ink:#ece7e9; --ink-2:#a9a0a4; --ink-3:#7a7276;
+  --rule:#302a2e; --rule-2:#433b40;
+  --accent:#e8a0be; --accent-soft:#33202a;
+  --basic:#7fd08f; --basic-soft:#1b2a1f;
+  --zrow:#f08a80; --zrow-soft:#2f1c1b;
+  --enter:#8ab8ee; --enter-soft:#1a2533;
+  --leave:#e3ad62; --leave-soft:#2d2419;
+  --hi:#3a3319; --on-accent:#241016; --src:#35243a; --src-line:#e8a0be;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -20px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1000px;margin:0 auto;padding-inline:20px;padding-block:2.4rem 7rem}
+@media(max-width:480px){.wrap{padding-inline:16px}}
+.eyebrow{font:500 .7rem/1 var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 .85rem}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(1.9rem,1.25rem + 2.4vw,2.8rem);line-height:1.1;letter-spacing:-.015em;margin:0 0 .8rem;text-wrap:balance}
+h1 em{color:var(--accent);font-style:italic}
+.lede{max-width:68ch;margin:0;color:var(--ink-2);font-size:1.01rem}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(1.3rem,1.1rem + .8vw,1.65rem);letter-spacing:-.01em;margin:0;text-wrap:balance}
+h3{font:600 .98rem/1.35 var(--sans);margin:0}
+.section{margin-top:2.6rem}
+.section__head{display:flex;flex-wrap:wrap;gap:.7rem 1.4rem;align-items:baseline;justify-content:space-between;padding-bottom:.8rem;margin-bottom:1.2rem;border-bottom:1px solid var(--rule)}
+.section__head p{margin:.25rem 0 0;color:var(--ink-2);font-size:.88rem;max-width:62ch}
+.legend{display:flex;flex-wrap:wrap;gap:.35rem .9rem;margin-top:1rem;font-size:.8rem;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:.35rem}
+.sw{width:.8rem;height:.8rem;border-radius:2px;display:inline-block}
+
+/* math */
+.mx{font-family:var(--serif);font-size:1.04rem;font-variant-numeric:lining-nums tabular-nums}
+.mx i,.sys i{font-style:italic}
+sub{font-size:.66em;position:relative;bottom:-.1em;line-height:0;font-style:normal}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;font-size:.74em;text-align:center;line-height:1.08;margin:0 .06em}
+.fr>span:first-child{border-bottom:1px solid currentColor;padding:0 .12em}
+.v-b{color:var(--basic);font-weight:600}
+.v-e{color:var(--enter);font-weight:600}
+.v-l{color:var(--leave);font-weight:600}
+.v-z{color:var(--zrow)}
+
+/* buttons */
+.btn{font:500 .8rem/1 var(--sans);cursor:pointer;border:1px solid var(--rule-2);background:var(--card);color:var(--ink-2);border-radius:999px;padding:.5rem .85rem;transition:border-color .16s,color .16s,background .16s}
+.btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn--solid{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn--solid{color:#241016}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn--solid{color:#241016}}
+.btn--solid:hover:not(:disabled){opacity:.88;color:#fff}
+.btn--sm{font-size:.74rem;padding:.34rem .6rem}
+.btnrow{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* cards */
+.card{background:var(--card);border:1px solid var(--rule);border-radius:4px;box-shadow:var(--shadow)}
+.card__head{display:flex;flex-wrap:wrap;gap:.6rem 1rem;align-items:center;justify-content:space-between;padding:.85rem 1.1rem;border-bottom:1px solid var(--rule)}
+.card__title{font:500 .68rem/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0}
+.card__body{padding:1.1rem}
+
+/* editor */
+.edwrap{overflow-x:auto;padding-bottom:.4rem}
+.ed{display:grid;gap:.4rem .45rem;align-items:center;justify-content:start;min-width:max-content}
+.ed .hd{font-family:var(--serif);font-size:1rem;text-align:center;color:var(--ink-2)}
+.ed .lab{font:500 .78rem/1.2 var(--sans);color:var(--ink-2);white-space:nowrap;padding-right:.3rem}
+.num{width:3.8rem;padding:.34rem .2rem;text-align:center;border:1px solid var(--rule-2);border-radius:3px;background:var(--card-2);color:var(--ink);font:400 .95rem/1.2 var(--serif)}
+.num:focus{border-color:var(--accent);background:var(--card);outline:none}
+.num.bad{border-color:var(--zrow);background:var(--zrow-soft)}
+.sel{padding:.32rem .3rem;border:1px solid var(--rule-2);border-radius:3px;background:var(--card-2);color:var(--ink);font:400 .85rem/1.2 var(--sans);cursor:pointer}
+.dims{display:flex;flex-wrap:wrap;gap:.6rem 1.2rem;align-items:center;margin-top:1rem;padding-top:.9rem;border-top:1px solid var(--rule)}
+.dims .g{display:flex;align-items:center;gap:.4rem}
+.dims .gl{font:500 .74rem/1 var(--sans);color:var(--ink-3)}
+.stepper{display:inline-flex;border:1px solid var(--rule-2);border-radius:999px;overflow:hidden}
+.stepper button{appearance:none;border:0;background:var(--card-2);color:var(--ink-2);font:500 .85rem/1 var(--sans);padding:.34rem .62rem;cursor:pointer}
+.stepper button:hover:not(:disabled){background:var(--accent-soft);color:var(--accent)}
+.stepper button:disabled{opacity:.35;cursor:not-allowed}
+.stepper .v{padding:.34rem .5rem;font:500 .82rem/1 var(--sans);background:var(--card);min-width:1.7rem;text-align:center;font-variant-numeric:tabular-nums}
+.errline{margin:.7rem 0 0;color:var(--zrow);font-size:.84rem;min-height:1.2em}
+.presets{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:center}
+.presets label{font:500 .74rem/1 var(--sans);color:var(--ink-3)}
+.presets .sel{max-width:100%}
+.note{font-size:.84rem;color:var(--ink-2);margin:0}
+
+/* worksheet */
+.toolbar{display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.seg{display:inline-flex;border:1px solid var(--rule-2);border-radius:999px;overflow:hidden}
+.seg button{appearance:none;border:0;background:var(--card);color:var(--ink-2);font:500 .74rem/1 var(--sans);padding:.4rem .7rem;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+.empty{padding:1.4rem 1.1rem;color:var(--ink-2);font-size:.92rem;border:1px dashed var(--rule-2);border-radius:4px;background:var(--card-2)}
+.group{margin-top:1.4rem}
+.group>summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;gap:.8rem;flex-wrap:wrap;padding:.3rem 0 .6rem;border-bottom:2px solid var(--ink)}
+.group>summary::-webkit-details-marker{display:none}
+.group>summary h2::before{content:"▾";display:inline-block;font-size:.8em;color:var(--ink-3);margin-right:.4rem;transition:transform .15s}
+.group:not([open])>summary h2::before{transform:rotate(-90deg)}
+.group__meta{font-size:.82rem;color:var(--ink-2)}
+.goal{font:600 .82rem/1 var(--sans);color:var(--ink-2)}
+.goal .v-z{font-family:var(--serif);font-style:italic;font-size:1rem}
+.stages{display:flex;flex-direction:column;gap:1rem;margin-top:1rem}
+.stage{background:var(--card);border:1px solid var(--rule);border-radius:4px;box-shadow:var(--shadow);padding:1rem 1.1rem 1.1rem;display:flex;flex-direction:column;gap:.85rem;min-width:0;scroll-margin-top:1rem;scroll-margin-bottom:6rem}
+.stage.is-current{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),var(--shadow)}
+.stage__h{display:flex;flex-wrap:wrap;gap:.2rem .7rem;align-items:baseline}
+.stage__k{font:600 .7rem/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.stage__t{font:600 1rem/1.35 var(--sans)}
+.stage p{margin:0;max-width:72ch}
+.q{font-weight:600}
+.ans{padding:.55rem .75rem;border-radius:3px;font-size:.93rem}
+.ans--yes{background:var(--zrow-soft);color:var(--ink)}
+.ans--ok{background:var(--basic-soft)}
+.ans--bad{background:var(--zrow-soft)}
+.ans--info{background:var(--card-2);border:1px solid var(--rule)}
+.ans b.v{font-weight:600}
+
+/* system of equations */
+.sysw{overflow-x:auto;padding:.15rem 0}
+.sys{display:inline-grid;align-items:stretch;grid-auto-rows:minmax(2.1rem,auto);font-family:var(--serif);font-size:1.06rem;font-variant-numeric:lining-nums tabular-nums;min-width:max-content}
+.sc{padding:.18rem .1rem;white-space:nowrap;display:flex;align-items:center}
+.sc.lab{font:500 .76rem/1.2 var(--sans);color:var(--ink-3);padding-right:.9rem;justify-content:flex-end}
+.sc.sg{justify-content:center;padding-inline:.32rem;color:var(--ink-2)}
+.sc.tm{justify-content:flex-end}
+.sc.rel{padding-inline:.5rem;color:var(--ink-2)}
+.sc.rhs{justify-content:flex-end;padding-right:.3rem}
+.sc.zc{color:var(--zrow);font-style:italic}
+.r0 .sc, .sc.r0{color:var(--zrow)}
+.sc.r0.lab{color:var(--zrow)}
+.sc.tb{color:var(--basic);font-weight:600}
+.sc.tn{color:var(--accent);font-weight:600}
+.sc.ce{background:var(--enter-soft)}
+.sc.rh{background:var(--hi)}
+.sc.rl{background:var(--leave-soft)}
+.sc.rs{border-top:1px solid var(--ink-2)}
+.sc.nn{font-size:.95rem;color:var(--ink-2);padding-top:.3rem}
+.sc.dim{opacity:.35}
+
+.pair{display:grid;gap:.8rem;align-items:center}
+@media(min-width:760px){.pair{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}}
+.pair__arrow{display:flex;flex-direction:column;align-items:center;gap:.2rem;color:var(--accent);font-family:var(--serif);font-size:1.5rem;line-height:1}
+.pair__arrow small{font:500 .7rem/1.3 var(--sans);color:var(--ink-3);text-align:center;max-width:9rem}
+@media(max-width:759px){.pair__arrow{flex-direction:row;justify-content:center}.pair__arrow span{transform:rotate(90deg)}}
+.pane{background:var(--card-2);border:1px solid var(--rule);border-radius:3px;padding:.6rem .75rem;min-width:0}
+.pane__t{font:500 .64rem/1 var(--sans);letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);margin:0 0 .45rem}
+
+/* basis table */
+.bt{border-collapse:collapse;font-family:var(--serif);font-size:1.02rem;min-width:15rem}
+.bt th{font:600 .74rem/1.25 var(--sans);letter-spacing:.02em;background:var(--accent);color:#fff;padding:.5rem .8rem;text-align:center}
+:root[data-theme="dark"] .bt th{color:#241016}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .bt th{color:#241016}}
+.bt td{padding:.36rem .9rem;text-align:center;border-bottom:1px solid var(--card);background:var(--accent-soft)}
+.bt tr:nth-child(even) td{background:var(--card-2)}
+.bt td.b{color:var(--basic);font-weight:600}
+.bt td.new{box-shadow:inset 3px 0 0 var(--enter)}
+.bt td.out{box-shadow:inset 3px 0 0 var(--leave)}
+.btw{overflow-x:auto}
+.row2{display:flex;flex-wrap:wrap;gap:1rem 1.6rem;align-items:flex-start}
+.row2>div{min-width:0}
+
+/* GE */
+.ops{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.4rem}
+.op{display:grid;grid-template-columns:1.6rem minmax(0,1fr);gap:.1rem .5rem;padding:.5rem .65rem;border:1px solid var(--rule);border-radius:3px;background:var(--card-2);font-size:.9rem}
+.op__n{font:600 .78rem/1.6 var(--sans);color:var(--ink-3)}
+.op__not{grid-column:2;font-family:var(--serif);font-size:.98rem;color:var(--ink-2)}
+.op.done{border-color:var(--rule-2);background:var(--card)}
+.op.done .op__n{color:var(--basic)}
+.op.last{border-color:var(--accent);background:var(--accent-soft)}
+.op.pend{opacity:.55}
+.work{display:flex;flex-direction:column;gap:.8rem}
+
+
+/* GE player */
+.op{grid-template-columns:1.6rem minmax(0,1fr)}
+.op__body{display:flex;flex-direction:column;gap:.1rem;text-align:left;background:none;border:0;padding:0;font:inherit;color:inherit}
+button.op__body{cursor:pointer}
+button.op__body:hover .op__not{color:var(--accent)}
+.op.live{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 1px var(--accent)}
+.op.live .op__n{color:var(--accent)}
+.op__not{grid-column:auto}
+.player{display:flex;flex-wrap:wrap;gap:.5rem .9rem;align-items:center;justify-content:space-between;padding:.6rem .75rem;border:1px solid var(--rule-2);border-radius:4px;background:var(--card-2);scroll-margin-top:1rem}
+.player__ctl{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+.player__count{font:500 .78rem/1 var(--sans);color:var(--ink-2);font-variant-numeric:tabular-nums}
+.pbig{min-width:7.2rem}
+.phases{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}
+.phases span{font:500 .74rem/1 var(--sans);padding:.34rem .6rem;border-radius:999px;border:1px solid var(--rule-2);color:var(--ink-3);transition:background .2s,color .2s}
+.phases span.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.phases span.done{color:var(--basic);border-color:var(--basic)}
+.cap{font-size:1rem;min-height:1.7em}
+.gebox{display:grid;gap:.8rem}
+@media(min-width:900px){.gebox{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start}}
+.gesys{position:relative;display:inline-block;min-width:max-content}
+.gesys>svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.sc.chipc{justify-content:flex-end;padding-right:.1rem}
+.sc.rsrc{background:var(--src)}
+.sc.rtgt{background:var(--hi)}
+.sc.rdone{background:var(--basic-soft)}
+.sc.rnew{animation:rownew 1.1s ease-out both}
+@keyframes rownew{0%{background:var(--hi)}30%{background:var(--basic-soft);box-shadow:0 0 0 0 transparent}100%{background:var(--basic-soft)}}
+.sc.tkill{box-shadow:inset 0 0 0 2px var(--zrow);border-radius:3px}
+.sc.tone{box-shadow:inset 0 0 0 2px var(--basic);border-radius:3px}
+.mult{display:inline-flex;align-items:center;font-family:var(--serif);font-size:1rem;line-height:1.2;background:var(--src-line);color:var(--on-accent);border-radius:999px;padding:.1rem .55rem;white-space:nowrap}
+.mult.pop{animation:pop .5s cubic-bezier(.2,1.5,.4,1) both}
+.mult.dim{opacity:.45}
+@keyframes pop{from{transform:scale(.2);opacity:0}}
+.ga-path{fill:none;stroke:var(--src-line);stroke-width:2.4;stroke-linecap:round}
+.ga-head{fill:var(--src-line)}
+.ga-badge{fill:var(--src-line)}
+.ga-txt{fill:var(--on-accent);font:700 16px var(--sans)}
+svg.ga.dim{opacity:.35}
+svg.ga .late{animation:fadein .2s ease-out both;animation-delay:var(--draw,.7s)}
+svg.ga .late2{animation:pop2 .35s ease-out both;animation-delay:calc(var(--draw,.7s) * .5)}
+@keyframes pop2{from{opacity:0}}
+.worked.fadein{animation:fadein .45s ease-out both}
+@keyframes fadein{from{opacity:0}}
+@media (prefers-reduced-motion: reduce){.mult.pop,.sc.rnew,.worked.fadein,svg.ga .late,svg.ga .late2{animation:none}}
+
+/* ratio */
+.tests{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.3rem;font-family:var(--serif);font-size:1.02rem}
+.tests li{padding:.3rem .6rem;border-radius:3px;display:flex;flex-wrap:wrap;gap:.2rem .6rem;align-items:baseline}
+.tests li.win{background:var(--hi)}
+.tests .why{font:400 .78rem/1.4 var(--sans);color:var(--ink-3)}
+.imp{color:var(--zrow);font-style:italic}
+
+/* choices */
+.choices{display:flex;flex-wrap:wrap;gap:.5rem}
+.choice{appearance:none;cursor:pointer;border:1px solid var(--rule-2);background:var(--card);border-radius:4px;padding:.5rem .8rem;font:inherit;color:var(--ink);display:flex;flex-direction:column;gap:.1rem;align-items:flex-start;text-align:left}
+.choice:hover:not(:disabled){border-color:var(--accent)}
+.choice[aria-pressed="true"]{border-color:var(--enter);background:var(--enter-soft);box-shadow:0 0 0 1px var(--enter)}
+.choice:disabled{cursor:default}
+.choice small{font:400 .72rem/1.3 var(--sans);color:var(--ink-3)}
+.choice .mx{font-size:1.05rem}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.chip{display:inline-flex;gap:.4rem;align-items:baseline;padding:.3rem .6rem;border-radius:999px;border:1px solid var(--rule-2);font-family:var(--serif);font-size:1rem;background:var(--card)}
+.chip.neg{border-color:var(--zrow);background:var(--zrow-soft)}
+.chip.zero{border-style:dashed}
+
+.final{display:grid;gap:.6rem}
+.kv{display:flex;flex-wrap:wrap;gap:.3rem 1.2rem;font-family:var(--serif);font-size:1.05rem}
+.big{font-family:var(--serif);font-size:1.35rem}
+
+/* sticky bar */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--card);border-top:1px solid var(--rule-2);box-shadow:0 -8px 24px -20px rgba(0,0,0,.5);padding:.65rem 16px calc(.65rem + env(safe-area-inset-bottom,0px))}
+.bar__in{max-width:1000px;margin:0 auto;display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:center;justify-content:space-between}
+.bar__status{font-size:.82rem;color:var(--ink-2);min-width:0;flex:1 1 14rem}
+.bar__status b{color:var(--ink);font-weight:600}
+.bar .btn--solid{padding:.6rem 1.05rem;font-size:.84rem}
+kbd{font:500 .7rem/1 var(--sans);border:1px solid var(--rule-2);border-bottom-width:2px;border-radius:3px;padding:.1rem .3rem;color:var(--ink-3)}
+
+/* reference */
+.ref{display:grid;gap:1rem}
+@media(min-width:760px){.ref{grid-template-columns:1fr 1fr}}
+.ref ol{margin:.4rem 0 0;padding-left:1.2rem;font-size:.9rem;color:var(--ink-2)}
+.ref li{margin:.25rem 0}
+.foot{margin-top:3rem;padding-top:1rem;border-top:1px solid var(--rule);font-size:.78rem;color:var(--ink-3)}
+.foot a{color:var(--ink-2)}
+a{color:var(--accent)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+/* ================= tableau ================= */
+.tw{overflow-x:auto;padding:.15rem 0 .3rem}
+.tabw{position:relative;display:inline-block;min-width:max-content}
+.tabw>svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+table.tab{border-collapse:separate;border-spacing:0;font-family:var(--serif);font-size:1.06rem;font-variant-numeric:lining-nums tabular-nums}
+.tab th{font:600 .7rem/1.2 var(--sans);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2);padding:.5rem .7rem;border-bottom:2px solid var(--ink);text-align:center;white-space:nowrap;vertical-align:bottom}
+.tab th.vh{font:italic 400 1.06rem/1.2 var(--serif);letter-spacing:0;text-transform:none;color:var(--ink)}
+.tab td{padding:.42rem .75rem;text-align:center;border-bottom:1px solid var(--rule);white-space:nowrap;min-width:2.7rem;background:var(--card);transition:background .25s}
+.tab .bv{text-align:left;border-right:1px solid var(--rule-2);min-width:3.2rem}
+.tab .eq{font:500 .76rem/1.2 var(--sans);color:var(--ink-3);border-right:1px solid var(--rule-2)}
+.tab .zcol{border-right:1px solid var(--rule-2)}
+.tab .rhsc{border-left:2px solid var(--ink-2);min-width:3.3rem}
+.tab tr.r0 td{color:var(--zrow);border-bottom:2px solid var(--rule-2)}
+.tab tr.r0 td.eq{color:var(--zrow)}
+.tab td.bvb{color:var(--basic);font-weight:600}
+.tab .z0{color:var(--ink-3)}
+.tab tr.r0 .z0{color:inherit;opacity:.6}
+.tab th.hb{color:var(--basic);box-shadow:inset 0 -3px 0 var(--basic)}
+.tab th.pc{background:var(--enter);color:var(--on-accent)}
+.tab td.pc{background:var(--enter-soft)}
+.tab tr.pr td:not(.gut):not(.gap):not(.sp){background:var(--leave-soft)}
+.tab tr.pr td.pc{background:color-mix(in srgb,var(--leave-soft) 50%,var(--enter-soft))}
+.tab td.pe{box-shadow:inset 0 0 0 2.5px var(--leave);font-weight:600;border-radius:4px}
+.tab td.rcn{box-shadow:inset 0 0 0 2px var(--zrow);border-radius:4px;font-weight:600}
+.tab tr.rsrc td:not(.gut):not(.gap):not(.sp){background:var(--src)}
+.tab tr.rtgt td:not(.gut):not(.gap):not(.sp){background:var(--hi)}
+.tab tr.rdone td:not(.gut):not(.gap):not(.sp){background:var(--basic-soft)}
+.tab tr.rnew td:not(.gut):not(.gap):not(.sp){animation:rownew 1.1s ease-out both}
+.tab tr.rs td{border-top:2px solid var(--ink-2)}
+.tab td.tkill{box-shadow:inset 0 0 0 2.5px var(--zrow);border-radius:4px}
+.tab td.tone{box-shadow:inset 0 0 0 2.5px var(--basic);border-radius:4px}
+.tab .gut,.tab .gap,.tab .sp{border:0!important;background:transparent!important;min-width:0;padding:0}
+.tab td.gut{text-align:right;padding-right:.15rem}
+.tab th.gut{min-width:4.2rem}
+.tab .gap{width:3.4rem;min-width:3.4rem}
+.tab .sp{width:1rem;min-width:1rem}
+.tab th.rt{background:var(--card-2);border:1px solid var(--rule-2);border-bottom:2px solid var(--ink);border-radius:4px 4px 0 0;text-transform:none;letter-spacing:0;font-size:.76rem;line-height:1.35}
+.tab td.rt{background:var(--card-2);border-left:1px solid var(--rule-2);border-right:1px solid var(--rule-2);text-align:left;min-width:12rem;color:var(--ink)}
+.tab tr:last-child td.rt{border-bottom:1px solid var(--rule-2)}
+.tab tr.r0 td.rt{color:var(--ink-3);font:400 .74rem/1.2 var(--sans)}
+.tab tr.win td.rt{background:var(--hi)}
+.tab td.rt .why{font:400 .74rem/1.3 var(--sans);color:var(--ink-3)}
+.mintag{display:inline-block;font:600 .64rem/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--on-accent);background:var(--leave);border-radius:999px;padding:.22rem .45rem;margin-left:.35rem;vertical-align:middle}
+.mintag.tie{background:var(--ink-3)}
+.tab.mini{font-size:.98rem}
+.tab.mini td{padding:.3rem .6rem}
+.tab.mini td.lbl{font:500 .76rem/1.2 var(--sans);color:var(--ink-2);white-space:nowrap}
+.qm{color:var(--ink-3);font-style:normal}
+.side{display:grid;gap:1rem;align-items:start}
+@media(min-width:900px){.side{grid-template-columns:auto minmax(0,1fr)}}
+@media (prefers-reduced-motion: reduce){.tab tr.rnew td{animation:none!important}}
+
+/* ================= dual simplex additions ================= */
+.tab tr.rrow td{background:var(--card-2);border-top:2px solid var(--rule-2);font-size:.86rem;white-space:nowrap}
+.tab tr.rrow td.rrl{font:500 .72rem/1.3 var(--sans);color:var(--ink-2);text-align:left;white-space:normal;max-width:9rem}
+.tab tr.rrow td.rr.pc{background:var(--enter-soft)}
+.tab tr.rrow td .mintag{margin-left:.25rem}
+.tests li .why{min-width:12rem}
+#sheet>.ans{margin:0}
+/* ================= compact iteration cards ================= */
+#sheet{display:flex;flex-direction:column;gap:1rem}
+.itcard{background:var(--card);border:1px solid var(--rule);border-radius:4px;box-shadow:var(--shadow);padding:.8rem 1rem .9rem;display:flex;flex-direction:column;gap:.55rem;min-width:0;scroll-margin-top:.8rem}
+.itcard.is-current{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent),var(--shadow)}
+.itcard__h{display:flex;flex-wrap:wrap;gap:.2rem 1rem;align-items:baseline}
+.itcard__h h2{font-size:1.2rem}
+.nl{margin:0;font-size:.9rem;color:var(--ink);max-width:80ch}
+.nl.ok{color:var(--ink-2)}
+.small{font-size:.8rem;color:var(--ink-3)}
+.nl.small{font-size:.8rem;color:var(--ink-3)}
+.cap.nl{min-height:2.6em;font-size:.92rem}
+.tab td.ex{font-size:.8rem;color:var(--ink);padding-inline:.4rem}
+.tab td.ex .fr{font-size:.85em}
+.blank{color:var(--rule-2)}
+.tab tr.rold td:not(.gut):not(.gap):not(.sp){background:var(--hi)}
+.tab td.tzero{box-shadow:inset 0 0 0 2px var(--ink-3);border-radius:4px}
+.itcard .choices{gap:.35rem}
+.itcard .choice{padding:.3rem .6rem}
+.itcard .player{padding:.45rem .6rem}
+.itcard .phases span{font-size:.68rem;padding:.28rem .5rem}
+.itcard .pair .pane{padding:.45rem .6rem}
+.itcard .sys{font-size:.98rem;grid-auto-rows:minmax(1.8rem,auto)}
+.itcard .final{padding:.6rem .75rem}
+.itcard .mult{font-size:1.08rem;padding:.15rem .6rem}
+.itcard .mult .fr{font-size:.82em}
+@media(max-width:520px){.tab th.gut{min-width:3.4rem}.tab .gap{width:2.9rem;min-width:2.9rem}.itcard{padding-inline:.7rem}}
+/* ================= assignment additions ================= */
+:root{--ln:#2563eb;--dm:#eef0f3}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--ln:#7aa7ff;--dm:#262a31}}
+:root[data-theme="dark"]{--ln:#7aa7ff;--dm:#262a31}
+.mv{font-family:var(--serif);font-style:italic;font-weight:600;color:var(--leave)}
+/* editor */
+.edt{border-collapse:separate;border-spacing:.35rem .3rem}
+.edt th{font:500 .78rem/1.2 var(--sans);color:var(--ink-2);text-align:center}
+.edt th.corner span{font:400 .7rem/1.2 var(--sans);color:var(--ink-3)}
+.nm{width:5.6rem;padding:.3rem .35rem;border:1px solid var(--rule);border-radius:3px;background:transparent;color:var(--ink);font:500 .8rem/1.2 var(--sans);text-align:center}
+.nm:focus{border-color:var(--accent);outline:none;background:var(--card)}
+.edt tbody th .nm{text-align:left}
+.num.ism{color:var(--leave);font-style:italic;font-weight:600;border-color:var(--leave)}
+.req{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:center;margin-top:.9rem;padding-top:.8rem;border-top:1px solid var(--rule)}
+.req .gl{font:500 .74rem/1 var(--sans);color:var(--ink-3)}
+.reqadd{display:inline-flex;flex-wrap:wrap;gap:.4rem;align-items:center}
+.chip .x{appearance:none;border:0;background:none;color:var(--ink-3);cursor:pointer;font-size:1rem;line-height:1;padding:0 .1rem}
+.chip .x:hover{color:var(--zrow)}
+.chip{font-family:var(--sans);font-size:.85rem}
+/* assignment table */
+.at{border-collapse:separate;border-spacing:0;font-family:var(--serif);font-size:1.1rem;font-variant-numeric:lining-nums tabular-nums}
+.at th{font:600 .74rem/1.25 var(--sans);color:var(--ink-2);padding:.45rem .7rem;white-space:nowrap;text-align:center}
+.at thead th{border-bottom:2px solid var(--ink)}
+.at th.rn{text-align:left;border-right:2px solid var(--ink)}
+.at th.hl{color:var(--ln)}
+.at th.dum,.at td.dum{background:var(--dm);font-style:italic}
+.at td{position:relative;text-align:center;min-width:3.4rem;padding:.55rem .7rem;border-bottom:1px solid var(--rule);border-right:1px solid var(--rule);background:var(--card);transition:background .25s}
+.at td>span{position:relative;z-index:1;display:inline-block;padding:0 .2rem;border-radius:4px}
+.at td.z>span{font-weight:700;color:var(--basic)}
+.at td.sd,.at tr.sd td{background:var(--card-2);color:var(--accent);font-weight:600;font-size:.98rem}
+.at td.sd{border-left:2px solid var(--ink-2)}
+.at tr.sd td,.at tr.sd th{border-top:2px solid var(--ink-2)}
+.at th.sdh{font:500 .68rem/1.2 var(--sans);color:var(--accent);text-transform:uppercase;letter-spacing:.06em}
+.at td.minc>span{box-shadow:0 0 0 2px var(--leave);background:var(--leave-soft)}
+.at td.unc{background:var(--hi)}
+.at td.two{background:var(--src)}
+.at td.bad{background:var(--zrow-soft)}
+.at td.pick>span{box-shadow:0 0 0 2.5px var(--zrow);background:var(--zrow-soft);color:var(--zrow)}
+.at td.pick.new>span{animation:pop .5s cubic-bezier(.2,1.5,.4,1) both}
+.at td.xz>span{color:var(--ink-3);text-decoration:line-through;text-decoration-thickness:2px;font-weight:400}
+.at td.lr::before,.at td.lc::after{content:"";position:absolute;background:var(--ln);opacity:.5;pointer-events:none;z-index:0;border-radius:3px}
+.at td.lr::before{left:0;right:0;top:calc(50% - 3px);height:6px}
+.at td.lc::after{top:0;bottom:0;left:calc(50% - 3px);width:6px}
+.at td.lr.new::before{animation:growx .55s ease-out both;transform-origin:left center}
+.at td.lc.new::after{animation:growy .55s ease-out both;transform-origin:center top}
+@keyframes growx{from{transform:scaleX(0)}}
+@keyframes growy{from{transform:scaleY(0)}}
+.at td.gone,.at th.gone{opacity:.35}
+.at td.gone>span{text-decoration:line-through}
+.at td.req>span{box-shadow:0 0 0 2.5px var(--basic);background:var(--basic-soft)}
+.at td.mcell{color:var(--leave)}
+.at.small{font-size:.98rem}
+.at.small td{padding:.35rem .6rem}
+.at .xl{display:block;font-size:.7rem;color:var(--ink-3);line-height:1}
+.at .note{font-weight:400;font-size:.68rem}
+/* formulation */
+.lpbox{display:flex;flex-direction:column;gap:.25rem;padding:.7rem .9rem;border:1px solid var(--rule);border-radius:4px;background:var(--card-2);overflow-x:auto;font-size:1.02rem}
+.lpl{white-space:normal;line-height:1.6}
+.lpl.ind{padding-left:1.4rem}
+.lpl .why{font:400 .76rem/1.3 var(--sans);color:var(--ink-3);margin-left:.4rem}
+.strike{text-decoration:line-through;color:var(--ink-3)}
+.dualrules{margin:.2rem 0 0;padding-left:1.1rem;font-size:.9rem;color:var(--ink-2)}
+.dualrules li{margin:.15rem 0}
+.big{font-family:var(--serif);font-size:1.3rem;margin:.3rem 0 0}
+@media (prefers-reduced-motion: reduce){.at td.lr.new::before,.at td.lc.new::after,.at td.pick.new>span{animation:none}}
+.card__head .presets{min-width:0;max-width:100%}
+#preset{max-width:calc(100vw - 6rem);min-width:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Foundations of Optimization · Tool 10</p>
+  <h1>Assignment problem interactive tool: <em>Hungarian Method</em></h1>
+  <p class="lede">Assign every assignee to exactly one task (and every task to exactly one assignee) at the smallest total cost. Enter a cost table, see it written as a <b>linear program</b> (the integrality condition can be dropped), then solve it step by step with the <b>Hungarian method</b>: row and column reductions, the minimum number of lines through all zeros, adjustments, and the final assignment.</p>
+  <div class="legend" aria-label="Colour key">
+    <span><i class="sw" style="background:var(--basic)"></i>zero entry</span>
+    <span><i class="sw" style="background:var(--ln)"></i>covering line</span>
+    <span><i class="sw" style="background:var(--hi);border:1px solid var(--rule-2)"></i>uncovered entry</span>
+    <span><i class="sw" style="background:var(--src)"></i>covered by two lines</span>
+    <span><i class="sw" style="background:var(--zrow)"></i>assigned zero (boxed)</span>
+    <span><i class="sw" style="background:var(--dm);border:1px solid var(--rule-2)"></i>dummy row / column</span>
+  </div>
+
+  <!-- ============ PROBLEM ============ -->
+  <section class="section" id="problem">
+    <div class="section__head">
+      <div>
+        <h2>1 · The cost table</h2>
+        <p>Rows are assignees, columns are tasks. Entries accept integers, decimals or fractions such as <span class="mx">3</span>, <span class="mx">2.5</span>, <span class="mx">7/2</span>. Type <b class="mx"><i>M</i></b> for a pair that is <b>not allowed</b> (big M). The names can be edited. The table does not have to be square.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card__head">
+        <div class="presets">
+          <label for="preset">Example</label>
+          <select id="preset" class="sel"></select>
+          <button class="btn btn--sm" id="saveEx" type="button">Save as my example</button>
+          <button class="btn btn--sm" id="delEx" type="button" hidden>Remove saved example</button>
+        </div>
+        <span class="note" id="saveMsg" aria-live="polite"></span>
+      </div>
+      <div class="card__body">
+        <div class="edwrap"><table class="edt" id="ed"></table></div>
+        <div class="dims">
+          <div class="g"><span class="gl">Assignees (rows)</span>
+            <span class="stepper"><button type="button" id="rDec" aria-label="Fewer rows">−</button><span class="v" id="rVal">4</span><button type="button" id="rInc" aria-label="More rows">+</button></span></div>
+          <div class="g"><span class="gl">Tasks (columns)</span>
+            <span class="stepper"><button type="button" id="cDec" aria-label="Fewer columns">−</button><span class="v" id="cVal">4</span><button type="button" id="cInc" aria-label="More columns">+</button></span></div>
+        </div>
+        <div class="req">
+          <span class="gl">Required assignments</span>
+          <span id="reqList" class="chips"></span>
+          <span class="reqadd"><select id="reqR" class="sel" aria-label="Assignee"></select><span class="note">must do</span><select id="reqC" class="sel" aria-label="Task"></select><button class="btn btn--sm" id="reqAdd" type="button">Add</button></span>
+        </div>
+        <p class="errline" id="err" role="alert"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FORMULATION ============ -->
+  <section class="section" id="lp">
+    <div class="section__head">
+      <div>
+        <h2>2 · The formulation</h2>
+        <p>The assignment problem as an integer program, and why it can be solved as a linear program.</p>
+      </div>
+    </div>
+    <div id="form"></div>
+  </section>
+
+  <!-- ============ HUNGARIAN ============ -->
+  <section class="section" id="hung">
+    <div class="section__head">
+      <div>
+        <h2>3 · The Hungarian method</h2>
+        <p>Press <b>Next</b> in the bar at the bottom (or <kbd>→</kbd>) to take one step, <b>Back</b> (<kbd>←</kbd>) to undo it, or <b>▶ Play</b> to watch it run.</p>
+      </div>
+      <div class="btnrow">
+        <span class="seg" role="group" aria-label="Number format">
+          <button type="button" id="fmtFrac" aria-pressed="true">Fractions</button>
+          <button type="button" id="fmtDec" aria-pressed="false">Decimals</button>
+        </span>
+        <button class="btn btn--sm" id="restart" type="button">Restart worksheet</button>
+      </div>
+    </div>
+    <div id="sheet"></div>
+  </section>
+
+  <!-- ============ REFERENCE ============ -->
+  <section class="section" id="reference">
+    <div class="section__head"><div><h2>4 · At a glance</h2></div></div>
+    <div class="ref">
+      <div class="card"><div class="card__body">
+        <h3>Preparing the table</h3>
+        <ol>
+          <li><b>Not allowed</b> (assignee <i>i</i> cannot do task <i>j</i>): cost <i>M</i>, a very large number (in the LP: <i>x<sub>ij</sub></i> = 0).</li>
+          <li><b>Required</b> (assignee <i>i</i> must do task <i>j</i>): the pair is decided, so delete row <i>i</i> and column <i>j</i> and solve the smaller problem; add <i>c<sub>ij</sub></i> back at the end.</li>
+          <li><b>Not square</b>: add dummy rows or columns with cost 0 until the table is square. A dummy assignment means “left unassigned”.</li>
+        </ol>
+      </div></div>
+      <div class="card"><div class="card__body">
+        <h3>The Hungarian method</h3>
+        <ol>
+          <li>Subtract each <b>row minimum</b> from its row, then each <b>column minimum</b> from its column.</li>
+          <li>Cover all zeros with the <b>minimum number of lines</b> (rows or columns).</li>
+          <li>If the number of lines is <i>n</i>: an optimal assignment uses only zeros. Start with a row or column that has a single zero.</li>
+          <li>Otherwise let <i>k</i> = the smallest uncovered number: subtract <i>k</i> from every uncovered entry, add <i>k</i> to every entry covered by two lines, and go back to step 2.</li>
+        </ol>
+      </div></div>
+    </div>
+  </section>
+
+  <p class="foot">Developed by Dr. Hadi Gard (Charkhgard) for teaching the Foundations of Optimization course only. © 2026 Hadi Gard (Charkhgard). · <a href="https://hcharkhgard.github.io/foundations-of-optimization/" target="_blank" rel="noopener">All course tools</a></p>
+</div>
+
+<div class="bar" role="region" aria-label="Step controls">
+  <div class="bar__in">
+    <button class="btn" id="back" type="button">← Back</button>
+    <div class="bar__status" id="status" aria-live="polite"></div>
+    <div class="btnrow">
+      <button class="btn" id="play" type="button">▶ Play</button>
+      <button class="btn" id="auto" type="button">Run to the end</button>
+      <button class="btn btn--solid" id="next" type="button">Next →</button>
+    </div>
+  </div>
+</div>
+<script>
+(() => {
+"use strict";
+/* ================= exact rationals ================= */
+const gcd = (a, b) => { a = a < 0n ? -a : a; b = b < 0n ? -b : b; while (b) { [a, b] = [b, a % b]; } return a; };
+class Q {
+  constructor(n, d = 1n) { n = BigInt(n); d = BigInt(d); if (d === 0n) throw new Error("division by zero"); if (d < 0n) { n = -n; d = -d; } const g = gcd(n, d) || 1n; this.n = n / g; this.d = d / g; }
+  add(o) { return new Q(this.n * o.d + o.n * this.d, this.d * o.d); }
+  sub(o) { return new Q(this.n * o.d - o.n * this.d, this.d * o.d); }
+  mul(o) { return new Q(this.n * o.n, this.d * o.d); }
+  div(o) { return new Q(this.n * o.d, this.d * o.n); }
+  neg() { return new Q(-this.n, this.d); }
+  sign() { return this.n > 0n ? 1 : this.n < 0n ? -1 : 0; }
+  isZero() { return this.n === 0n; }
+  cmp(o) { return this.sub(o).sign(); }
+  num() { return Number(this.n) / Number(this.d); }
+}
+const ZERO = new Q(0), ONE = new Q(1);
+function parseQ(s) {
+  s = String(s).trim().replace(/[−–]/g, "-").replace(/\s+/g, "");
+  let m;
+  if ((m = s.match(/^([+-]?\d+)\/(\d+)$/))) { if (BigInt(m[2]) === 0n) return null; return new Q(BigInt(m[1]), BigInt(m[2])); }
+  if ((m = s.match(/^([+-]?)(\d*)\.?(\d*)$/))) {
+    if (m[2] === "" && m[3] === "") return null;
+    const sg = m[1] === "-" ? -1n : 1n, fp = m[3] || "", den = 10n ** BigInt(fp.length);
+    return new Q(sg * (BigInt(m[2] || "0") * den + BigInt(fp || "0")), den);
+  }
+  return null;
+}
+/* a cell is a Q or the big M */
+const BIGM = { m: true };
+const isM = v => v === BIGM;
+const parseCell = s => /^\s*[mM]\s*$/.test(String(s)) ? BIGM : parseQ(s);
+const vsub = (v, k) => isM(v) ? v : v.sub(k);
+const vadd = (v, k) => isM(v) ? v : v.add(k);
+const vzero = v => !isM(v) && v.isZero();
+function vmin(list) { let b = null; for (const v of list) if (!isM(v) && (b === null || v.cmp(b) < 0)) b = v; return b; }
+
+/* ================= formatting ================= */
+let MODE = "frac";
+const decStr = q => { const x = q.num(); return x !== 0 && Math.abs(x) < 0.001 ? String(+x.toPrecision(3)) : String(+x.toFixed(4)); };
+function absHtml(q) { const a = q.sign() < 0 ? q.neg() : q; if (a.d === 1n) return String(a.n); if (MODE === "dec") return decStr(a); return `<span class="fr"><span>${a.n}</span><span>${a.d}</span></span>`; }
+const numHtml = q => (q.sign() < 0 ? "−" : "") + absHtml(q);
+const vh = v => isM(v) ? `<i class="mv">M</i>` : numHtml(v);
+const pv = v => !isM(v) && v.sign() < 0 ? `(${numHtml(v)})` : vh(v);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const X = (i, j) => `<i>x</i><sub>${i + 1}${j + 1 > 9 || i + 1 > 9 ? "," : ""}${j + 1}</sub>`;
+const $ = id => document.getElementById(id);
+const cp = x => JSON.parse(JSON.stringify(x));
+
+/* ================= examples ================= */
+const PRESETS = [
+  { name: "Four people, four jobs (lines = n right away)", rn: ["Ann", "Ben", "Cal", "Dee"], cn: ["Job 1", "Job 2", "Job 3", "Job 4"], C: [["9", "2", "7", "8"], ["6", "4", "3", "7"], ["5", "8", "1", "8"], ["7", "6", "9", "4"]], req: [] },
+  { name: "One adjustment step", rn: ["Ann", "Ben", "Cal", "Dee"], cn: ["Job 1", "Job 2", "Job 3", "Job 4"], C: [["9", "3", "9", "10"], ["6", "4", "7", "10"], ["8", "3", "12", "9"], ["4", "5", "4", "11"]], req: [] },
+  { name: "Two adjustment steps (4 × 4)", rn: ["Ann", "Ben", "Cal", "Dee"], cn: ["Job 1", "Job 2", "Job 3", "Job 4"], C: [["12", "2", "5", "9"], ["10", "12", "6", "3"], ["8", "3", "6", "1"], ["10", "9", "9", "12"]], req: [] },
+  { name: "Two adjustment steps (5 × 5)", rn: ["A", "B", "C", "D", "E"], cn: ["T1", "T2", "T3", "T4", "T5"], C: [["1", "12", "9", "11", "10"], ["12", "7", "4", "3", "11"], ["11", "11", "2", "11", "12"], ["6", "3", "9", "11", "2"], ["8", "10", "7", "5", "11"]], req: [] },
+  { name: "More tasks than people (dummy row)", rn: ["Ann", "Ben", "Cal"], cn: ["Job 1", "Job 2", "Job 3", "Job 4"], C: [["12", "8", "11", "9"], ["10", "7", "9", "12"], ["14", "10", "8", "11"]], req: [] },
+  { name: "More people than tasks (dummy column)", rn: ["Ann", "Ben", "Cal", "Dee", "Eve"], cn: ["Job 1", "Job 2", "Job 3"], C: [["15", "12", "18"], ["13", "14", "16"], ["17", "11", "15"], ["14", "13", "14"], ["16", "15", "13"]], req: [] },
+  { name: "Not allowed pairs (big M)", rn: ["Ann", "Ben", "Cal", "Dee"], cn: ["Job 1", "Job 2", "Job 3", "Job 4"], C: [["M", "5", "8", "6"], ["7", "M", "6", "9"], ["4", "6", "M", "5"], ["8", "7", "6", "M"]], req: [] },
+  { name: "A required assignment (row and column removed)", rn: ["Ann", "Ben", "Cal", "Dee"], cn: ["Job 1", "Job 2", "Job 3", "Job 4"], C: [["9", "2", "7", "8"], ["6", "4", "3", "7"], ["5", "8", "1", "8"], ["7", "6", "9", "4"]], req: [[0, 0]] },
+  { name: "All tricks: dummy, M and a required pair", rn: ["Ann", "Ben", "Cal", "Dee"], cn: ["Job 1", "Job 2", "Job 3", "Job 4", "Job 5"], C: [["8", "M", "6", "9", "7"], ["5", "7", "M", "6", "8"], ["9", "6", "7", "M", "5"], ["7", "8", "6", "5", "9"]], req: [[3, 3]] },
+  { name: "Impossible: forbidden pairs leave no assignment", rn: ["Ann", "Ben", "Cal"], cn: ["Job 1", "Job 2", "Job 3"], C: [["4", "M", "M"], ["6", "M", "M"], ["3", "5", "7"]], req: [] }
+];
+const LS_KEY = "fo-assignment-examples";
+function loadSaved() { try { const v = JSON.parse(localStorage.getItem(LS_KEY) || "[]"); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
+function storeSaved(a) { try { localStorage.setItem(LS_KEY, JSON.stringify(a)); return true; } catch (e) { return false; } }
+
+/* ================= editor ================= */
+let draft = cp(PRESETS[0]);
+let BASE = null;  // parsed model
+function fillPresetSelect(sel) {
+  const saved = loadSaved();
+  let h = `<optgroup label="Course examples">` + PRESETS.map((p, i) => `<option value="p${i}">${esc(p.name)}</option>`).join("") + `</optgroup>`;
+  if (saved.length) h += `<optgroup label="My examples (this browser)">` + saved.map((p, i) => `<option value="s${i}">${esc(p.name)}</option>`).join("") + `</optgroup>`;
+  h += `<option value="blank">Blank table</option>`;
+  $("preset").innerHTML = h; if (sel) $("preset").value = sel;
+  $("delEx").hidden = !String($("preset").value).startsWith("s");
+}
+function renderEditor() {
+  const r = draft.rn.length, c = draft.cn.length;
+  $("rVal").textContent = r; $("cVal").textContent = c;
+  $("rDec").disabled = r <= 1; $("rInc").disabled = r >= 8; $("cDec").disabled = c <= 1; $("cInc").disabled = c >= 8;
+  let h = `<thead><tr><th class="corner"><span>assignee \\ task</span></th>` + draft.cn.map((n, j) => `<th><input class="nm" data-k="cn" data-j="${j}" value="${esc(n)}" aria-label="Name of task ${j + 1}"></th>`).join("") + `</tr></thead><tbody>`;
+  draft.rn.forEach((n, i) => {
+    h += `<tr><th><input class="nm" data-k="rn" data-i="${i}" value="${esc(n)}" aria-label="Name of assignee ${i + 1}"></th>`;
+    draft.C[i].forEach((v, j) => { h += `<td><input class="num" data-k="C" data-i="${i}" data-j="${j}" value="${esc(v)}" aria-label="Cost of ${esc(n)} doing task ${j + 1}"></td>`; });
+    h += `</tr>`;
+  });
+  $("ed").innerHTML = h + `</tbody>`;
+  renderReq(); validate();
+}
+function renderReq() {
+  $("reqList").innerHTML = draft.req.length ? draft.req.map(([i, j], k) => `<span class="chip"><span>${esc(draft.rn[i])} → ${esc(draft.cn[j])}</span><button type="button" class="x" data-del="${k}" aria-label="Remove">×</button></span>`).join("") : `<span class="note">none</span>`;
+  $("reqR").innerHTML = draft.rn.map((n, i) => `<option value="${i}">${esc(n)}</option>`).join("");
+  $("reqC").innerHTML = draft.cn.map((n, j) => `<option value="${j}">${esc(n)}</option>`).join("");
+}
+function validate() {
+  let bad = 0; const msgs = [];
+  document.querySelectorAll("#ed .num").forEach(inp => { const ok = parseCell(inp.value) !== null; inp.classList.toggle("bad", !ok); inp.classList.toggle("ism", ok && isM(parseCell(inp.value))); if (!ok) bad++; });
+  if (bad) msgs.push(`${bad} entr${bad === 1 ? "y is" : "ies are"} not a number or M.`);
+  const rs = new Set(), cs = new Set();
+  for (const [i, j] of draft.req) {
+    if (rs.has(i)) msgs.push(`${draft.rn[i]} has two required tasks.`); if (cs.has(j)) msgs.push(`${draft.cn[j]} has two required assignees.`);
+    rs.add(i); cs.add(j);
+    if (!bad && isM(parseCell(draft.C[i][j]))) msgs.push(`${draft.rn[i]} → ${draft.cn[j]} is required but marked M (not allowed).`);
+  }
+  $("err").textContent = msgs.join(" ");
+  return !msgs.length;
+}
+function readModel() {
+  if (!validate()) return null;
+  const nm = (s, d) => String(s).trim() || d;
+  return { rn: draft.rn.map((s, i) => nm(s, "Row " + (i + 1))), cn: draft.cn.map((s, j) => nm(s, "Col " + (j + 1))), C: draft.C.map(r => r.map(parseCell)), req: draft.req.map(x => x.slice()) };
+}
+function changed(flash) {
+  stopPlay();
+  BASE = readModel();
+  STEPS = BASE ? buildSteps(BASE) : []; CUR = -1;
+  if (flash && BASE) FLASH = "The table changed, so the worksheet restarted.";
+  renderForm(); render();
+}
+$("ed").addEventListener("input", e => {
+  const t = e.target, k = t.dataset.k, i = +t.dataset.i, j = +t.dataset.j; if (!k) return;
+  if (k === "C") draft.C[i][j] = t.value; else if (k === "rn") draft.rn[i] = t.value; else if (k === "cn") draft.cn[j] = t.value;
+  if (k !== "C") renderReq();
+  changed(true);
+});
+function resize(dr, dc) {
+  const r = draft.rn.length + dr, c = draft.cn.length + dc;
+  if (r < 1 || r > 8 || c < 1 || c > 8) return;
+  if (dr > 0) { draft.rn.push("Row " + r); draft.C.push(Array(c).fill("0")); }
+  if (dr < 0) { draft.rn.pop(); draft.C.pop(); draft.req = draft.req.filter(([i]) => i < r); }
+  if (dc > 0) { draft.cn.push("Col " + c); draft.C.forEach(x => x.push("0")); }
+  if (dc < 0) { draft.cn.pop(); draft.C.forEach(x => x.pop()); draft.req = draft.req.filter(([, j]) => j < c); }
+  renderEditor(); changed(true);
+}
+$("rDec").onclick = () => resize(-1, 0); $("rInc").onclick = () => resize(1, 0);
+$("cDec").onclick = () => resize(0, -1); $("cInc").onclick = () => resize(0, 1);
+$("reqAdd").onclick = () => {
+  const i = +$("reqR").value, j = +$("reqC").value;
+  draft.req = draft.req.filter(([a, b]) => !(a === i && b === j)); draft.req.push([i, j]);
+  renderReq(); validate(); changed(true);
+};
+$("reqList").addEventListener("click", e => { const b = e.target.closest("[data-del]"); if (!b) return; draft.req.splice(+b.dataset.del, 1); renderReq(); validate(); changed(true); });
+$("preset").addEventListener("change", () => {
+  const v = $("preset").value;
+  if (v === "blank") draft = { rn: ["Row 1", "Row 2", "Row 3"], cn: ["Col 1", "Col 2", "Col 3"], C: [["0", "0", "0"], ["0", "0", "0"], ["0", "0", "0"]], req: [] };
+  else if (v[0] === "p") draft = cp(PRESETS[+v.slice(1)]);
+  else { const s = loadSaved()[+v.slice(1)]; if (s) draft = cp(s); }
+  $("delEx").hidden = v[0] !== "s"; renderEditor(); changed(false);
+});
+$("saveEx").onclick = () => {
+  if (!validate()) { $("saveMsg").textContent = "Fix the table first."; return; }
+  const saved = loadSaved(), name = `My example ${saved.length + 1} (${draft.rn.length} × ${draft.cn.length})`;
+  saved.push(Object.assign(cp(draft), { name }));
+  if (storeSaved(saved)) { fillPresetSelect("s" + (saved.length - 1)); $("saveMsg").textContent = `Saved as “${name}” in this browser.`; }
+  else $("saveMsg").textContent = "This browser is blocking storage, so the example could not be saved.";
+};
+$("delEx").onclick = () => {
+  const v = $("preset").value; if (v[0] !== "s") return;
+  const saved = loadSaved(); saved.splice(+v.slice(1), 1); storeSaved(saved);
+  fillPresetSelect("p0"); draft = cp(PRESETS[0]); renderEditor(); changed(false); $("saveMsg").textContent = "Saved example removed.";
+};
+
+/* ================= preparation ================= */
+function prepare(M) {
+  const rReq = new Set(M.req.map(x => x[0])), cReq = new Set(M.req.map(x => x[1]));
+  const R = [], C = [];
+  M.rn.forEach((n, i) => { if (!rReq.has(i)) R.push({ name: n, o: i }); });
+  M.cn.forEach((n, j) => { if (!cReq.has(j)) C.push({ name: n, o: j }); });
+  const n = Math.max(R.length, C.length), dR = n - R.length, dC = n - C.length;
+  for (let k = 0; k < dR; k++) R.push({ name: "Dummy" + (dR > 1 ? " " + (k + 1) : ""), dummy: true });
+  for (let k = 0; k < dC; k++) C.push({ name: "Dummy" + (dC > 1 ? " " + (k + 1) : ""), dummy: true });
+  const W = R.map(r => C.map(c => r.dummy || c.dummy ? ZERO : M.C[r.o][c.o]));
+  return { R, C, W, n, dR, dC };
+}
+
+/* ================= minimum cover (König) ================= */
+function maxMatch(Z, n) {
+  const mc = Array(n).fill(-1), mr = Array(n).fill(-1);
+  const tryRow = (i, seen) => { for (let j = 0; j < n; j++) if (Z[i][j] && !seen[j]) { seen[j] = true; if (mc[j] < 0 || tryRow(mc[j], seen)) { mc[j] = i; mr[i] = j; return true; } } return false; };
+  for (let i = 0; i < n; i++) tryRow(i, Array(n).fill(false));
+  return { mr, mc };
+}
+function minCover(W) {
+  const n = W.length, Z = W.map(r => r.map(vzero));
+  const { mr, mc } = maxMatch(Z, n);
+  const visR = Array(n).fill(false), visC = Array(n).fill(false), stack = [];
+  for (let i = 0; i < n; i++) if (mr[i] < 0) { visR[i] = true; stack.push(i); }
+  while (stack.length) { const i = stack.pop(); for (let j = 0; j < n; j++) if (Z[i][j] && !visC[j]) { visC[j] = true; const r = mc[j]; if (r >= 0 && !visR[r]) { visR[r] = true; stack.push(r); } } }
+  const lines = [];
+  for (let i = 0; i < n; i++) if (!visR[i]) lines.push({ t: "r", k: i });
+  for (let j = 0; j < n; j++) if (visC[j]) lines.push({ t: "c", k: j });
+  return lines;
+}
+function hasPerfect(Z, rowsLeft, colsLeft) {
+  const rs = [...rowsLeft], cs = [...colsLeft]; if (rs.length !== cs.length) return false;
+  const sub = rs.map(i => cs.map(j => Z[i][j])); const { mr } = maxMatch(sub, rs.length);
+  return mr.every(x => x >= 0);
+}
+
+/* ================= build every step ================= */
+let STEPS = [], CUR = -1, FLASH = "";
+function buildSteps(M) {
+  const S = [], P = prepare(M);
+  const add = (card, o) => S.push(Object.assign({ card }, o));
+  add("start", { M });
+  if (M.req.length) add("req", { M });
+  if (P.n === 0) { add("final", { P, picks: [], M }); return S; }
+  if (P.dR || P.dC) add("dummy", { P });
+  else add("square", { P });
+  let W = P.W;
+  // infeasible right away? (a row or a column of M only)
+  const rowsAllM = W.map((r, i) => r.every(isM) ? i : -1).filter(i => i >= 0), colsAllM = W[0].map((_, j) => W.every(r => isM(r[j])) ? j : -1).filter(j => j >= 0);
+  if (rowsAllM.length || colsAllM.length) { add("infeasible", { P, W, rowsAllM, colsAllM }); return S; }
+  const rmin = W.map(r => vmin(r));
+  add("rowmin", { P, W, rmin });
+  W = W.map((r, i) => r.map(v => vsub(v, rmin[i])));
+  add("rowsub", { P, W, rmin });
+  const cmin = W[0].map((_, j) => vmin(W.map(r => r[j])));
+  add("colmin", { P, W, cmin });
+  W = W.map(r => r.map((v, j) => vsub(v, cmin[j])));
+  add("colsub", { P, W, cmin });
+  for (let it = 1; it <= 60; it++) {
+    const lines = minCover(W);
+    for (let k = 1; k <= lines.length; k++) add("cover" + it, { P, W, lines, shown: k, it });
+    if (!lines.length) add("cover" + it, { P, W, lines, shown: 0, it });
+    if (lines.length === P.n) break;
+    const rs = new Set(lines.filter(l => l.t === "r").map(l => l.k)), cs = new Set(lines.filter(l => l.t === "c").map(l => l.k));
+    const unc = []; W.forEach((r, i) => r.forEach((v, j) => { if (!rs.has(i) && !cs.has(j)) unc.push(v); }));
+    const k = vmin(unc);
+    if (k === null) { add("adj" + it, { P, W, lines, rs, cs, k: null, it }); add("infeasible", { P, W, late: true, L: lines.length }); return S; }
+    add("adj" + it, { P, W, lines, rs, cs, k, it });
+    W = W.map((r, i) => r.map((v, j) => { const c = (rs.has(i) ? 1 : 0) + (cs.has(j) ? 1 : 0); return c === 0 ? vsub(v, k) : c === 2 ? vadd(v, k) : v; }));
+    add("adj" + it, { P, W, lines, rs, cs, k, it, after: true });
+  }
+  // assignment from the zeros
+  const n = P.n, Z = W.map(r => r.map(vzero)), aR = new Set(), aC = new Set(), picks = [];
+  add("assign", { P, W, picks: [] });
+  while (picks.length < n) {
+    const free = (i, j) => Z[i][j] && !aR.has(i) && !aC.has(j);
+    let pick = null;
+    for (let i = 0; i < n && !pick; i++) if (!aR.has(i)) { const js = []; for (let j = 0; j < n; j++) if (free(i, j)) js.push(j); if (js.length === 1) pick = { i, j: js[0], why: "row" }; }
+    for (let j = 0; j < n && !pick; j++) if (!aC.has(j)) { const is = []; for (let i = 0; i < n; i++) if (free(i, j)) is.push(i); if (is.length === 1) pick = { i: is[0], j, why: "col" }; }
+    if (!pick) {
+      outer: for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) if (free(i, j)) {
+        const rl = new Set([...Array(n).keys()].filter(x => !aR.has(x) && x !== i)), cl = new Set([...Array(n).keys()].filter(x => !aC.has(x) && x !== j));
+        if (hasPerfect(Z, rl, cl)) { pick = { i, j, why: "choice" }; break outer; }
+      }
+    }
+    if (!pick) break;  // cannot happen when lines = n
+    pick.crossed = []; for (let j = 0; j < n; j++) if (j !== pick.j && free(pick.i, j)) pick.crossed.push([pick.i, j]);
+    for (let i = 0; i < n; i++) if (i !== pick.i && free(i, pick.j)) pick.crossed.push([i, pick.j]);
+    aR.add(pick.i); aC.add(pick.j); picks.push(pick);
+    add("assign", { P, W, picks: picks.slice() });
+  }
+  add("final", { P, W, picks, M });
+  return S;
+}
+
+/* ================= the table view ================= */
+/* o: {W, P, rside:[html], cside:[html], cell(i,j)->cls, lines, newLine, sideLabel, csideLabel, strikeR:Set, strikeC:Set} */
+function atab(o) {
+  const P = o.P, n = o.W.length;
+  const rs = new Set(), cs = new Set();
+  (o.lines || []).forEach(l => (l.t === "r" ? rs : cs).add(l.k));
+  const nl = o.newLine;
+  let h = `<div class="tw"><table class="at"><thead><tr><th class="corner"></th>`;
+  P.C.forEach((c, j) => { h += `<th class="${c.dummy ? "dum" : ""}${cs.has(j) ? " hl" : ""}">${esc(c.name)}</th>`; });
+  if (o.rside) h += `<th class="sdh">${o.sideLabel || ""}</th>`;
+  h += `</tr></thead><tbody>`;
+  o.W.forEach((r, i) => {
+    h += `<tr><th class="rn${P.R[i].dummy ? " dum" : ""}${rs.has(i) ? " hl" : ""}">${esc(P.R[i].name)}</th>`;
+    r.forEach((v, j) => {
+      let cls = vzero(v) ? "z" : "";
+      if (P.R[i].dummy || P.C[j].dummy) cls += " dum";
+      if (rs.has(i)) cls += " lr" + (nl && nl.t === "r" && nl.k === i ? " new" : "");
+      if (cs.has(j)) cls += " lc" + (nl && nl.t === "c" && nl.k === j ? " new" : "");
+      if (o.cell) cls += " " + (o.cell(i, j) || "");
+      h += `<td class="${cls}"><span>${vh(v)}</span></td>`;
+    });
+    if (o.rside) h += `<td class="sd">${o.rside[i] ?? ""}</td>`;
+    h += `</tr>`;
+  });
+  if (o.cside) h += `<tr class="sd"><th class="rn sdh">${o.csideLabel || ""}</th>` + o.cside.map(x => `<td>${x ?? ""}</td>`).join("") + (o.rside ? `<td></td>` : "") + `</tr>`;
+  return h + `</tbody></table></div>`;
+}
+function origTab(M, o = {}) {
+  const rq = new Map(M.req.map(([i, j]) => [i + "," + j, true]));
+  let h = `<div class="tw"><table class="at"><thead><tr><th class="corner"></th>` + M.cn.map((c, j) => `<th class="${o.goneC && o.goneC.has(j) ? "gone" : ""}">${esc(c)}</th>`).join("") + `</tr></thead><tbody>`;
+  M.C.forEach((r, i) => {
+    h += `<tr><th class="rn${o.goneR && o.goneR.has(i) ? " gone" : ""}">${esc(M.rn[i])}</th>`;
+    r.forEach((v, j) => {
+      const g = o.goneR && (o.goneR.has(i) || o.goneC.has(j));
+      h += `<td class="${g ? "gone" : ""}${rq.has(i + "," + j) && o.showReq ? " req" : ""}${isM(v) ? " mcell" : ""}"><span>${vh(v)}</span></td>`;
+    });
+    h += `</tr>`;
+  });
+  return h + `</tbody></table></div>`;
+}
+
+/* ================= cards ================= */
+function card(id, title, body, cur, meta = "") { return `<article class="itcard${cur ? " is-current" : ""}" id="card-${id}"><div class="itcard__h"><h2>${title}</h2>${meta ? `<span class="group__meta">${meta}</span>` : ""}</div>${body}</article>`; }
+const listNames = arr => arr.map(x => `<b>${esc(x)}</b>`).join(", ");
+function renderStep(s, cur) {
+  const P = s.P;
+  switch (s.card) {
+    case "start": {
+      const M = s.M, r = M.rn.length, c = M.cn.length, mCount = M.C.flat().filter(isM).length;
+      let h = `<p class="nl">The cost table has <b>${r}</b> assignee${r === 1 ? "" : "s"} and <b>${c}</b> task${c === 1 ? "" : "s"}.</p>` + origTab(M, { showReq: true });
+      const items = [];
+      if (mCount) items.push(`${mCount} pair${mCount === 1 ? " is" : "s are"} <b>not allowed</b> (cost <i class="mv">M</i>, a very large number, so the method never picks ${mCount === 1 ? "it" : "them"}).`);
+      if (M.req.length) items.push(`${M.req.length} required assignment${M.req.length === 1 ? "" : "s"} (outlined): ${M.req.map(([i, j]) => `${esc(M.rn[i])} → ${esc(M.cn[j])}`).join(", ")}.`);
+      const pp = prepare(M);
+      if (pp.dR || pp.dC) items.push(`After that, the table is not square, so dummy ${pp.dR ? "rows" : "columns"} will be needed.`);
+      h += items.length ? `<ul class="dualrules">${items.map(t => `<li>${t}</li>`).join("")}</ul>` : `<p class="nl">The table is square with no special pairs, so it is ready for the Hungarian method.</p>`;
+      return card("start", "The table", h, cur, "Preparation");
+    }
+    case "req": {
+      const M = s.M, goneR = new Set(M.req.map(x => x[0])), goneC = new Set(M.req.map(x => x[1]));
+      let h = `<p class="nl">A required pair is already decided: ${M.req.map(([i, j]) => `<b>${esc(M.rn[i])}</b> does <b>${esc(M.cn[j])}</b> (cost ${vh(M.C[i][j])})`).join("; ")}. So ${M.req.length > 1 ? "those rows and those columns are" : "that row and that column are"} <b>removed</b>: nobody else may do ${M.req.length > 1 ? "those tasks" : "that task"}, and ${M.req.length > 1 ? "those assignees do" : "that assignee does"} nothing else. The Hungarian method solves the smaller table, and the cost of ${M.req.length > 1 ? "the required pairs is" : "the required pair is"} added back at the end.</p>`;
+      h += origTab(M, { goneR, goneC, showReq: true });
+      return card("req", M.req.length > 1 ? "Required assignments: remove their rows and columns" : "Required assignment: remove the row and the column", h, cur, "Preparation");
+    }
+    case "dummy": {
+      const nR = P.R.filter(r => !r.dummy).length, nC = P.C.filter(c => !c.dummy).length;
+      const h = `<p class="nl">The table has ${nR} row${nR === 1 ? "" : "s"} and ${nC} column${nC === 1 ? "" : "s"}. The Hungarian method needs a <b>square</b> table, so add ${P.dR ? `${P.dR} dummy row${P.dR > 1 ? "s" : ""} (an imaginary assignee)` : `${P.dC} dummy column${P.dC > 1 ? "s" : ""} (an imaginary task)`} with cost <b>0</b>. ${P.dR ? "A task given to a dummy row is a task that nobody does." : "An assignee given to a dummy column gets no task."} The zero costs do not change which real pairs are best.</p>` + atab({ P, W: P.W });
+      return card("dummy", "Make the table square: add dummies", h, cur, `${P.n} × ${P.n}`);
+    }
+    case "square":
+      return card("square", "The table is square", `<p class="nl">${P.n} rows and ${P.n} columns, so no dummy is needed.</p>` + atab({ P, W: P.W }), cur, `${P.n} × ${P.n}`);
+    case "infeasible": {
+      let h = s.late
+        ? `<p class="ans ans--bad"><b>No feasible assignment.</b> Every entry that no line covers is <i class="mv">M</i>, so every allowed pair lies on one of the ${s.L} lines. One line can hold at most one assignment, so at most ${s.L} assignees can get an allowed task, fewer than ${P.n}. Change some <i class="mv">M</i> entries.</p>`
+        : `<p class="ans ans--bad"><b>No feasible assignment.</b> ${s.rowsAllM.length ? `Row${s.rowsAllM.length > 1 ? "s" : ""} ${listNames(s.rowsAllM.map(i => P.R[i].name))} ha${s.rowsAllM.length > 1 ? "ve" : "s"} only <i class="mv">M</i> entries` : ""}${s.rowsAllM.length && s.colsAllM.length ? " and c" : s.colsAllM.length ? "C" : ""}${s.colsAllM.length ? `olumn${s.colsAllM.length > 1 ? "s" : ""} ${listNames(s.colsAllM.map(j => P.C[j].name))} ha${s.colsAllM.length > 1 ? "ve" : "s"} only <i class="mv">M</i> entries` : ""}: nothing allowed is left there.</p>`;
+      if (!s.late) h = atab({ P, W: s.W, cell: (i, j) => s.rowsAllM.includes(i) || s.colsAllM.includes(j) ? "bad" : "" }) + h;
+      return card("infeasible", "Stopped", h, cur);
+    }
+    case "rowmin": {
+      const h = `<p class="nl"><b>Step 1.</b> Find the <b>smallest entry in each row</b> (circled; shown in the side column).</p>` + atab({ P, W: s.W, rside: s.rmin.map(v => v === null ? "" : vh(v)), sideLabel: "row min", cell: (i, j) => !isM(s.W[i][j]) && s.rmin[i] && s.W[i][j].cmp(s.rmin[i]) === 0 ? "minc" : "" });
+      return card("rows", "Step 1 · Row reduction", h, cur, "find the minima");
+    }
+    case "rowsub": {
+      const h = `<p class="nl"><b>Step 1.</b> Subtract each row minimum from every entry of its row. Every row now has at least one zero.${s.W.flat().some(isM) ? ` (<i class="mv">M</i> − anything is still <i class="mv">M</i>.)` : ""}</p>` + atab({ P, W: s.W, rside: s.rmin.map(v => v === null ? "" : "− " + pv(v)), sideLabel: "subtracted" });
+      return card("rows", "Step 1 · Row reduction", h, cur, "subtract");
+    }
+    case "colmin": {
+      const allZero = s.cmin.every(v => v && v.isZero());
+      const h = `<p class="nl"><b>Step 2.</b> Find the <b>smallest entry in each column</b> of the new table (bottom row).${allZero ? " Every column already has a zero, so the column minima are all 0." : ""}</p>` + atab({ P, W: s.W, cside: s.cmin.map(v => v === null ? "" : vh(v)), csideLabel: "column min", cell: (i, j) => !isM(s.W[i][j]) && s.cmin[j] && s.W[i][j].cmp(s.cmin[j]) === 0 && !s.cmin[j].isZero() ? "minc" : "" });
+      return card("cols", "Step 2 · Column reduction", h, cur, "find the minima");
+    }
+    case "colsub": {
+      const h = `<p class="nl"><b>Step 2.</b> Subtract each column minimum from every entry of its column. Every row and every column now has a zero.</p>` + atab({ P, W: s.W, cside: s.cmin.map(v => v === null ? "" : "− " + pv(v)), csideLabel: "subtracted" });
+      return card("cols", "Step 2 · Column reduction", h, cur, "subtract");
+    }
+  }
+  if (s.card.startsWith("cover")) {
+    const all = s.shown >= s.lines.length, L = s.lines.length;
+    const nl = s.lines[s.shown - 1];
+    let h = `<p class="nl"><b>Step 3.</b> Cover every zero with the <b>smallest possible number</b> of lines (whole rows or whole columns).</p>`;
+    h += atab({ P, W: s.W, lines: s.lines.slice(0, s.shown), newLine: cur ? nl : null });
+    if (!all) h += `<p class="nl">Line ${s.shown} of ${L}: ${nl.t === "r" ? `row <b>${esc(P.R[nl.k].name)}</b>` : `column <b>${esc(P.C[nl.k].name)}</b>`}.</p>`;
+    else if (L === P.n) h += `<p class="ans ans--ok"><b>${L} lines = ${P.n}</b> (the size of the table). An optimal assignment can be made using zeros only.</p>`;
+    else h += `<p class="ans ans--info"><b>${L} line${L === 1 ? "" : "s"} &lt; ${P.n}.</b> The zeros are not enough for a full assignment yet, so the table must be adjusted (Step 4).</p>`;
+    if (all) h += `<p class="nl small">Why ${L} is the minimum: there ${L === 1 ? "is" : "are"} ${L} zero${L === 1 ? "" : "s"} with no two in the same row or column, and each line can cover only one of them.</p>`;
+    return card(s.card, `Step 3 · Cover the zeros${s.it > 1 ? ` (round ${s.it})` : ""}`, h, cur, all ? `${L} line${L === 1 ? "" : "s"}` : `drawing line ${s.shown}`);
+  }
+  if (s.card.startsWith("adj")) {
+    let h;
+    if (!s.after) {
+      const cell = (i, j) => { const c = (s.rs.has(i) ? 1 : 0) + (s.cs.has(j) ? 1 : 0); return c === 0 ? "unc" + (s.k && !isM(s.W[i][j]) && s.W[i][j].cmp(s.k) === 0 ? " minc" : "") : c === 2 ? "two" : ""; };
+      h = `<p class="nl"><b>Step 4.</b> Look at the entries that <b>no line covers</b> (yellow). ${s.k ? `The smallest of them is <b>k = ${vh(s.k)}</b> (circled).` : "They are all M."}</p>` + atab({ P, W: s.W, lines: s.lines, cell });
+      if (s.k) h += `<ul class="dualrules"><li>Subtract <b>${vh(s.k)}</b> from every <b>uncovered</b> entry (yellow): this creates a new zero.</li><li>Add <b>${vh(s.k)}</b> to every entry covered by <b>two lines</b> (purple).</li><li>Entries covered by one line stay the same.</li></ul>`;
+    } else {
+      const cell = (i, j) => { const c = (s.rs.has(i) ? 1 : 0) + (s.cs.has(j) ? 1 : 0); return c === 0 ? "unc" : c === 2 ? "two" : ""; };
+      h = `<p class="nl"><b>Step 4.</b> The adjusted table: yellow entries went down by ${vh(s.k)}, purple entries went up by ${vh(s.k)}, the rest is unchanged. Now go back to Step 3.</p>` + atab({ P, W: s.W, cell });
+    }
+    return card(s.card, `Step 4 · Adjust the table${s.it > 1 ? ` (round ${s.it})` : ""}`, h, cur, s.after ? "adjusted" : `k = ${s.k ? vh(s.k) : "—"}`);
+  }
+  if (s.card === "assign") {
+    const pk = new Map(s.picks.map((p, k) => [p.i + "," + p.j, k])), crossed = new Set(s.picks.flatMap(p => p.crossed.map(x => x[0] + "," + x[1])));
+    const last = s.picks[s.picks.length - 1];
+    const cell = (i, j) => pk.has(i + "," + j) ? "pick" + (cur && last && last.i === i && last.j === j ? " new" : "") : crossed.has(i + "," + j) ? "xz" : "";
+    let h = `<p class="nl"><b>Step 5.</b> Build the assignment from the zeros, one at a time. Always start with a row or a column that has <b>only one</b> available zero: assign it (boxed) and cross out the other zeros in its row and column.</p>` + atab({ P, W: s.W, cell });
+    if (!last) h += `<p class="nl">Press <b>Next</b> to make the first assignment.</p>`;
+    else {
+      const who = `<b>${esc(P.R[last.i].name)}</b> → <b>${esc(P.C[last.j].name)}</b>`;
+      h += `<p class="nl">${last.why === "row" ? `Row <b>${esc(P.R[last.i].name)}</b> has only one available zero` : last.why === "col" ? `Column <b>${esc(P.C[last.j].name)}</b> has only one available zero` : `Every remaining row and column has two or more zeros, so any choice that still allows a full assignment works; take the first one`}: assign ${who}.${last.crossed.length ? ` Cross out ${last.crossed.length} other zero${last.crossed.length > 1 ? "s" : ""} in that row and column.` : ""} (${s.picks.length} of ${P.n})</p>`;
+    }
+    return card("assign", "Step 5 · Make the assignment", h, cur, `${s.picks.length} of ${P.n}`);
+  }
+  if (s.card === "final") return card("final", "The optimal assignment", finalHtml(s), cur);
+  return "";
+}
+function finalHtml(s) {
+  const M = s.M, P = s.P;
+  const rows = [];
+  for (const [i, j] of M.req) rows.push({ r: M.rn[i], c: M.cn[j], v: M.C[i][j], tag: "required" });
+  for (const p of s.picks) {
+    const R = P.R[p.i], C = P.C[p.j];
+    if (R.dummy) rows.push({ r: "—", c: C.name, v: null, tag: "nobody does this task (dummy row)" });
+    else if (C.dummy) rows.push({ r: R.name, c: "—", v: null, tag: "no task (dummy column)" });
+    else rows.push({ r: R.name, c: C.name, v: M.C[R.o][C.o] });
+  }
+  const ord = x => { const i = M.rn.indexOf(x.r); return i < 0 ? 999 : i; };
+  rows.sort((a, b) => ord(a) - ord(b));
+  let tot = ZERO; rows.forEach(x => { if (x.v) tot = tot.add(x.v); });
+  let h = `<div class="btw"><table class="bt"><thead><tr><th>Assignee</th><th>Task</th><th>Cost</th></tr></thead><tbody>` + rows.map(x => `<tr><td>${esc(x.r)}</td><td>${esc(x.c)}</td><td>${x.v ? vh(x.v) : `<span class="note">${x.tag}</span>`}${x.v && x.tag ? ` <span class="note">(${x.tag})</span>` : ""}</td></tr>`).join("") + `</tbody></table></div>`;
+  const terms = rows.filter(x => x.v).map(x => vh(x.v));
+  h += `<p class="big">Minimum total cost = ${terms.join(" + ") || "0"}${terms.length > 1 ? ` = ${numHtml(tot)}` : ""}</p>`;
+  if (s.picks.length) h += `<p class="nl small">Each boxed zero is an assignment. In the reduced table its cost is 0, and every entry is ≥ 0, so no assignment can do better in the reduced table; the reductions changed every assignment’s cost by the same amount, so this one is optimal for the original costs too.</p>`;
+  return h;
+}
+
+/* ================= the formulation ================= */
+function renderForm() {
+  const el = $("form");
+  if (!BASE) { el.innerHTML = `<div class="empty">Fix the table above to see the formulation.</div>`; return; }
+  const M = BASE, P = prepareFull(M), n = P.n;
+  const names = (i, j) => X(i, j);
+  let h = `<div class="card"><div class="card__body" style="display:flex;flex-direction:column;gap:.85rem">`;
+  if (P.dR || P.dC) h += `<p class="nl">The table is ${M.rn.length} × ${M.cn.length}, so ${P.dR ? `${P.dR} dummy row${P.dR > 1 ? "s" : ""}` : `${P.dC} dummy column${P.dC > 1 ? "s" : ""}`} with cost 0 ${P.dR + P.dC > 1 ? "are" : "is"} added to make it ${n} × ${n}. Rows are numbered <i>i</i> = 1…${n}, columns <i>j</i> = 1…${n}.</p>`;
+  h += `<p class="nl"><b>Decision variables:</b> <span class="mx">${X(0, 0).replace("11", "<i>ij</i>")} = 1</span> if assignee <i>i</i> does task <i>j</i>, and 0 otherwise.</p>`;
+  h += `<div class="tw">` + costIdx(P) + `</div>`;
+  // objective
+  const obj = [];
+  P.W.forEach((r, i) => r.forEach((v, j) => { if (isM(v)) return; if (v.isZero()) return; obj.push(`${v.sign() < 0 ? "− " : obj.length ? "+ " : ""}${v.n === v.d || v.n === -v.d ? "" : absHtml(v)}${names(i, j)}`); }));
+  const fixed0 = [], fixed1 = [];
+  P.W.forEach((r, i) => r.forEach((v, j) => { if (isM(v)) fixed0.push([i, j]); }));
+  P.req.forEach(([i, j]) => fixed1.push([i, j]));
+  h += `<div class="lpbox mx"><div class="lpl"><b>min</b> <i>z</i> = ${obj.join(" ") || "0"}</div><div class="lpl"><b>subject to</b></div>`;
+  for (let i = 0; i < n; i++) h += `<div class="lpl ind">${Array.from({ length: n }, (_, j) => names(i, j)).join(" + ")} = 1 <span class="why">(${esc(P.R[i].name)} does exactly one task)</span></div>`;
+  for (let j = 0; j < n; j++) h += `<div class="lpl ind">${Array.from({ length: n }, (_, i) => names(i, j)).join(" + ")} = 1 <span class="why">(${esc(P.C[j].name)} is done by exactly one assignee)</span></div>`;
+  if (fixed0.length) h += `<div class="lpl ind">${fixed0.map(([i, j]) => names(i, j)).join(", ")} = 0 <span class="why">(not allowed: instead of a cost <i>M</i>)</span></div>`;
+  if (fixed1.length) h += `<div class="lpl ind">${fixed1.map(([i, j]) => names(i, j)).join(", ")} = 1 <span class="why">(required)</span></div>`;
+  h += `<div class="lpl ind">${X(0, 0).replace("11", "<i>ij</i>")} ≥ 0 for all <i>i</i>, <i>j</i> <span class="why">(the integer program has ${X(0, 0).replace("11", "<i>ij</i>")} ∈ {0, 1}; the LP only needs ≥ 0)</span></div></div>`;
+  h += `<p class="nl"><b>Why the integrality condition can be dropped:</b> every variable appears in exactly two constraints, once in a row constraint and once in a column constraint, each time with coefficient 1, and every right-hand side is 1. Such a constraint matrix is <b>totally unimodular</b>, so every corner point of the LP is integer. The simplex method stops at a corner point, so solving the <b>linear program</b> already gives <span class="mx">${X(0, 0).replace("11", "<i>ij</i>")}</span> ∈ {0, 1}.</p>`;
+  if (P.dR || P.dC) h += `<p class="nl small">Without dummies, the same problem can be written with “= 1” on the smaller side and “≤ 1” on the larger side${P.dR ? " (each task is done by at most one assignee)" : " (each assignee does at most one task)"}.</p>`;
+  h += `<div class="btnrow"><button class="btn btn--sm btn--solid" id="lpSolve" type="button">Solve the LP with the simplex method</button><span class="note">(exact arithmetic, ${n * n - fixed0.length} variables)</span></div><div id="lpOut"></div>`;
+  h += `</div></div>`;
+  el.innerHTML = h;
+  $("lpSolve").onclick = () => { $("lpOut").innerHTML = lpHtml(P); };
+}
+function prepareFull(M) {
+  const n = Math.max(M.rn.length, M.cn.length), dR = n - M.rn.length, dC = n - M.cn.length;
+  const R = M.rn.map(nm => ({ name: nm })), C = M.cn.map(nm => ({ name: nm }));
+  for (let k = 0; k < dR; k++) R.push({ name: "Dummy" + (dR > 1 ? " " + (k + 1) : ""), dummy: true });
+  for (let k = 0; k < dC; k++) C.push({ name: "Dummy" + (dC > 1 ? " " + (k + 1) : ""), dummy: true });
+  const W = R.map((r, i) => C.map((c, j) => r.dummy || c.dummy ? ZERO : M.C[i][j]));
+  return { n, dR, dC, R, C, W, req: M.req };
+}
+function costIdx(P) {
+  let h = `<table class="at small"><thead><tr><th class="corner"></th>` + P.C.map((c, j) => `<th class="${c.dummy ? "dum" : ""}">${esc(c.name)}<br><span class="note">j = ${j + 1}</span></th>`).join("") + `</tr></thead><tbody>`;
+  P.W.forEach((r, i) => { h += `<tr><th class="rn${P.R[i].dummy ? " dum" : ""}">${esc(P.R[i].name)} <span class="note">i = ${i + 1}</span></th>` + r.map((v, j) => `<td class="${P.R[i].dummy || P.C[j].dummy ? "dum" : ""}"><span>${vh(v)}</span><small class="xl">${X(i, j)}</small></td>`).join("") + `</tr>`; });
+  return h + `</tbody></table>`;
+}
+/* two-phase simplex (Bland's rule), min c x, A x = b (b ≥ 0), x ≥ 0 */
+function lpSolve(c, A, b) {
+  const m = A.length, nv = c.length, N = nv + m;
+  const T = A.map((r, i) => { const row = r.concat(Array.from({ length: m }, (_, k) => k === i ? ONE : ZERO)); row.push(b[i]); return row; });
+  let basis = Array.from({ length: m }, (_, i) => nv + i);
+  const pivot = (obj, r, e) => {
+    const p = T[r][e]; T[r] = T[r].map(x => x.div(p));
+    for (let i = 0; i < T.length; i++) if (i !== r && !T[i][e].isZero()) { const f = T[i][e]; T[i] = T[i].map((x, k) => x.sub(f.mul(T[r][k]))); }
+    if (!obj[e].isZero()) { const f = obj[e]; for (let k = 0; k <= N; k++) obj[k] = obj[k].sub(f.mul(T[r][k])); }
+    basis[r] = e;
+  };
+  const run = (obj, allowed) => {
+    for (let guard = 0; guard < 5000; guard++) {
+      let e = -1; for (let j = 0; j < N; j++) if (allowed(j) && obj[j].sign() < 0) { e = j; break; }
+      if (e < 0) return true;
+      let r = -1, best = null;
+      for (let i = 0; i < T.length; i++) if (T[i][e].sign() > 0) { const q = T[i][N].div(T[i][e]); const cmp = best === null ? -1 : q.cmp(best); if (cmp < 0 || (cmp === 0 && basis[i] < basis[r])) { best = q; r = i; } }
+      if (r < 0) return false;
+      pivot(obj, r, e);
+    }
+    return false;
+  };
+  // phase 1
+  const w = Array.from({ length: N + 1 }, (_, k) => k >= nv && k < N ? ONE : ZERO);
+  for (let i = 0; i < m; i++) for (let k = 0; k <= N; k++) w[k] = w[k].sub(T[i][k]);
+  run(w, () => true);
+  if (w[N].neg().sign() > 0) return { status: "infeasible" };
+  for (let i = T.length - 1; i >= 0; i--) if (basis[i] >= nv) {
+    let e = -1; for (let j = 0; j < nv; j++) if (!T[i][j].isZero()) { e = j; break; }
+    if (e >= 0) pivot(w, i, e); else { T.splice(i, 1); basis.splice(i, 1); }
+  }
+  const z = Array.from({ length: N + 1 }, (_, k) => k < nv ? c[k] : ZERO);
+  for (let i = 0; i < T.length; i++) { const cb = basis[i] < nv ? c[basis[i]] : ZERO; if (!cb.isZero()) for (let k = 0; k <= N; k++) z[k] = z[k].sub(cb.mul(T[i][k])); }
+  if (!run(z, j => j < nv)) return { status: "unbounded" };
+  const x = Array(nv).fill(ZERO); basis.forEach((bv, i) => { if (bv < nv) x[bv] = T[i][N]; });
+  let val = ZERO; x.forEach((v, j) => { val = val.add(v.mul(c[j])); });
+  return { status: "optimal", x, val };
+}
+function lpOf(P) {
+  const n = P.n, vars = [];
+  P.W.forEach((r, i) => r.forEach((v, j) => { if (!isM(v)) vars.push({ i, j, c: v }); }));
+  const A = [], b = [];
+  for (let i = 0; i < n; i++) { A.push(vars.map(v => v.i === i ? ONE : ZERO)); b.push(ONE); }
+  for (let j = 0; j < n; j++) { A.push(vars.map(v => v.j === j ? ONE : ZERO)); b.push(ONE); }
+  for (const [i, j] of P.req) { A.push(vars.map(v => v.i === i && v.j === j ? ONE : ZERO)); b.push(ONE); }
+  return { vars, res: lpSolve(vars.map(v => v.c), A, b) };
+}
+function lpHtml(P) {
+  const { vars, res } = lpOf(P);
+  if (res.status !== "optimal") return `<p class="ans ans--bad">The LP is <b>${res.status}</b>: no assignment uses only allowed pairs.</p>`;
+  const ones = vars.map((v, k) => ({ v, x: res.x[k] })).filter(o => !o.x.isZero());
+  const allInt = res.x.every(x => x.isZero() || x.cmp(ONE) === 0);
+  let h = `<p class="ans ${allInt ? "ans--ok" : "ans--info"}"><b>LP optimum z = ${numHtml(res.val)}.</b> Nonzero variables: ${ones.map(o => `<span class="mx">${X(o.v.i, o.v.j)} = ${numHtml(o.x)}</span> <span class="note">(${esc(P.R[o.v.i].name)} → ${esc(P.C[o.v.j].name)})</span>`).join(", ")}. All other variables are 0.</p>`;
+  h += allInt ? `<p class="nl small">Every variable came out <b>0 or 1</b> even though only <span class="mx">x ≥ 0</span> was imposed. Compare with the Hungarian method below.</p>` : "";
+  return h;
+}
+
+/* ================= page ================= */
+let PLAY = null;
+function stopPlay() { clearInterval(PLAY); PLAY = null; $("play").textContent = "▶ Play"; }
+function render() {
+  let h = FLASH ? `<p class="ans ans--info">${esc(FLASH)}</p>` : ""; FLASH = "";
+  if (!BASE) h += `<div class="empty">Fix the table above first.</div>`;
+  else if (CUR < 0) h += `<div class="empty">The worksheet is empty. Press <b>Next</b> to start.</div>`;
+  else {
+    const lastOf = new Map();
+    for (let k = 0; k <= CUR; k++) lastOf.set(STEPS[k].card, k);
+    for (const [, k] of lastOf) h += renderStep(STEPS[k], k === CUR);
+  }
+  $("sheet").innerHTML = h;
+  const end = !BASE || CUR >= STEPS.length - 1;
+  $("next").textContent = end ? "Done" : CUR < 0 ? "Start →" : nextLabel() + " →";
+  $("next").disabled = end; $("auto").disabled = end; $("play").disabled = end && !PLAY;
+  $("back").disabled = CUR < 0;
+  $("status").innerHTML = statusText();
+  if (end && PLAY) stopPlay();
+}
+function nextLabel() {
+  const s = STEPS[CUR + 1]; if (!s) return "Next";
+  const c = s.card;
+  if (c === "req") return "Remove required pairs";
+  if (c === "dummy") return "Add dummies";
+  if (c === "square") return "Check the size";
+  if (c === "rowmin") return "Row minima";
+  if (c === "rowsub") return "Subtract row minima";
+  if (c === "colmin") return "Column minima";
+  if (c === "colsub") return "Subtract column minima";
+  if (c.startsWith("cover")) return `Draw line ${s.shown}`;
+  if (c.startsWith("adj")) return s.after ? "Adjust the table" : "Smallest uncovered entry";
+  if (c === "assign") return s.picks.length ? `Assignment ${s.picks.length}` : "Make the assignment";
+  if (c === "final") return "Optimal assignment";
+  if (c === "infeasible") return "Check";
+  return "Next";
+}
+function statusText() {
+  if (!BASE) return "<b>Fix the table first.</b>";
+  if (CUR < 0) return `<b>Ready.</b> ${STEPS.length} steps.`;
+  const s = STEPS[CUR];
+  const t = { start: "The table.", req: "Required pairs removed.", dummy: "Dummies added: the table is square.", square: "The table is square.", rowmin: "Step 1: row minima.", rowsub: "Step 1 done: row reduction.", colmin: "Step 2: column minima.", colsub: "Step 2 done: column reduction.", infeasible: "Stopped: no feasible assignment.", final: "Done: optimal assignment." }[s.card];
+  if (t) return `<b>${t}</b>`;
+  if (s.card.startsWith("cover")) return `<b>Step 3:</b> ${s.shown} of ${s.lines.length} lines${s.shown >= s.lines.length ? (s.lines.length === s.P.n ? " = n: optimal" : " < n: adjust") : ""}.`;
+  if (s.card.startsWith("adj")) return `<b>Step 4:</b> ${s.after ? "table adjusted." : "k = smallest uncovered entry."}`;
+  if (s.card === "assign") return `<b>Step 5:</b> ${s.picks.length} of ${s.P.n} assigned.`;
+  return "";
+}
+function focusCur() {
+  const s = STEPS[CUR]; if (!s) return;
+  const el = $("card-" + s.card); if (!el) return;
+  const r = el.getBoundingClientRect();
+  if (r.top < 0 || r.bottom > window.innerHeight - 80) el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: r.height > window.innerHeight * .8 ? "start" : "center" });
+}
+const step = d => { const k = Math.max(-1, Math.min(STEPS.length - 1, CUR + d)); if (k === CUR) return false; CUR = k; render(); focusCur(); return true; };
+$("next").onclick = () => { stopPlay(); step(1); };
+$("back").onclick = () => { stopPlay(); step(-1); };
+$("auto").onclick = () => { stopPlay(); CUR = STEPS.length - 1; render(); focusCur(); };
+$("restart").onclick = () => { stopPlay(); CUR = -1; render(); $("hung").scrollIntoView({ behavior: "smooth" }); };
+$("play").onclick = () => {
+  if (PLAY) { stopPlay(); return; }
+  if (CUR >= STEPS.length - 1) CUR = -1;
+  $("play").textContent = "❚❚ Pause"; step(1);
+  PLAY = setInterval(() => { if (!step(1)) stopPlay(); }, 1400);
+};
+function setMode(m) { MODE = m; $("fmtFrac").setAttribute("aria-pressed", m === "frac"); $("fmtDec").setAttribute("aria-pressed", m === "dec"); renderForm(); render(); }
+$("fmtFrac").onclick = () => setMode("frac"); $("fmtDec").onclick = () => setMode("dec");
+document.addEventListener("keydown", e => {
+  const tag = (e.target.tagName || "").toLowerCase();
+  if (tag === "input" || tag === "select" || tag === "textarea" || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === "ArrowRight") { e.preventDefault(); $("next").click(); }
+  else if (e.key === "ArrowLeft") { e.preventDefault(); $("back").click(); }
+});
+
+fillPresetSelect("p0");
+renderEditor();
+changed(false);
+window.__asg = {
+  PRESETS, get STEPS() { return STEPS; }, get CUR() { return CUR; },
+  load(i) { draft = cp(PRESETS[i]); fillPresetSelect("p" + i); renderEditor(); changed(false); },
+  set(p) { draft = cp(p); renderEditor(); changed(false); },
+  runAll() { CUR = STEPS.length - 1; render(); },
+  goto(k) { CUR = k; render(); },
+  result() {
+    const s = STEPS[STEPS.length - 1]; if (!s) return null;
+    if (s.card === "infeasible") return { status: "infeasible" };
+    const M = s.M, P = s.P, pairs = M.req.map(([i, j]) => [i, j]);
+    for (const p of s.picks) { const R = P.R[p.i], C = P.C[p.j]; if (!R.dummy && !C.dummy) pairs.push([R.o, C.o]); }
+    let tot = ZERO; pairs.forEach(([i, j]) => { tot = tot.add(M.C[i][j]); });
+    return { status: "optimal", pairs, total: tot.n + "/" + tot.d, adjusts: STEPS.filter(x => x.card.startsWith("adj") && x.after).length };
+  },
+  lp() { const P = prepareFull(BASE); const { vars, res } = lpOf(P); return res.status !== "optimal" ? { status: res.status } : { status: "optimal", val: res.val.n + "/" + res.val.d, integral: res.x.every(x => x.isZero() || x.cmp(ONE) === 0) }; }
+};
+})();
+</script>
+</body>
+</html>
