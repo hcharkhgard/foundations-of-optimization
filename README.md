@@ -20,6 +20,7 @@ Every tool is a single self-contained web page — no installation, no build ste
 | Dual Simplex method interactive tool: Tabular Form | The dual simplex method: suitability check (no negative reduced cost), all constraints “≤”, pivot row by the most negative right-hand side, pivot column by the ratio test, animated pivots | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/dual-simplex/) | [`tools/dual-simplex`](tools/dual-simplex) |
 | Sensitivity Analysis interactive tool: Tabular Form | Sensitivity analysis from the final tableau (y\* and S\*): new decision variables through the dual, re-optimizing after changes (Steps 1–3 with step-by-step matrix products), allowable ranges of b and c with θ | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/sensitivity-analysis/) | [`tools/sensitivity-analysis`](tools/sensitivity-analysis) |
 | Assignment problem interactive tool: Hungarian Method | The assignment problem as a linear program (integrality can be dropped) and the Hungarian method: reductions, minimum lines through the zeros, adjustments, the assignment; dummy rows/columns, big M and required pairs | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/assignment-problem/) | [`tools/assignment-problem`](tools/assignment-problem) |
+| Transportation problem interactive tool: Transportation Simplex Method | The transportation problem as an LP and its dual (why u_i + v_j − c_ij is computed), and the transportation simplex method: balancing, northwest rule, dual values, loops and θ; dummies, big M and minimum shipments | [Open](https://hcharkhgard.github.io/foundations-of-optimization/tools/transportation-problem/) | [`tools/transportation-problem`](tools/transportation-problem) |
 
 ## Repository layout
 
@@ -61,7 +62,11 @@ foundations-of-optimization/
     │   ├── index.html
     │   ├── README.md
     │   └── EXAMPLES.md
-    └── assignment-problem/
+    ├── assignment-problem/
+    │   ├── index.html
+    │   ├── README.md
+    │   └── EXAMPLES.md
+    └── transportation-problem/
         ├── index.html
         ├── README.md
         └── EXAMPLES.md
